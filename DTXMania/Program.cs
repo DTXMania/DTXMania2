@@ -102,7 +102,12 @@ namespace DTXMania
                         // 戻ってきた際、再起動フラグが立っていたらここでアプリを再起動する。
 
                         if( app.再起動が必要 )
+                        {
+                            // 注意：Visual Sutdio のデバッグ＞例外設定で Common Language Runtime Exceptions にチェックを入れていると、
+                            // ここで InvalidDeploymentException が発生してデバッガが一時停止するが、これは「ファーストチャンス例外」なので、
+                            // 単に無視すること。
                             Application.Restart();
+                        }
                     }
                     else
                     {

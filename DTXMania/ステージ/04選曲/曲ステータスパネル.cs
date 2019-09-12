@@ -61,32 +61,6 @@ namespace DTXMania.選曲
                 #region " フォーカスノードが変更されたので情報を更新する。"
                 //----------------
                 this._現在表示しているノード = App進行描画.曲ツリー.フォーカス曲ノード; // MusicNode 以外は null が返される
-
-                this._ノーツ数 = null;
-
-                if( null != this._現在表示しているノード )
-                {
-                    using( var songdb = new SongDB() )
-                    {
-                        var note = songdb.Songs.Where( ( r ) => ( r.HashId == this._現在表示しているノード.曲ファイルハッシュ ) ).SingleOrDefault();
-
-                        if( null != note )
-                        {
-                            this._ノーツ数 = new Dictionary<表示レーン種別, int>() {
-                                { 表示レーン種別.Unknown, 0 },
-                                { 表示レーン種別.LeftCymbal, note.TotalNotes_LeftCymbal },
-                                { 表示レーン種別.HiHat, note.TotalNotes_HiHat },
-                                { 表示レーン種別.Foot, note.TotalNotes_LeftPedal },
-                                { 表示レーン種別.Snare, note.TotalNotes_Snare },
-                                { 表示レーン種別.Bass, note.TotalNotes_Bass },
-                                { 表示レーン種別.Tom1, note.TotalNotes_HighTom },
-                                { 表示レーン種別.Tom2, note.TotalNotes_LowTom },
-                                { 表示レーン種別.Tom3, note.TotalNotes_FloorTom },
-                                { 表示レーン種別.RightCymbal, note.TotalNotes_RightCymbal },
-                            };
-                        }
-                    }
-                }
                 //----------------
                 #endregion
             }
@@ -101,7 +75,7 @@ namespace DTXMania.選曲
             {
                 // Total Notes を表示する。
 
-                if( null != this._ノーツ数 )
+                if( null != this._現在表示しているノード?.レーン別ノート数 )
                 {
                     DXResources.Instance.D2DBatchDraw( dc, () => {
 
@@ -126,7 +100,7 @@ namespace DTXMania.選曲
                                 continue;
 
                             var 矩形 = new RectangleF( 領域dpx.X + Xオフセット[ lane ], 領域dpx.Y + Yオフセット, 6f, 405f );
-                            矩形.Top = 矩形.Bottom - ( 矩形.Height * Math.Min( this._ノーツ数[ lane ], 250 ) / 250f );
+                            矩形.Top = 矩形.Bottom - ( 矩形.Height * Math.Min( this._現在表示しているノード.レーン別ノート数[ lane ], 250 ) / 250f );
 
                             dc.FillRectangle( 矩形, this._色[ lane ] );
                         }
@@ -144,8 +118,6 @@ namespace DTXMania.選曲
         private テクスチャ _背景画像 = null;
 
         private MusicNode _現在表示しているノード = null;
-
-        private Dictionary<表示レーン種別, int> _ノーツ数 = null;
 
         private Dictionary<表示レーン種別, SolidColorBrush> _色 = null;
     }

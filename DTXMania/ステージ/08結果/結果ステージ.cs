@@ -155,7 +155,7 @@ namespace DTXMania.結果
             var ユーザID = App進行描画.ユーザ管理.ログオン中のユーザ.ユーザID;
             using( var recorddb = new RecordDB() )
             {
-                var record = recorddb.Records.Where( ( r ) => ( r.UserId == ユーザID && r.SongHashId == 選択曲.曲ファイルハッシュ ) ).SingleOrDefault();
+                var record = recorddb.Records.Where( ( r ) => ( r.UserId == ユーザID && r.SongHashId == 選択曲.曲ファイルのハッシュ ) ).SingleOrDefault();
 
                 if( null == record )
                 {
@@ -163,7 +163,7 @@ namespace DTXMania.結果
 
                     recorddb.Records.InsertOnSubmit( new Record() {
                         UserId = ユーザID,
-                        SongHashId = 選択曲.曲ファイルハッシュ,
+                        SongHashId = 選択曲.曲ファイルのハッシュ,
                         Score = this._結果.Score,
                         CountMap = "",  // TODO: CountMap を成績DBに保存する。
                         Achievement = this._結果.Achievement,

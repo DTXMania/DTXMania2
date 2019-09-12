@@ -48,22 +48,8 @@ namespace DTXMania.選曲
                 //----------------
                 this._現在表示しているノード = App進行描画.曲ツリー.フォーカス曲ノード;
 
-                this._最小BPM = 120.0;
-                this._最大BPM = 120.0;
-
-                if( null != this._現在表示しているノード )
-                {
-                    using( var songdb = new SongDB() )
-                    {
-                        var song = songdb.Songs.Where( ( r ) => ( r.Path == this._現在表示しているノード.曲ファイルの絶対パス.変数なしパス ) ).SingleOrDefault();
-
-                        if( null != song )
-                        {
-                            this._最小BPM = song.MinBPM ?? 120.0;
-                            this._最大BPM = song.MaxBPM ?? 120.0;
-                        }
-                    }
-                }
+                this._最小BPM = this._現在表示しているノード?.最小BPM ?? 120.0;
+                this._最大BPM = this._現在表示しているノード?.最大BPM ?? 120.0;
                 //----------------
                 #endregion
             }

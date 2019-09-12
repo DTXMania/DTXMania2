@@ -19,30 +19,36 @@ namespace DTXMania
     /// </summary>
     class MusicNode : Node
     {
-
-        // プロパティ
-
-
         /// <summary>
         ///		この曲ノードに対応する曲ファイル。
         ///		絶対パス。
         /// </summary>
-        public VariablePath 曲ファイルの絶対パス { get; protected set; } = null;
+        public VariablePath 曲ファイルの絶対パス { get; set; } = null;
 
         /// <summary>
         ///		この曲ノードに対応する曲ファイルのハッシュ値。
         /// </summary>
-        public string 曲ファイルハッシュ { get; protected set; } = null;
+        public string 曲ファイルのハッシュ { get; set; } = null;
+
+        /// <summary>
+        ///     この曲ノードに対応する曲ファイルの最終更新日時。
+        ///		文字列の書式は、System.DateTime.ToString("G") と同じ。（例: "08/17/2000 16:32:32"）
+        ///		カルチャはシステム既定のものとする。
+        /// </summary>
+        public string 曲ファイルの最終更新日時 { get; set; } = null;
 
         /// <summary>
         ///     この曲のBGMの再生タイミングを、この時間[ms]分だけ前後にずらす。（負数で早める、正数で遅める）
         /// </summary>
         public int BGMAdjust { get; set; } = 0;
 
+        public double 最小BPM { get; set; } = 0.0;
 
+        public double 最大BPM { get; set; } = 0.0;
 
-        // プロパティ（最高成績）
+        public VariablePath プレビュー画像ファイルの絶対パス { get; set; } = null;
 
+        public Dictionary<表示レーン種別, int> レーン別ノート数 { get; set; } = null;
 
         /// <summary>
         ///     これまでの最高達成率。0～100。
@@ -58,7 +64,29 @@ namespace DTXMania
 
 
 
-        // 現行化ステータス
+        // 生成と終了
+
+
+        public MusicNode( VariablePath 曲ファイルの絶対パス, Node 親ノード = null )
+        {
+            this.親ノード = 親ノード;
+            this.曲ファイルの絶対パス = 曲ファイルの絶対パス;
+            this.ノード画像 = Node.現行化前のノード画像;
+
+            this.タイトル = "(New song!)";
+            this.サブタイトル = "Now Loading...";
+        }
+
+        public override void Dispose()
+        {
+            this.ノード画像?.Dispose();
+
+            base.Dispose();
+        }
+
+
+        
+        // 現行化
 
 
         public bool 現行化未実施 { get; set; } = true;
@@ -71,43 +99,6 @@ namespace DTXMania
 
         public readonly object 現行化処理の排他 = new object();
 
-
-
-        // 生成と終了
-
-
-        public MusicNode( VariablePath 曲ファイルの絶対パス, SongDB songdb = null, Node 親ノード = null )
-        {
-            this.親ノード = 親ノード;
-            this.曲ファイルの絶対パス = 曲ファイルの絶対パス;
-            this.ノード画像 = Node.現行化前のノード画像;
-
-            // SongDB にレコードがある？
-            var song = songdb?.Songs.Where( ( r ) => ( r.Path == this.曲ファイルの絶対パス.変数なしパス ) ).SingleOrDefault();
-            if( null != song )
-            {
-                // (A) あれば、情報を転写する。
-                this.タイトル = song.Title;
-                this.サブタイトル = song.Artist;
-                this.難易度 = (float) song.Level;
-                this.難易度ラベル = "FREE";   // 既定値。set.def 内の MusicNode であれば、指定ラベルに上書きすること。
-                this.曲ファイルハッシュ = song.HashId;
-                this.BGMAdjust = song.BGMAdjust;
-            }
-            else
-            {
-                // (B) なければ、新曲である。
-                this.タイトル = "(New song!)";
-            }
-        }
-
-        public override void Dispose()
-        {
-            this.ノード画像?.Dispose();
-
-            base.Dispose();
-        }
-
         public void 現行化する( SongDB songdb, RecordDB recorddb )
         {
             if( this.現行化済み || AppForm.ビュアーモードである )
@@ -117,91 +108,36 @@ namespace DTXMania
             {
                 this.現行化済み = true;  // 先に設定
 
-                // SongDB へ反映（新規追加 or 更新）する。
-                _SongDBに曲を追加または更新する( songdb, this.曲ファイルの絶対パス, App進行描画.ユーザ管理.ログオン中のユーザ );
-
-                // そのSongDBレコードを取得。
-                var song = songdb.Songs.Where( ( r ) => ( r.Path == this.曲ファイルの絶対パス.変数なしパス ) ).SingleOrDefault();
-
-                if( null != song )
+                #region " SongDB と同期する。"
+                //----------------
+                try
                 {
-                    // 情報を更新する。
-                    this.タイトル = song.Title;
-                    this.サブタイトル = song.Artist;
-                    this.難易度 = (float) song.Level;
-                    this.難易度ラベル = ( this.親ノード is SetNode setnode ) ? ( setnode.MusicNodes.First( ( m ) => m == this ).難易度ラベル ) : "FREE";
-                    this.曲ファイルハッシュ = song.HashId;
-                    this.BGMAdjust = song.BGMAdjust;
+                    var 同一パス曲 = songdb.Songs.Where( ( song ) => ( song.Path == this.曲ファイルの絶対パス.変数なしパス ) ).SingleOrDefault();
 
-                    // ノード画像（プレビュー画像）を生成する。
-                    if( this.ノード画像 != Node.既定のノード画像 && this.ノード画像 != Node.現行化前のノード画像 )
-                        this.ノード画像?.Dispose();
-                    this.ノード画像 = ( song.PreImage.Nullでも空でもない() ) ?
-                        new テクスチャ( Path.Combine( Path.GetDirectoryName( song.Path ), song.PreImage ) ) : null;
-
-                    // プレビューサウンドはパスだけ取得しておく。（生成は再生直前に行う。）
-                    if( song.PreSound.Nullでも空でもない() )
-                        this.プレビュー音声ファイルの絶対パス = Path.Combine( Path.GetDirectoryName( song.Path ), song.PreSound );
-
-                    // 成績レコードがある？
-                    var record = recorddb?.Records.Where( ( r ) => ( r.UserId == App進行描画.ユーザ管理.ログオン中のユーザ.ユーザID && r.SongHashId == song.HashId ) ).SingleOrDefault();
-                    if( null != record )
+                    if( null == 同一パス曲 )
                     {
-                        // あれば、成績を転写する。
-                        this.達成率 = record.Achievement;
-                    }
-                    else
-                    {
-                        // なければ、リセット。
-                        this.達成率 = null;
-                    }
-                }
-                else
-                {
-                    Log.ERROR( $"SongDBに曲レコードが存在していません。" );
-                }
-            }
-        }
+                        // (A) 同一パスを持つレコードがDBになかった
 
-
-        
-        // private(static)
-
-
-        /// <summary>
-        ///		指定された曲ファイルに対応するレコードがデータベースになければレコードを追加し、
-        ///		あればそのレコードを更新する。
-        /// </summary>
-        private static void _SongDBに曲を追加または更新する( SongDB songdb, VariablePath 曲ファイルの絶対パス, ユーザ設定 ユーザ設定 )
-        {
-            try
-            {
-                var 同一パス検索クエリ = songdb.Songs.Where( ( song ) => ( song.Path == 曲ファイルの絶対パス.変数なしパス ) );
-
-                if( 0 == 同一パス検索クエリ.Count() )
-                {
-                    // (A) 同一パスを持つレコードがDBになかった
-
-                    var 調べる曲のハッシュ = _ファイルのハッシュを算出して返す( 曲ファイルの絶対パス );
-                    var 同一ハッシュレコード = songdb.Songs.Where( ( song ) => ( song.HashId == 調べる曲のハッシュ ) ).SingleOrDefault();
-
-                    if( null == 同一ハッシュレコード )
-                    {
-                        #region " (A-a) 同一ハッシュを持つレコードがDBになかった → 新規追加 "
-                        //----------------
                         // スコアを読み込む。
-                        var score = スコア.ファイルから生成する( 曲ファイルの絶対パス.変数なしパス );
+                        var score = スコア.ファイルから生成する( this.曲ファイルの絶対パス.変数なしパス, ヘッダだけ: true );
 
-                        // SongDB にレコードを新規追加する。
-                        var ノーツ数 = _ノーツ数を算出して返す( score, ユーザ設定 );
+                        var ノーツ数 = _ノーツ数を算出して返す( score, App進行描画.ユーザ管理.ログオン中のユーザ );
                         var BPMs = _最小最大BPMを調べて返す( score );
+                        var 最終更新日時 = File.GetLastWriteTime( this.曲ファイルの絶対パス.変数なしパス ).ToString( "G" );
+                        var ハッシュ = _ファイルのハッシュを算出して返す( this.曲ファイルの絶対パス );
 
-                        songdb.Songs.InsertOnSubmit(
-                            new Song() {
-                                HashId = 調べる曲のハッシュ,
+                        var 同一ハッシュ曲 = songdb.Songs.Where( ( song ) => ( song.HashId == ハッシュ ) ).SingleOrDefault();
+
+                        if( null == 同一ハッシュ曲 )
+                        {
+                            #region " (A-a) 同一ハッシュを持つレコードもDBになかった → 新規追加 "
+                            //----------------
+                            // スコアをもとに、SongDB にレコードを新規追加する。
+                            var song = new Song() {
+                                HashId = ハッシュ,
                                 Title = score.曲名,
-                                Path = 曲ファイルの絶対パス.変数なしパス,
-                                LastWriteTime = File.GetLastWriteTime( 曲ファイルの絶対パス.変数なしパス ).ToString( "G" ),
+                                Path = this.曲ファイルの絶対パス.変数なしパス,
+                                LastWriteTime = 最終更新日時,
                                 Level = score.難易度,
                                 MinBPM = BPMs.最小BPM,
                                 MaxBPM = BPMs.最大BPM,
@@ -214,129 +150,203 @@ namespace DTXMania
                                 TotalNotes_LowTom = ノーツ数[ 表示レーン種別.Tom2 ],
                                 TotalNotes_FloorTom = ノーツ数[ 表示レーン種別.Tom3 ],
                                 TotalNotes_RightCymbal = ノーツ数[ 表示レーン種別.RightCymbal ],
-                                PreImage = ( score.プレビュー画像ファイル名.Nullでも空でもない() ) ? score.プレビュー画像ファイル名 : "",
+                                PreImage = ( score.プレビュー画像ファイル名.Nullでも空でもない() ) ? score.プレビュー画像ファイル名 : "",  // 相対パス
                                 Artist = score.アーティスト名,
-                                PreSound = ( score.プレビュー音声ファイル名.Nullでも空でもない() ) ? score.プレビュー音声ファイル名 : "",
+                                PreSound = ( score.プレビュー音声ファイル名.Nullでも空でもない() ) ? score.プレビュー音声ファイル名 : "",  // 相対パス
                                 BGMAdjust = 0,
-                            } );
+                            };
+                            songdb.Songs.InsertOnSubmit( song );
 
-                        songdb.DataContext.SubmitChanges();
+                            // スコアを、自身（MusinNode）にも反映する。
+                            this.レコードを反映する( song );
 
-                        Log.Info( $"DBに曲を追加しました。{曲ファイルの絶対パス.変数付きパス}" );
-                        //----------------
-                        #endregion
-                    }
-                    else
-                    {
-                        #region " (A-b) 同一ハッシュを持つレコードがDBにあった → 更新 "
-                        //----------------
-                        var song = 同一ハッシュレコード;
-
-                        // スコアを読み込む。
-                        var score = スコア.ファイルから生成する( 曲ファイルの絶対パス.変数なしパス );
-
-                        // SongDB のレコードを更新する。
-                        var ノーツ数 = _ノーツ数を算出して返す( score, ユーザ設定 );
-                        var BPMs = _最小最大BPMを調べて返す( score );
-
-                        song.Title = score.曲名;
-                        song.Path = 曲ファイルの絶対パス.変数なしパス;
-                        song.LastWriteTime = File.GetLastWriteTime( 曲ファイルの絶対パス.変数なしパス ).ToString( "G" );
-                        song.Level = score.難易度;
-                        song.MinBPM = BPMs.最小BPM;
-                        song.MaxBPM = BPMs.最大BPM;
-                        song.TotalNotes_LeftCymbal = ノーツ数[ 表示レーン種別.LeftCymbal ];
-                        song.TotalNotes_HiHat = ノーツ数[ 表示レーン種別.HiHat ];
-                        song.TotalNotes_LeftPedal = ノーツ数[ 表示レーン種別.Foot ];
-                        song.TotalNotes_Snare = ノーツ数[ 表示レーン種別.Snare ];
-                        song.TotalNotes_Bass = ノーツ数[ 表示レーン種別.Bass ];
-                        song.TotalNotes_HighTom = ノーツ数[ 表示レーン種別.Tom1 ];
-                        song.TotalNotes_LowTom = ノーツ数[ 表示レーン種別.Tom2 ];
-                        song.TotalNotes_FloorTom = ノーツ数[ 表示レーン種別.Tom3 ];
-                        song.TotalNotes_RightCymbal = ノーツ数[ 表示レーン種別.RightCymbal ];
-                        song.PreImage = ( score.プレビュー画像ファイル名.Nullでも空でもない() ) ? score.プレビュー画像ファイル名 : "";
-                        song.Artist = score.アーティスト名;
-                        song.PreSound = ( score.プレビュー音声ファイル名.Nullでも空でもない() ) ? score.プレビュー音声ファイル名 : "";
-                        song.BGMAdjust = song.BGMAdjust;
-
-                        songdb.DataContext.SubmitChanges();
-
-                        Log.Info( $"パスが異なりハッシュが同一であるレコードが検出されたため、曲の情報を更新しました。{曲ファイルの絶対パス.変数付きパス}" );
-                        //----------------
-                        #endregion
-                    }
-                }
-                else
-                {
-                    // (B) 同一パスを持つレコードがDBにあった
-
-                    var record = 同一パス検索クエリ.Single();
-
-                    string レコードの最終更新日時 = record.LastWriteTime;
-                    string 調べる曲の最終更新日時 = File.GetLastWriteTime( 曲ファイルの絶対パス.変数なしパス ).ToString( "G" );
-
-                    if( レコードの最終更新日時 != 調べる曲の最終更新日時 )
-                    {
-                        #region " (B-a) 最終更新日時が変更されている → 更新 "
-                        //----------------
-                        // スコアを読み込む。
-                        var score = スコア.ファイルから生成する( 曲ファイルの絶対パス.変数なしパス );
-                        var hash = _ファイルのハッシュを算出して返す( 曲ファイルの絶対パス );
-                        var ノーツ数 = _ノーツ数を算出して返す( score, ユーザ設定 );
-                        var BPMs = _最小最大BPMを調べて返す( score );
-
-                        // HashId 以外のカラムを更新する。
-                        record.Title = score.曲名;
-                        record.LastWriteTime = 調べる曲の最終更新日時;
-                        record.Level = score.難易度;
-                        record.MinBPM = BPMs.最小BPM;
-                        record.MaxBPM = BPMs.最大BPM;
-                        record.TotalNotes_LeftCymbal = ノーツ数[ 表示レーン種別.LeftCymbal ];
-                        record.TotalNotes_HiHat = ノーツ数[ 表示レーン種別.HiHat ];
-                        record.TotalNotes_LeftPedal = ノーツ数[ 表示レーン種別.Foot ];
-                        record.TotalNotes_Snare = ノーツ数[ 表示レーン種別.Snare ];
-                        record.TotalNotes_Bass = ノーツ数[ 表示レーン種別.Bass ];
-                        record.TotalNotes_HighTom = ノーツ数[ 表示レーン種別.Tom1 ];
-                        record.TotalNotes_LowTom = ノーツ数[ 表示レーン種別.Tom2 ];
-                        record.TotalNotes_FloorTom = ノーツ数[ 表示レーン種別.Tom3 ];
-                        record.TotalNotes_RightCymbal = ノーツ数[ 表示レーン種別.RightCymbal ];
-                        record.PreImage = ( score.プレビュー画像ファイル名.Nullでも空でもない() ) ? score.プレビュー画像ファイル名 : "";
-                        record.Artist = score.アーティスト名;
-                        record.PreSound = ( score.プレビュー音声ファイル名.Nullでも空でもない() ) ? score.プレビュー音声ファイル名 : "";
-                        record.BGMAdjust = record.BGMAdjust;
-
-                        if( hash != record.HashId )
-                        {
-                            // ハッシュはキーなので、これが変わったら、古いレコードを削除して、新しいレコードを追加する。
-                            var newRecord = record.Clone();
-                            songdb.Songs.DeleteOnSubmit( record );
-                            songdb.DataContext.SubmitChanges(); // 一度Submitして先にレコード削除を確定しないと、次のInsertがエラーになる。（PathカラムはUnique属性なので）
-
-                            newRecord.HashId = hash;
-                            songdb.Songs.InsertOnSubmit( newRecord );
+                            Log.Info( $"DBに曲を追加しました。{this.曲ファイルの絶対パス.変数付きパス}" );
+                            //----------------
+                            #endregion
                         }
+                        else
+                        {
+                            #region " (A-b) 同一ハッシュを持つレコードがDBにあった → 更新 "
+                            //----------------
+                            // スコアをもとに、SongDB のレコードを更新する。
+                            //同一ハッシュ曲.HashId → 更新不要
+                            同一ハッシュ曲.Title = score.曲名;
+                            同一ハッシュ曲.Path = this.曲ファイルの絶対パス.変数なしパス;
+                            同一ハッシュ曲.LastWriteTime = 最終更新日時;
+                            同一ハッシュ曲.Level = score.難易度;
+                            同一ハッシュ曲.MinBPM = BPMs.最小BPM;
+                            同一ハッシュ曲.MaxBPM = BPMs.最大BPM;
+                            同一ハッシュ曲.TotalNotes_LeftCymbal = ノーツ数[ 表示レーン種別.LeftCymbal ];
+                            同一ハッシュ曲.TotalNotes_HiHat = ノーツ数[ 表示レーン種別.HiHat ];
+                            同一ハッシュ曲.TotalNotes_LeftPedal = ノーツ数[ 表示レーン種別.Foot ];
+                            同一ハッシュ曲.TotalNotes_Snare = ノーツ数[ 表示レーン種別.Snare ];
+                            同一ハッシュ曲.TotalNotes_Bass = ノーツ数[ 表示レーン種別.Bass ];
+                            同一ハッシュ曲.TotalNotes_HighTom = ノーツ数[ 表示レーン種別.Tom1 ];
+                            同一ハッシュ曲.TotalNotes_LowTom = ノーツ数[ 表示レーン種別.Tom2 ];
+                            同一ハッシュ曲.TotalNotes_FloorTom = ノーツ数[ 表示レーン種別.Tom3 ];
+                            同一ハッシュ曲.TotalNotes_RightCymbal = ノーツ数[ 表示レーン種別.RightCymbal ];
+                            同一ハッシュ曲.PreImage = ( score.プレビュー画像ファイル名.Nullでも空でもない() ) ? score.プレビュー画像ファイル名 : ""; // 相対パス
+                            同一ハッシュ曲.Artist = score.アーティスト名;
+                            同一ハッシュ曲.PreSound = ( score.プレビュー音声ファイル名.Nullでも空でもない() ) ? score.プレビュー音声ファイル名 : ""; // 相対パス
+                            同一ハッシュ曲.BGMAdjust = 0;  // リセット。
 
-                        songdb.DataContext.SubmitChanges();
+                            // スコアを、自身（MusinNode）にも反映する。
+                            this.レコードを反映する( 同一ハッシュ曲 );
 
-                        Log.Info( $"最終更新日時が変更されているため、曲の情報を更新しました。{曲ファイルの絶対パス.変数付きパス}" );
-                        //----------------
-                        #endregion
+                            Log.Info( $"パスが異なりハッシュが同一であるレコードが検出されたため、曲の情報を更新しました。{this.曲ファイルの絶対パス.変数付きパス}" );
+                            //----------------
+                            #endregion
+                        }
                     }
                     else
                     {
-                        #region " (B-b) それ以外 → 何もしない "
-                        //----------------
-                        //----------------
-                        #endregion
+                        // (B) 同一パスを持つレコードがDBにあった
+
+                        string 曲ファイルの最終更新日時 = File.GetLastWriteTime( this.曲ファイルの絶対パス.変数なしパス ).ToString( "G" );
+
+                        if( 同一パス曲.LastWriteTime != 曲ファイルの最終更新日時 )
+                        {
+                            #region " (B-a) 最終更新日時が変更されている → 更新 "
+                            //----------------
+                            // スコアを読み込む。
+                            var score = スコア.ファイルから生成する( this.曲ファイルの絶対パス.変数なしパス );
+                            var ハッシュ = _ファイルのハッシュを算出して返す( this.曲ファイルの絶対パス );
+                            var ノーツ数 = _ノーツ数を算出して返す( score, App進行描画.ユーザ管理.ログオン中のユーザ );
+                            var BPMs = _最小最大BPMを調べて返す( score );
+
+                            // レコードを更新する。
+                            //同一パス曲.HashId → 後述
+                            同一パス曲.Title = score.曲名;
+                            同一パス曲.LastWriteTime = 曲ファイルの最終更新日時;
+                            同一パス曲.Level = score.難易度;
+                            同一パス曲.MinBPM = BPMs.最小BPM;
+                            同一パス曲.MaxBPM = BPMs.最大BPM;
+                            同一パス曲.TotalNotes_LeftCymbal = ノーツ数[ 表示レーン種別.LeftCymbal ];
+                            同一パス曲.TotalNotes_HiHat = ノーツ数[ 表示レーン種別.HiHat ];
+                            同一パス曲.TotalNotes_LeftPedal = ノーツ数[ 表示レーン種別.Foot ];
+                            同一パス曲.TotalNotes_Snare = ノーツ数[ 表示レーン種別.Snare ];
+                            同一パス曲.TotalNotes_Bass = ノーツ数[ 表示レーン種別.Bass ];
+                            同一パス曲.TotalNotes_HighTom = ノーツ数[ 表示レーン種別.Tom1 ];
+                            同一パス曲.TotalNotes_LowTom = ノーツ数[ 表示レーン種別.Tom2 ];
+                            同一パス曲.TotalNotes_FloorTom = ノーツ数[ 表示レーン種別.Tom3 ];
+                            同一パス曲.TotalNotes_RightCymbal = ノーツ数[ 表示レーン種別.RightCymbal ];
+                            同一パス曲.PreImage = ( score.プレビュー画像ファイル名.Nullでも空でもない() ) ? score.プレビュー画像ファイル名 : "";
+                            同一パス曲.Artist = score.アーティスト名;
+                            同一パス曲.PreSound = ( score.プレビュー音声ファイル名.Nullでも空でもない() ) ? score.プレビュー音声ファイル名 : "";
+                            同一パス曲.BGMAdjust = 0;
+
+                            var newRecord = 同一パス曲.Clone();
+                            if( ハッシュ != 同一パス曲.HashId )
+                            {
+                                // ハッシュはキーなので、これが変わったら、古いレコードを削除して、新しいレコードを追加する。
+                                songdb.Songs.DeleteOnSubmit( 同一パス曲 );
+                                songdb.DataContext.SubmitChanges(); // 一度Submitして先にレコード削除を確定しないと、次のInsertがエラーになる。（PathカラムはUnique属性なので）
+
+                                newRecord.HashId = ハッシュ;
+                                songdb.Songs.InsertOnSubmit( newRecord );
+                            }
+
+                            // レコードを、自身（MusinNode）にも反映する。
+                            this.レコードを反映する( newRecord );
+
+                            Log.Info( $"最終更新日時が変更されているため、曲の情報を更新しました。{this.曲ファイルの絶対パス.変数付きパス}" );
+                            //----------------
+                            #endregion
+                        }
+                        else
+                        {
+                            #region " (B-b) それ以外 → 何もしない "
+                            //----------------
+                            // レコードを、自身（MusinNode）にも反映する。
+                            this.レコードを反映する( 同一パス曲 );
+                            //----------------
+                            #endregion
+                        }
                     }
                 }
-            }
-            catch( Exception e )
-            {
-                Log.ERROR( $"曲DBへの曲の追加に失敗しました。({VariablePath.絶対パスをフォルダ変数付き絶対パスに変換して返す( e.Message )})[{曲ファイルの絶対パス.変数付きパス}]" );
-                //throw;
+                catch( Exception e )
+                {
+                    Log.ERROR( $"曲DBへの曲の追加に失敗しました。({VariablePath.絶対パスをフォルダ変数付き絶対パスに変換して返す( e.Message )})[{this.曲ファイルの絶対パス.変数付きパス}]" );
+                    return;
+                }
+                //----------------
+                #endregion
+
+                #region " ノード画像を生成する。"
+                //----------------
+                {
+                    if( this.ノード画像 != Node.既定のノード画像 && this.ノード画像 != Node.現行化前のノード画像 )
+                        this.ノード画像?.Dispose();
+
+                    this.ノード画像 = null;
+
+                    if( this.プレビュー画像ファイルの絶対パス?.変数なしパス.Nullでも空でもない() ?? false )
+                        this.ノード画像 = new テクスチャ( this.プレビュー画像ファイルの絶対パス.変数なしパス );
+                }
+                //----------------
+                #endregion
+
+                #region " 成績があれば取得する。"
+                //----------------
+                try
+                {
+                    var record = recorddb?.Records.Where( ( r ) => ( 
+                        r.UserId == App進行描画.ユーザ管理.ログオン中のユーザ.ユーザID && 
+                        r.SongHashId == this.曲ファイルのハッシュ ) ).SingleOrDefault();
+
+                    if( null != record )
+                    {
+                        // あれば、成績を自身（MusicNode）に反映する。
+                        this.達成率 = record.Achievement;
+                    }
+                    else
+                    {
+                        // なければ、リセット。
+                        this.達成率 = null;
+                    }
+                }
+                catch( Exception e )
+                {
+                    Log.ERROR( $"成績DBの取得に失敗しました。({VariablePath.絶対パスをフォルダ変数付き絶対パスに変換して返す( e.Message )})[{this.曲ファイルの絶対パス.変数付きパス}]" );
+                    this.達成率 = null;
+                }
+                //----------------
+                #endregion
             }
         }
+
+        public void レコードを反映する( Song song )
+        {
+            var 曲ファイルのあるフォルダ = Path.GetDirectoryName( this.曲ファイルの絶対パス.変数なしパス ) ?? "";  // Path.GetDirectoryName は、ルートディレクトリの場合 null が返される。
+
+            this.タイトル = song.Title;
+            this.サブタイトル = song.Artist;
+            this.プレビュー画像ファイルの絶対パス = ( string.IsNullOrEmpty( song.PreImage ) ) ? null : Path.Combine( 曲ファイルのあるフォルダ, song.PreImage );
+            this.プレビュー音声ファイルの絶対パス = ( string.IsNullOrEmpty( song.PreSound ) ) ? null : Path.Combine( 曲ファイルのあるフォルダ, song.PreSound );
+            this.レーン別ノート数 = new Dictionary<表示レーン種別, int>() {
+                [ 表示レーン種別.LeftCymbal ] = song.TotalNotes_LeftCymbal,
+                [ 表示レーン種別.HiHat ] = song.TotalNotes_HiHat,
+                [ 表示レーン種別.Foot ] = song.TotalNotes_LeftPedal,
+                [ 表示レーン種別.Snare ] = song.TotalNotes_Snare,
+                [ 表示レーン種別.Bass ] = song.TotalNotes_Bass,
+                [ 表示レーン種別.Tom1 ] = song.TotalNotes_HighTom,
+                [ 表示レーン種別.Tom2 ] = song.TotalNotes_LowTom,
+                [ 表示レーン種別.Tom3 ] = song.TotalNotes_FloorTom,
+                [ 表示レーン種別.RightCymbal ] = song.TotalNotes_RightCymbal,
+            };
+            this.曲ファイルのハッシュ = song.HashId;
+            this.曲ファイルの最終更新日時 = song.LastWriteTime;
+            this.最小BPM = song.MinBPM ?? 0.0;
+            this.最大BPM = song.MaxBPM ?? 0.0;
+            this.BGMAdjust = song.BGMAdjust;
+            this.難易度 = song.Level;
+            this.難易度ラベル = ( this.親ノード is SetNode setnode ) ? ( setnode.MusicNodes.First( ( m ) => m == this ).難易度ラベル ) : "FREE";
+        }
+
+
+
+        // private(static)
+
 
         private static string _ファイルのハッシュを算出して返す( VariablePath 曲ファイルの絶対パス )
         {

@@ -100,6 +100,8 @@ namespace DTXMania
                         //---------------------
                         if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"FONTCOLOR", out パラメータ ) )
                         {
+                            if( !( パラメータ.StartsWith( "#" ) ) )
+                                パラメータ = "#" + パラメータ;
                             var sysColor = System.Drawing.ColorTranslator.FromHtml( $"{パラメータ}" );
                             block.FontColor = new Color( sysColor.R, sysColor.G, sysColor.B, sysColor.A );
                             blockが有効 = true;

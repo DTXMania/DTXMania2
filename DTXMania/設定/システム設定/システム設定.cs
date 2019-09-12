@@ -173,70 +173,73 @@ namespace DTXMania
 
                 try
                 {
-                    string yamlText;
-
-                    #region " システム設定ファイル（YAML）を文字列として一括で読み込む。"
-                    //----------------
-                    yamlText = File.ReadAllText( システム設定ファイルパス.変数なしパス );
-                    //----------------
-                    #endregion
-
-                    int version = 0;
-    
-                    #region " ルートノード 'Version' を検索し、バージョン値を取得する。"
-                    //----------------
+                    if( File.Exists( システム設定ファイルパス.変数なしパス ) )
                     {
-                        var yamlStream = new YamlStream();
-                        yamlStream.Load( new StringReader( yamlText ) );
-                        var rootMapping = (YamlMappingNode) yamlStream.Documents[ 0 ].RootNode;
-                        var versionNode = new YamlScalarNode( "Version" );
-                        if( rootMapping.Children.ContainsKey( versionNode ) )
+                        string yamlText;
+
+                        #region " システム設定ファイル（YAML）を文字列として一括で読み込む。"
+                        //----------------
+                        yamlText = File.ReadAllText( システム設定ファイルパス.変数なしパス );
+                        //----------------
+                        #endregion
+
+                        int version = 0;
+
+                        #region " ルートノード 'Version' を検索し、バージョン値を取得する。"
+                        //----------------
                         {
-                            var versionValue = rootMapping.Children[ versionNode ] as YamlScalarNode;
-                            version = int.Parse( versionValue.Value );  // 取得
+                            var yamlStream = new YamlStream();
+                            yamlStream.Load( new StringReader( yamlText ) );
+                            var rootMapping = (YamlMappingNode) yamlStream.Documents[ 0 ].RootNode;
+                            var versionNode = new YamlScalarNode( "Version" );
+                            if( rootMapping.Children.ContainsKey( versionNode ) )
+                            {
+                                var versionValue = rootMapping.Children[ versionNode ] as YamlScalarNode;
+                                version = int.Parse( versionValue.Value );  // 取得
+                            }
                         }
+                        //----------------
+                        #endregion
+
+                        object curConfig = null;
+
+                        #region " 対応するバージョンのクラスでデシリアライズする。"
+                        //----------------
+                        var deserializer = new Deserializer();
+                        switch( version )
+                        {
+                            case 1:
+                            case 2:
+                                curConfig = deserializer.Deserialize<システム設定02>( yamlText );
+                                break;
+
+                            case 3:
+                                curConfig = deserializer.Deserialize<システム設定03>( yamlText );
+                                break;
+
+                            default:
+                                Log.ERROR( $"未対応のバージョンです。新規に作成して保存します。[{システム設定ファイルパス.変数付きパス}]" );
+                                curConfig = new システム設定();
+                                break;
+                        }
+                        //----------------
+                        #endregion
+
+                        #region " 最新バージョンまでマイグレーションする。"
+                        //----------------
+                        while( !( curConfig is システム設定 ) )
+                            curConfig = _バージョンを１つ上にマイグレーションする( curConfig );
+                        //----------------
+                        #endregion
+
+                        config = curConfig as システム設定;
                     }
-                    //----------------
-                    #endregion
-
-                    object curConfig = null;
-
-                    #region " 対応するバージョンのクラスでデシリアライズする。"
-                    //----------------
-                    var deserializer = new Deserializer();
-                    switch( version )
+                    else
                     {
-                        case 1:
-                        case 2:
-                            curConfig = deserializer.Deserialize<システム設定02>( yamlText );
-                            break;
-
-                        case 3:
-                            curConfig = deserializer.Deserialize<システム設定03>( yamlText );
-                            break;
-
-                        default:
-                            Log.ERROR( $"未対応のバージョンです。新規に作成して保存します。[{システム設定ファイルパス.変数付きパス}]" );
-                            curConfig = new システム設定();
-                            break;
+                        Log.Info( $"ファイルが存在しないため、新規に作成します。[{システム設定ファイルパス.変数付きパス}]" );
+                        config = new システム設定();
+                        config.保存する();
                     }
-                    //----------------
-                    #endregion
-
-                    #region " 最新バージョンまでマイグレーションする。"
-                    //----------------
-                    while( !( curConfig is システム設定 ) )
-                        curConfig = _バージョンを１つ上にマイグレーションする( curConfig );
-                    //----------------
-                    #endregion
-
-                    config = curConfig as システム設定;
-                }
-                catch( FileNotFoundException )
-                {
-                    Log.Info( $"ファイルが存在しないため、新規に作成します。[{システム設定ファイルパス.変数付きパス}]" );
-                    config = new システム設定();
-                    config.保存する();
                 }
                 catch( YamlException e )
                 {

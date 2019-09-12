@@ -45,7 +45,7 @@ namespace DTXMania
             this.Connection = new SQLiteConnection( this._DB接続文字列 );
             this.Connection.Open();
 
-            this.DataContext = new DataContext( this.Connection );
+            this.ResetDataContext();
 
 
             // マイグレーションが必要？
@@ -108,6 +108,12 @@ namespace DTXMania
             // SQLite は接続を切断した後もロックを維持するので、GC でそれを解放する。
             // 参考: https://stackoverrun.com/ja/q/3363188
             GC.Collect();
+        }
+
+        public void ResetDataContext()
+        {
+            this.DataContext?.Dispose();
+            this.DataContext = new DataContext( this.Connection );
         }
 
 

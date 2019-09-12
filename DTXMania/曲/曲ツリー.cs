@@ -293,24 +293,31 @@ namespace DTXMania
         // 曲ツリーの構築
 
 
-        /// <summary>
-        ///     曲検索フォルダパスをもとにファイルとフォルダを列挙し、ノード（Root, Music, Set, Box, Back, RandomSelect）から成る曲ツリーを確定する。
-        ///     また、ファイルの情報が SongDB に存在している場合は、DBから情報を反映する。
-        /// </summary>
-        /// <param name="曲検索フォルダパスリスト">曲検索対象のルートフォルダのパスのリスト。</param>
         public void 曲ツリーを構築する( IEnumerable<VariablePath> 曲検索フォルダパスリスト )
         {
             using( Log.Block( FDKUtilities.現在のメソッド名 ) )
             {
+                // (1) 曲ツリーの構造を確定する。
+                foreach( var path in 曲検索フォルダパスリスト )
+                    this._曲ツリーを構築する( path, this.ルートノード );
+
+                // (2) SongDB にレコードがあれば、MusicNode に反映する。
                 using( var songdb = new SongDB() )
                 {
-                    foreach( var path in 曲検索フォルダパスリスト )
-                        this._曲ツリーを構築する( path, this.ルートノード, songdb );
+                    foreach( var node in this.ルートノード.Traverse() )
+                    {
+                        if( node is MusicNode mnode )
+                        {
+                            var r = songdb.Songs.Where( ( song ) => ( song.Path == mnode.曲ファイルの絶対パス.変数なしパス ) ).SingleOrDefault();
+                            if( null != r )
+                                mnode.レコードを反映する( r );
+                        }
+                    }
                 }
             }
         }
 
-        private void _曲ツリーを構築する( VariablePath 基点フォルダパス, Node 親ノード, SongDB songdb, bool BoxDefが有効 = true )
+        private void _曲ツリーを構築する( VariablePath 基点フォルダパス, Node 親ノード, bool BoxDefが有効 = true )
         {
             if( !( Directory.Exists( 基点フォルダパス.変数なしパス ) ) )
             {
@@ -340,7 +347,7 @@ namespace DTXMania
 
                     // box.defを無効にして、このフォルダを対象として、再度構築する。
                     // 構築結果のノードリストは、BOXノードの子として付与される。
-                    this._曲ツリーを構築する( 基点フォルダパス, boxNode, songdb, BoxDefが有効: false );
+                    this._曲ツリーを構築する( 基点フォルダパス, boxNode, BoxDefが有効: false );
 
                     // box.def があった場合、サブフォルダは検索しない。
                     サブフォルダを検索する = false;
@@ -365,7 +372,7 @@ namespace DTXMania
                     foreach( var block in setDef.Blocks )
                     {
                         // １つのブロックにつき１つの SetNode を作成する。
-                        var setNode = new SetNode( block, 基点フォルダパス, songdb );
+                        var setNode = new SetNode( block, 基点フォルダパス );
 
                         if( 0 < setNode.子ノードリスト.Count ) // L1～L5のいずれかが有効であるときのみ登録する。
                             追加ノードリスト.Add( setNode );
@@ -398,7 +405,7 @@ namespace DTXMania
                     try
                     {
                         // MusicNodeを作成し、追加する。
-                        var music = new MusicNode( vpath, songdb );
+                        var music = new MusicNode( vpath );
                         追加ノードリスト.Add( music );
                     }
                     catch
@@ -440,7 +447,7 @@ namespace DTXMania
                         親ノード.子ノードリスト.Add( boxNode );
 
                         // BOXノードを親として、サブフォルダを検索する。
-                        this._曲ツリーを構築する( dir.FullName, boxNode, songdb );
+                        this._曲ツリーを構築する( dir.FullName, boxNode );
                         //----------------
                         #endregion
                     }
@@ -448,7 +455,7 @@ namespace DTXMania
                     {
                         #region " (E-c) それ以外 → サブフォルダの内容を同じ親ノードに追加する。"
                         //----------------
-                        this._曲ツリーを構築する( dir.FullName, 親ノード, songdb );
+                        this._曲ツリーを構築する( dir.FullName, 親ノード );
                         //----------------
                         #endregion
                     }
@@ -482,6 +489,7 @@ namespace DTXMania
         /// </summary>
         public TriStateEvent 現行化タスクの一時停止 { get; protected set; } = new TriStateEvent( TriStateEvent.状態種別.OFF );
 
+
         public async void 曲ツリーを現行化するAsync( Action<Exception> 例外通知 )
         {
             this.現行化タスク = Task.Run( () => {
@@ -506,13 +514,20 @@ namespace DTXMania
                     var timer = Stopwatch.StartNew();
                     using( var recorddb = new RecordDB() )
                     using( var songdb = new SongDB() )
+                    using( var songdb_trans = songdb.Connection.BeginTransaction() )
                     {
                         foreach( var node in this.ルートノード.Traverse() )   // SetNode.MusicNodes[] も展開される。
                         {
                             if( node is MusicNode music )
                             {
+                                // DataContext は軽量なので、使い捨てにする。
+                                // DataContext.SubmitChanges() の回数が増えるとどんどん重くなるので注意。
+                                songdb.ResetDataContext();
+
                                 music.現行化する( songdb, recorddb );
                                 musicNode数++;
+
+                                songdb.DataContext.SubmitChanges();
                             }
 
                             // キャンセル？
@@ -525,6 +540,8 @@ namespace DTXMania
                             // 一時停止？
                             this.現行化タスクの一時停止.OFFになるまでブロックする();
                         }
+
+                        songdb_trans.Commit();
                     }
 
                     int 曲数 = this.ルートノード.Traverse().Count( ( n ) => ( n is SetNode || ( n is MusicNode && !( n.親ノード is SetNode ) ) ) ); // MusicNode と SetNode（MusicNodes[]含まない）の数

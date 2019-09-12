@@ -96,12 +96,12 @@ namespace DTXMania.選曲
 
                 if( 表示可能ノードである )
                 {
-                    var 難易度リスト = new (string ラベル, float 値)[ 5 ];
+                    var 難易度リスト = new (string ラベル, double 値)[ 5 ];
 
                     if( node is SetNode setNode )
                     {
                         for( int i = 0; i < 5; i++ )
-                            難易度リスト[ i ] = (setNode.MusicNodes[ i ]?.難易度ラベル ?? "", setNode.MusicNodes[ i ]?.難易度 ?? 0f);
+                            難易度リスト[ i ] = (setNode.MusicNodes[ i ]?.難易度ラベル ?? "", setNode.MusicNodes[ i ]?.難易度 ?? 0.0);
                     }
                     else
                     {
@@ -153,7 +153,7 @@ namespace DTXMania.選曲
             }
         }
 
-        private void _難易度パネルを１つ描画する( DeviceContext dc, float 基点X, float 基点Y, string 難易度ラベル, float 難易度値, Brush 文字ブラシ, Brush 見出し背景ブラシ, Brush 数値背景ブラシ )
+        private void _難易度パネルを１つ描画する( DeviceContext dc, float 基点X, float 基点Y, string 難易度ラベル, double 難易度値, Brush 文字ブラシ, Brush 見出し背景ブラシ, Brush 数値背景ブラシ )
         {
             dc.FillRectangle( new RectangleF( 基点X, 基点Y, 157f, 20f ), 見出し背景ブラシ );
             dc.FillRectangle( new RectangleF( 基点X, 基点Y + 20f, 157f, 66f ), 数値背景ブラシ );

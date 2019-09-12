@@ -58,7 +58,7 @@ namespace DTXMania.選曲
                 {
                     using( var recorddb = new RecordDB() )
                     {
-                        var record = recorddb.Records.Where( ( r ) => ( r.UserId == App進行描画.ユーザ管理.ログオン中のユーザ.ユーザID && r.SongHashId == this._現在表示しているノード.曲ファイルハッシュ ) ).SingleOrDefault();
+                        var record = recorddb.Records.Where( ( r ) => ( r.UserId == App進行描画.ユーザ管理.ログオン中のユーザ.ユーザID && r.SongHashId == this._現在表示しているノード.曲ファイルのハッシュ ) ).SingleOrDefault();
 
                         if( null != record )
                         {

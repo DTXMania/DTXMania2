@@ -1244,7 +1244,7 @@ namespace DTXMania.演奏
 
                 using( var songdb = new SongDB() )
                 {
-                    var 曲レコード = songdb.Songs.Where( ( song ) => ( song.HashId == musicNode.曲ファイルハッシュ ) ).SingleOrDefault();
+                    var 曲レコード = songdb.Songs.Where( ( song ) => ( song.HashId == musicNode.曲ファイルのハッシュ ) ).SingleOrDefault();
 
                     if( null != 曲レコード )
                     {

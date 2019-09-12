@@ -23,7 +23,7 @@ namespace DTXMania
         // 難易度
 
 
-        public override float 難易度
+        public override double 難易度
             => this.MusicNodes[ App進行描画.曲ツリー.フォーカス難易度 ].難易度;
 
         public override string 難易度ラベル
@@ -103,7 +103,7 @@ namespace DTXMania
             }
         }
 
-        public override string プレビュー音声ファイルの絶対パス
+        public override VariablePath プレビュー音声ファイルの絶対パス
             => this.MusicNodes[ App進行描画.曲ツリー.フォーカス難易度 ].プレビュー音声ファイルの絶対パス;
 
         private テクスチャ _SetNode自身のノード画像 = null;
@@ -116,7 +116,7 @@ namespace DTXMania
         /// <summary>
         ///     指定された <see cref="SetDef.Block"/> をもとに、初期化する。
         /// </summary>
-        public SetNode( SetDef.Block block, VariablePath 基点フォルダパス, SongDB songdb, Node 親ノード = null )
+        public SetNode( SetDef.Block block, VariablePath 基点フォルダパス, Node 親ノード = null )
         {
             this.タイトル = block.Title;
             this.親ノード = 親ノード;
@@ -133,7 +133,7 @@ namespace DTXMania
                     {
                         try
                         {
-                            this.MusicNodes[ i ] = new MusicNode( Path.Combine( 基点フォルダパス.変数なしパス, block.File[ i ] ), songdb, this );
+                            this.MusicNodes[ i ] = new MusicNode( Path.Combine( 基点フォルダパス.変数なしパス, block.File[ i ] ), this );
                             this.MusicNodes[ i ].難易度ラベル = block.Label[ i ];
                             this.MusicNodes[ i ].難易度 = 0.00f;   // 仮置き
                             this.子ノードリスト.Add( this.MusicNodes[ i ] );

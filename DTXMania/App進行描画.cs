@@ -361,6 +361,9 @@ namespace DTXMania
                         stage.非活性化する();
                         this.現在のステージ = this.選曲ステージ;
                         this.現在のステージ.活性化する();
+
+                        // 曲ツリーの現行化タスクを再開する。
+                        曲ツリー.現行化タスクの一時停止.現在の状態 = TriStateEvent.状態種別.OFF;
                     }
                     //----------------
                     #endregion
