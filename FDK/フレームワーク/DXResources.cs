@@ -125,7 +125,7 @@ namespace FDK
 
         public SharpDX.DirectWrite.Factory DWriteFactory { get; private set; } = null;
 
-        public Animation アニメーション { get; private set; } = null;
+        public Animation Animation { get; private set; } = null;
 
 
 
@@ -334,14 +334,14 @@ namespace FDK
                 this.DWriteFactory = new SharpDX.DirectWrite.Factory( SharpDX.DirectWrite.FactoryType.Shared );
 
                 // Windows Animation を生成する。
-                this.アニメーション = new Animation();
+                this.Animation = new Animation();
             }
         }
         private void _スワップチェーンに依存しないグラフィックリソースを解放する()
         {
             using( Log.Block( FDKUtilities.現在のメソッド名 ) )
             {
-                this.アニメーション?.Dispose();
+                this.Animation?.Dispose();
                 this.DWriteFactory?.Dispose();
                 this.WicImagingFactory2?.Dispose();
                 this.DCompTarget?.Dispose();

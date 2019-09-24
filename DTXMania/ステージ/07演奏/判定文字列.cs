@@ -116,7 +116,7 @@ namespace DTXMania.演奏
                         {
                             status.アニメ用メンバを解放する();
 
-                            var animation = DXResources.Instance.アニメーション;
+                            var animation = DXResources.Instance.Animation;
 
                             #region " (1) 光 アニメーションを構築 "
                             //----------------

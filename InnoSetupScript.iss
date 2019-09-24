@@ -4,7 +4,7 @@
 ; このスクリプトは Release 版を対象にしているので、
 ; このスクリプトをコンパイルする前に Release 版をビルドしておくこと。
 
-#define MyAppVersion "050"
+#define MyAppVersion "051"
 
 #define MyAppName "DTXMania2"
 #define MyAppFolderName "DTXMania2"
@@ -72,14 +72,15 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; {app} → exe のおかれるフォルダ。（例："C:\Program Files (x86)\<アプリ名>"）
-;Source: "{#MyAppBin}\ja\*"; DestDir: "{app}\ja"; Flags: ignoreversion recursesubdirs
 Source: "{#MyAppBin}\System\*"; DestDir: "{app}\System"; Flags: ignoreversion recursesubdirs
 Source: "{#MyAppBin}\x64\*"; DestDir: "{app}\x64"; Flags: ignoreversion recursesubdirs
 Source: "{#MyAppBin}\x86\*"; DestDir: "{app}\x86"; Flags: ignoreversion recursesubdirs
 Source: "{#MyAppBin}\*.dll"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 Source: "{#MyAppBin}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
-Source: "{#MyEditorAppBin}\{#MyEditorExeName}"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "{#MyAppBin}\{#MyAppExeName}.config"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 Source: "{#MyEditorAppBin}\ja-JP\*"; DestDir: "{app}\ja-JP"; Flags: ignoreversion recursesubdirs
+Source: "{#MyEditorAppBin}\{#MyEditorExeName}"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "{#MyEditorAppBin}\{#MyEditorExeName}.config"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 ; {userappdata} → インストールユーザの AppData フォルダ。（例："C:\users\<ユーザ名>\AppData\Roaming\<アプリ名>"）
 ;Source: "{#MyAppBin}\appdata_default\*"; DestDir: "{userappdata}\{#MyAppFolderName}"; Flags: ignoreversion

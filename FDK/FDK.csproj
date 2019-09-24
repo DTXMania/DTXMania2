@@ -64,16 +64,16 @@
   <ItemGroup>
     <Reference Include="CSCore, Version=1.2.1.2, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath Condition="'$(Configuration)' == 'Debug'">..\packages-selfbuild\cscore\DebugDll\CSCore.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'Release'">..\packages-selfbuild\cscore\ReleaseDll\CSCore.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'RemoteDebug'">..\packages-selfbuild\cscore\DebugDll\CSCore.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'RemoteRelease'">..\packages-selfbuild\cscore\ReleaseDll\CSCore.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'Debug'">..\packages-local\cscore\DebugDll\CSCore.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'Release'">..\packages-local\cscore\ReleaseDll\CSCore.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'RemoteDebug'">..\packages-local\cscore\DebugDll\CSCore.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'RemoteRelease'">..\packages-local\cscore\ReleaseDll\CSCore.dll</HintPath>
     </Reference>
     <Reference Include="bjxa, Version=0.4.0.0">
-      <HintPath Condition="'$(Configuration)' == 'Debug'">..\packages-selfbuild\bjxa\Debug\net471\bjxa.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'Release'">..\packages-selfbuild\bjxa\Release\net471\bjxa.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'RemoteDebug'">..\packages-selfbuild\bjxa\Debug\net471\bjxa.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'RemoteRelease'">..\packages-selfbuild\bjxa\Release\net471\bjxa.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'Debug'">..\packages-local\bjxa\Debug\net471\bjxa.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'Release'">..\packages-local\bjxa\Release\net471\bjxa.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'RemoteDebug'">..\packages-local\bjxa\Debug\net471\bjxa.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'RemoteRelease'">..\packages-local\bjxa\Release\net471\bjxa.dll</HintPath>
     </Reference>
     <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NVorbis.0.8.6\lib\net35\NVorbis.dll</HintPath>

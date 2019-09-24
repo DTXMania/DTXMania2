@@ -84,6 +84,9 @@ namespace DTXMania.結果
                 };
                 this._演奏パラメータ結果 = new 演奏パラメータ結果();
                 this._ランク = new ランク();
+                this._難易度 = new 難易度();
+                this._曲別SKILL = new 曲別SKILL();
+                this._達成率 = new 達成率();
                 this._システム情報 = new システム情報();
 
 
@@ -132,13 +135,15 @@ namespace DTXMania.結果
 
                 App進行描画.WAV管理?.Dispose();
 
-
                 this._背景?.Dispose();
                 this._曲名パネル?.Dispose();
                 this._曲名画像?.Dispose();
                 this._サブタイトル画像?.Dispose();
                 this._演奏パラメータ結果?.Dispose();
                 this._ランク?.Dispose();
+                this._難易度?.Dispose();
+                this._曲別SKILL?.Dispose();
+                this._達成率?.Dispose();
                 this._システム情報?.Dispose();
 
                 base.On非活性化();
@@ -209,7 +214,8 @@ namespace DTXMania.結果
             {
                 case フェーズ.表示:
 
-                    if( App進行描画.入力管理.確定キーが入力された() )
+                    if( App進行描画.入力管理.確定キーが入力された() ||
+                        App進行描画.入力管理.キャンセルキーが入力された() )
                     {
                         #region " 確定キー　→　フェーズアウトへ "
                         //----------------
@@ -293,7 +299,10 @@ namespace DTXMania.結果
             this._曲名を描画する( dc );
             this._サブタイトルを描画する( dc );
             this._演奏パラメータ結果.描画する( dc, 1317f, 716f, this._結果 );
-            this._ランク.進行描画する( this._結果.ランク );
+            this._ランク.進行描画する( 200f, 300f, this._結果.ランク );
+            this._難易度.進行描画する( dc, 1341f, 208f, App進行描画.曲ツリー.フォーカスノード.難易度 );
+            this._曲別SKILL.進行描画する( dc, 1329f, 327f, this._結果.スキル );
+            this._達成率.進行描画する( dc, 1233f, 428f, this._結果.Achievement );
             this._システム情報.描画する( dc );
 
             switch( this.現在のフェーズ )
@@ -305,6 +314,7 @@ namespace DTXMania.結果
                     break;
             }
         }
+
 
         private void _プレビュー画像を描画する( DeviceContext dc )
         {
@@ -387,6 +397,12 @@ namespace DTXMania.結果
         private 演奏パラメータ結果 _演奏パラメータ結果 = null;
 
         private ランク _ランク = null;
+
+        private 難易度 _難易度 = null;
+
+        private 曲別SKILL _曲別SKILL = null;
+
+        private 達成率 _達成率 = null;
 
         private SolidColorBrush _黒マスクブラシ = null;
 

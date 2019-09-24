@@ -31,7 +31,7 @@ namespace DTXMania.演奏
                 this._ゲージ量 = null;
                 this._ゲージ量のストーリーボード = null;
 
-                this._ゲージ量 = new Variable( DXResources.Instance.アニメーション.Manager, initialValue: 0 );
+                this._ゲージ量 = new Variable( DXResources.Instance.Animation.Manager, initialValue: 0 );
                 this._ゲージ量のストーリーボード = null;
             }
         }
@@ -83,7 +83,7 @@ namespace DTXMania.演奏
 
             if( ゲージ量 != this._ゲージ量.FinalValue )
             {
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
 
                 this._ゲージ量のストーリーボード = new Storyboard( animation.Manager );
 

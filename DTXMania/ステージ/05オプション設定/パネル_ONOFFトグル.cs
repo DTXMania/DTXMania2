@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SharpDX;
 using FDK;
 
 namespace DTXMania.オプション設定
@@ -29,7 +30,7 @@ namespace DTXMania.オプション設定
 
 
         public パネル_ONOFFトグル( string パネル名, bool 初期状態はON, Action<パネル> 値の変更処理 = null )
-            : base( パネル名, new[] { "OFF", "ON" }, ( 初期状態はON ) ? 1 : 0, 値の変更処理 )
+            : base( パネル名, new[] { ("OFF", Color.Red), ("ON", Color4.White) }, ( 初期状態はON ) ? 1 : 0, 値の変更処理 )
         {
         }
 

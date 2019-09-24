@@ -16,7 +16,7 @@ namespace DTXMania.オプション設定
     {
         public int 現在選択されている選択肢の番号 { get; set; } = 0;
 
-        public List<string> 選択肢リスト { get; protected set; } = new List<string>();
+        public List<(string 文字列, Color4 色)> 選択肢リスト { get; protected set; } = new List<(string, Color4)>();
 
 
 
@@ -25,6 +25,22 @@ namespace DTXMania.オプション設定
 
         public パネル_文字列リスト( string パネル名, IEnumerable<string> 選択肢初期値リスト = null, int 初期選択肢番号 = 0, Action<パネル> 値の変更処理 = null )
             : base( パネル名, 値の変更処理 )
+        {
+            var list = new List<(string 文字列, Color4 色)>();
+            foreach( var item in 選択肢初期値リスト )
+                list.Add( (item, Color4.White) );   // 既定の色は白
+
+            this._初期化( パネル名, list, 初期選択肢番号 );
+        }
+
+        // 色指定あり
+        public パネル_文字列リスト( string パネル名, IEnumerable<(string 文字列, Color4 色)> 選択肢初期値リスト = null, int 初期選択肢番号 = 0, Action<パネル> 値の変更処理 = null )
+            : base( パネル名, 値の変更処理 )
+        {
+            this._初期化( パネル名, 選択肢初期値リスト, 初期選択肢番号 );
+        }
+
+        private void _初期化( string パネル名, IEnumerable<(string 文字列, Color4 色)> 選択肢初期値リスト = null, int 初期選択肢番号 = 0 )
         {
             this.現在選択されている選択肢の番号 = 初期選択肢番号;
 
@@ -37,12 +53,12 @@ namespace DTXMania.オプション設定
             for( int i = 0; i < this.選択肢リスト.Count; i++ )
             {
                 var image = new 文字列画像() {
-                    表示文字列 = this.選択肢リスト[ i ],
+                    表示文字列 = this.選択肢リスト[ i ].文字列,
                     フォントサイズpt = 34f,
-                    前景色 = Color4.White,
+                    前景色 = this.選択肢リスト[ i ].色,
                 };
 
-                this._選択肢文字列画像リスト.Add( this.選択肢リスト[ i ], image );
+                this._選択肢文字列画像リスト.Add( this.選択肢リスト[ i ].文字列, image );
             }
         }
 
@@ -105,7 +121,7 @@ namespace DTXMania.オプション設定
                 width: this.項目領域.Width,
                 height: this.項目領域.Height * 拡大率Y );
 
-            var 項目画像 = this._選択肢文字列画像リスト[ this.選択肢リスト[ this.現在選択されている選択肢の番号 ] ];
+            var 項目画像 = this._選択肢文字列画像リスト[ this.選択肢リスト[ this.現在選択されている選択肢の番号 ].文字列 ];
 
             項目画像.ビットマップを生成または更新する( dc );    // 先に画像を更新する。↓で画像サイズを取得するため。
             float 拡大率X = Math.Min( 1f, ( 項目矩形.Width - 20f ) / 項目画像.画像サイズdpx.Width );    // -20 は左右マージンの最低値[dpx]

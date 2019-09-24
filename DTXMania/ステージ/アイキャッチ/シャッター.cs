@@ -225,7 +225,7 @@ namespace DTXMania
             {
                 double 秒( double v ) => ( v / 速度倍率 );
 
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
                 var start = animation.Timer.Time;
 
                 for( int i = 0; i < シャッター枚数; i++ )
@@ -264,7 +264,7 @@ namespace DTXMania
             {
                 double 秒( double v ) => ( v / 速度倍率 );
 
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
 
                 double 最も遅い時刻sec = 0.0;
                 foreach( var s in this._シャッターアニメーション )

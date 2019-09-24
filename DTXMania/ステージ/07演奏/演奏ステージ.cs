@@ -745,7 +745,7 @@ namespace DTXMania.演奏
                         this._左サイドクリアパネル.クリアパネル.テクスチャへ描画する( ( dcp ) => {
                             this._プレイヤー名表示.進行描画する( dcp );
                             if( user.ダーク == ダーク種別.OFF )
-                                this._スコア表示.進行描画する( dcp, DXResources.Instance.アニメーション, new Vector2( +280f, +120f ), this.成績 );
+                                this._スコア表示.進行描画する( dcp, DXResources.Instance.Animation, new Vector2( +280f, +120f ), this.成績 );
                             this._達成率表示.描画する( dcp, (float) this.成績.Achievement );
                             this._判定パラメータ表示.描画する( dcp, +118f, +372f, this.成績 );
                             this._曲別SKILL.進行描画する( dcp, 0f );
@@ -855,7 +855,7 @@ namespace DTXMania.演奏
                         this._左サイドクリアパネル.クリアパネル.テクスチャへ描画する( ( dcp ) => {
                             this._プレイヤー名表示.進行描画する( dcp );
                             if( user.ダーク == ダーク種別.OFF )
-                                this._スコア表示.進行描画する( dcp, DXResources.Instance.アニメーション, new Vector2( +280f, +120f ), this.成績 );
+                                this._スコア表示.進行描画する( dcp, DXResources.Instance.Animation, new Vector2( +280f, +120f ), this.成績 );
                             this._達成率表示.描画する( dcp, (float) this.成績.Achievement );
                             this._判定パラメータ表示.描画する( dcp, +118f, +372f, this.成績 );
                             this._曲別SKILL.進行描画する( dcp, this.成績.スキル );
@@ -864,7 +864,7 @@ namespace DTXMania.演奏
 
                         this._右サイドクリアパネル.クリアする();
                         this._右サイドクリアパネル.クリアパネル.テクスチャへ描画する( ( dcp ) => {
-                            this._コンボ表示.進行描画する( dcp, DXResources.Instance.アニメーション, new Vector2( +228f + 264f / 2f, +234f ), this.成績 );
+                            this._コンボ表示.進行描画する( dcp, DXResources.Instance.Animation, new Vector2( +228f + 264f / 2f, +234f ), this.成績 );
                         } );
                         this._右サイドクリアパネル.描画する();
 

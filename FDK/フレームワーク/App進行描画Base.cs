@@ -109,7 +109,7 @@ namespace FDK
 
                         // (2) 進行する。
 
-                        DXResources.Instance.アニメーション.進行する();
+                        DXResources.Instance.Animation.進行する();
                         this.On進行();
 
 

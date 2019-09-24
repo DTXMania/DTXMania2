@@ -128,7 +128,7 @@ namespace DTXMania
             {
                 double 秒( double v ) => ( v / 速度倍率 );
 
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
 
                 this.現在のフェーズ = フェーズ.クローズ;
 
@@ -801,7 +801,7 @@ namespace DTXMania
             {
                 double 秒( double v ) => ( v / 速度倍率 );
 
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
 
                 this.現在のフェーズ = フェーズ.オープン;
                 var basetime = animation.Timer.Time;

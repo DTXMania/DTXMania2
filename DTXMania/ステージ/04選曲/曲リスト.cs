@@ -94,7 +94,7 @@ namespace DTXMania.選曲
             if( this._初めての進行描画 )
             {
                 this._スクロール用カウンタ = new 定間隔進行();     // 生成と同時にカウント開始。
-                this._選択ノードのオフセットアニメをリセットする( DXResources.Instance.アニメーション );
+                this._選択ノードのオフセットアニメをリセットする( DXResources.Instance.Animation );
                 this._初めての進行描画 = false;
             }
 
@@ -534,7 +534,7 @@ namespace DTXMania.選曲
 
             App進行描画.曲ツリー.前のノードをフォーカスする();
 
-            this._選択ノードのオフセットアニメをリセットする( DXResources.Instance.アニメーション );
+            this._選択ノードのオフセットアニメをリセットする( DXResources.Instance.Animation );
         }
 
         public void 次のノードを選択する()
@@ -543,7 +543,7 @@ namespace DTXMania.選曲
 
             App進行描画.曲ツリー.次のノードをフォーカスする();
 
-            this._選択ノードのオフセットアニメをリセットする( DXResources.Instance.アニメーション );
+            this._選択ノードのオフセットアニメをリセットする( DXResources.Instance.Animation );
         }
 
         public void BOXに入る()

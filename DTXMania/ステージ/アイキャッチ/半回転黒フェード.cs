@@ -52,7 +52,7 @@ namespace DTXMania
             {
                 double 秒( double v ) => ( v / 速度倍率 );
 
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
 
                 this._アニメーション?.Dispose();
                 this._アニメーション = new アニメ( animation.Manager );
@@ -127,7 +127,7 @@ namespace DTXMania
             {
                 double 秒( double v ) => ( v / 速度倍率 );
 
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
 
                 this._アニメーション?.Dispose();
                 this._アニメーション = new アニメ( animation.Manager );

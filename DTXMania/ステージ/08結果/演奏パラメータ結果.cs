@@ -22,7 +22,7 @@ namespace DTXMania.結果
             {
                 this._フルコンボ再生済み = false;
 
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
 
                 this._パラメータアニメ = new パラメータアニメ( animation.Manager );
                 this._パラメータアニメ.X位置オフセット = new Variable[ 6 ];
@@ -166,7 +166,7 @@ namespace DTXMania.結果
 
         private パラメータアニメ _パラメータアニメ = null;
 
-        protected new const float _改行幅dpx = 27f;
+        protected new const float _改行幅dpx = 36f;
 
 
         private bool _フルコンボ再生済み = false;

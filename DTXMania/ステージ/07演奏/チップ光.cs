@@ -85,7 +85,7 @@ namespace DTXMania.演奏
         {
             foreach( 表示レーン種別 レーン in Enum.GetValues( typeof( 表示レーン種別 ) ) )
             {
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
                 var status = this._レーンtoステータス[ レーン ];
 
                 switch( status.現在の状態 )

@@ -42,9 +42,9 @@ namespace DTXMania.結果
         // 進行と描画
 
 
-        public void 進行描画する( ランク種別 rank )
+        public void 進行描画する( float left, float top, ランク種別 rank )
         {
-            this._ランク画像[ rank ].描画する( 200f, 300f, 1f, 3f, 3f );
+            this._ランク画像[ rank ].描画する( left, top, X方向拡大率: 3f, Y方向拡大率: 3f );
         }
 
 

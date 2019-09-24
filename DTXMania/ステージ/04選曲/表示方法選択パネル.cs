@@ -35,7 +35,7 @@ namespace DTXMania.選曲
                 foreach( var p in this._パネルs )
                     p.画像 = new テクスチャ( p.vpath );
 
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
                 this._横方向差分割合 = new Variable( animation.Manager, initialValue: 0.0 );
                 this._横方向差分移動ストーリーボード = new Storyboard( animation.Manager );
                 using( var 維持 = animation.TrasitionLibrary.Constant( 0.0 ) )

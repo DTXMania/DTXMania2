@@ -14,6 +14,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -25,6 +26,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>
+    </NoWarn>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -35,16 +39,20 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'RemoteDebug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\RemoteDebug\</OutputPath>
+    <OutputPath>\\DRUMS-PC\DTXMania2リモートデバッグ\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'RemoteRelease|AnyCPU'">
     <OutputPath>bin\RemoteRelease\</OutputPath>
@@ -55,14 +63,20 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CSCore, Version=1.2.1.2, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath Condition="'$(Configuration)' == 'Debug'">..\packages-selfbuild\cscore\DebugDll\CSCore.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'Release'">..\packages-selfbuild\cscore\ReleaseDll\CSCore.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'RemoteDebug'">..\packages-selfbuild\cscore\DebugDll\CSCore.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'RemoteRelease'">..\packages-selfbuild\cscore\ReleaseDll\CSCore.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'Debug'">..\packages-local\cscore\DebugDll\CSCore.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'Release'">..\packages-local\cscore\ReleaseDll\CSCore.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'RemoteDebug'">..\packages-local\cscore\DebugDll\CSCore.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'RemoteRelease'">..\packages-local\cscore\ReleaseDll\CSCore.dll</HintPath>
+    </Reference>
+    <Reference Include="EffekseerNET">
+      <HintPath>..\packages-local\Effekseer.NET\x86\EffekseerNET.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
@@ -114,6 +128,8 @@
     <Compile Include="AppForm.Designer.cs">
       <DependentUpon>AppForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Effekseer.NET\EffekseerEffect.cs" />
+    <Compile Include="Effekseer.NET\EffekseerManager.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="ステージ\03認証\ユーザリスト.cs" />
     <Compile Include="ステージ\03認証\認証ステージ.cs" />
@@ -172,9 +188,21 @@
     <Compile Include="ステージ\07演奏\演奏ステージ_ビュアーモード.cs" />
     <Compile Include="ステージ\07演奏\譜面スクロール速度.cs" />
     <Compile Include="ステージ\07演奏\達成率表示.cs" />
+    <Compile Include="ステージ\08結果\曲別SKILL.アイコン.cs" />
+    <Compile Include="ステージ\08結果\達成率.アイコン.cs" />
+    <Compile Include="ステージ\08結果\難易度.アイコン.cs" />
     <Compile Include="ステージ\08結果\ランク.cs" />
+    <Compile Include="ステージ\08結果\曲別SKILL.下線.cs" />
+    <Compile Include="ステージ\08結果\曲別SKILL.数値.cs" />
+    <Compile Include="ステージ\08結果\達成率.下線.cs" />
+    <Compile Include="ステージ\08結果\達成率.数値.cs" />
+    <Compile Include="ステージ\08結果\難易度.数値.cs" />
+    <Compile Include="ステージ\08結果\難易度.下線.cs" />
+    <Compile Include="ステージ\08結果\曲別SKILL.cs" />
     <Compile Include="ステージ\08結果\演奏パラメータ結果.cs" />
     <Compile Include="ステージ\08結果\結果ステージ.cs" />
+    <Compile Include="ステージ\08結果\達成率.cs" />
+    <Compile Include="ステージ\08結果\難易度.cs" />
     <Compile Include="ステージ\アイキャッチ\GO.cs" />
     <Compile Include="ステージ\アイキャッチ\アイキャッチ.cs" />
     <Compile Include="ステージ\アイキャッチ\シャッター.cs" />
@@ -824,6 +852,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="System\Images\結果\曲別SKILLアイコン.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="System\Images\結果\達成率アイコン.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="System\Images\結果\難易度アイコン.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="System\Images\結果\MAX.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -832,4 +876,20 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>set DESTDIR86="$(TargetDir)x86"
+set DESTDIR64="$(TargetDir)x64"
+
+if not exist %25DESTDIR86%25 mkdir %25DESTDIR86%25
+if not exist %25DESTDIR64%25 mkdir %25DESTDIR64%25
+
+xcopy "$(SolutionDir)packages-local\Effekseer.NET\x86\EffekseerNET.dll" %25DESTDIR86%25  /Y /D
+xcopy "$(SolutionDir)packages-local\Effekseer.NET\x64\EffekseerNET.dll" %25DESTDIR64%25  /Y /D
+
+xcopy "$(SolutionDir)packages-local\vc140\x86\msvcp140.dll" %25DESTDIR86%25  /Y /D
+xcopy "$(SolutionDir)packages-local\vc140\x86\vcruntime140.dll" %25DESTDIR86%25  /Y /D
+xcopy "$(SolutionDir)packages-local\vc140\x64\msvcp140.dll" %25DESTDIR64%25  /Y /D
+xcopy "$(SolutionDir)packages-local\vc140\x64\vcruntime140.dll" %25DESTDIR64%25  /Y /D
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

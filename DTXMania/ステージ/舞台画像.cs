@@ -47,7 +47,7 @@ namespace DTXMania
                 this._クリッピングエフェクト = new Crop( dc );
                 this._クリッピングエフェクト黒幕付き用 = new Crop( dc );
 
-                this._ぼかしと縮小割合 = new Variable( DXResources.Instance.アニメーション.Manager, initialValue: 0.0 );
+                this._ぼかしと縮小割合 = new Variable( DXResources.Instance.Animation.Manager, initialValue: 0.0 );
                 this.ぼかしと縮小を適用中 = false;
 
                 this._ストーリーボード = null;
@@ -83,7 +83,7 @@ namespace DTXMania
         {
             using( Log.Block( FDKUtilities.現在のメソッド名 ) )
             {
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
 
                 if( !( this.ぼかしと縮小を適用中 ) )
                 {
@@ -117,7 +117,7 @@ namespace DTXMania
         {
             using( Log.Block( FDKUtilities.現在のメソッド名 ) )
             {
-                var animation = DXResources.Instance.アニメーション;
+                var animation = DXResources.Instance.Animation;
 
                 if( this.ぼかしと縮小を適用中 )
                 {

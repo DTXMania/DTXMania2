@@ -513,7 +513,7 @@ namespace DTXMania.選曲
 
         private void _導線アニメをリセットする()
         {
-            var animation = DXResources.Instance.アニメーション;
+            var animation = DXResources.Instance.Animation;
 
             this._選択曲枠ランナー.リセットする();
 

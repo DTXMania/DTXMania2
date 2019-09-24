@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using SharpDX;
 using SharpDX.Direct2D1;
 using FDK;
 
@@ -541,10 +542,10 @@ namespace DTXMania.オプション設定
                             "ダークモード",
 
                         選択肢初期値リスト:
-                            new[] { "OFF", "HALF", "FULL" },
+                            new[] { ("OFF", Color.Red), ("HALF", Color4.White), ("FULL", Color4.White) },
 
                         初期選択肢番号:
-                            (int)user.ダーク,
+                            (int) user.ダーク,
 
                         値の変更処理:
                             ( panel ) => {
