@@ -1,0 +1,260 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using Microsoft.Data.Sqlite;
+
+namespace DTXMania2.曲
+{
+    class 標準の曲ツリー : 曲ツリー
+    {
+
+        // 生成と終了
+
+
+        public 標準の曲ツリー()
+        {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+        }
+
+        public override void Dispose()
+        {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            base.Dispose();
+        }
+
+
+
+        // ツリーと全譜面リストの構築
+
+
+        /// <summary>
+        ///     標準の曲ツリーを構築する。
+        /// </summary>
+        /// <remarks>
+        ///     曲ツリーは、曲検索フォルダを検索した結果に、現状の（現行前の）ScoreDB の内容を反映したものとなる。
+        ///     曲ツリーを構築すると同時に、全譜面リストも構築する。
+        /// </remarks>
+        public void 構築する( IEnumerable<VariablePath> 曲検索フォルダパスリスト, Dictionary<string, Score> 全譜面リスト )
+        {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
+
+            // (1) 曲検索フォルダパスをスキャンして、曲ツリー（と全譜面リスト）を構築する。
+
+            // ルートノードの子ノードリストの先頭に「ランダムセレクト」を追加する。
+            this.ルートノード.子ノードリスト.Add( new RandomSelectNode() { 親ノード = this.ルートノード } );
+
+            // 曲検索パスに従って構築する。
+            foreach( var path in 曲検索フォルダパスリスト )
+                this._構築する( path, this.ルートノード );
+
+
+            // (2) 現状の（まだ現行化されていない）ScoreDB を読み込んで全譜面リストに反映する。
+
+            using var scoredb = new ScoreDB();
+            using var query = new SqliteCommand( "SELECT * FROM Scores", scoredb.Connection );
+            var result = query.ExecuteReader();
+            while( result.Read() )
+            {
+                var record = new ScoreDBRecord( result );
+
+                if( 全譜面リスト.ContainsKey( record.ScorePath ) )
+                    全譜面リスト[ record.ScorePath ].譜面.UpdateFrom( record );    // 上書き
+            }
+
+
+            // (3) 文字列画像のみ生成する。
+
+
+            foreach( var score in 全譜面リスト.Values )
+            {
+                score.タイトル文字列画像 = 現行化.タイトル文字列画像を生成する( score.譜面.Title );
+                score.サブタイトル文字列画像 = 現行化.サブタイトル文字列画像を生成する( score.譜面.Artist );
+            }
+
+
+            // (4) 最初の子ノードをフォーカスする。
+
+            this.フォーカスリスト.SelectFirst();
+        }
+
+        /// <summary>
+        ///     1つのフォルダに対して検索と構築を行う。
+        /// </summary>
+        /// <param name="基点フォルダパス">検索フォルダの絶対パス。</param>
+        /// <param name="親ノード">ノードは、このノードの子ノードとして構築される。</param>
+        /// <param name="boxdefが有効">true にすると、フォルダ内の box.def が有効になる。false にすると box.def を無視する。</param>
+        private void _構築する( VariablePath 基点フォルダパス, BoxNode 親ノード, bool boxdefが有効 = true )
+        {
+            #region " 基点フォルダが存在しない場合は無視。"
+            //----------------
+            if( !( Directory.Exists( 基点フォルダパス.変数なしパス ) ) )
+            {
+                Log.WARNING( $"指定されたフォルダが存在しません。無視します。[{基点フォルダパス.変数付きパス}]" );
+                return;
+            }
+            //----------------
+            #endregion
+
+            // 一時リスト。作成したノードをいったんこのノードリストに格納し、あとでまとめて曲ツリーに登録する。
+            var 追加ノードリスト = new List<Node>();
+
+            // 各準備。
+            var dirInfo = new DirectoryInfo( 基点フォルダパス.変数なしパス );
+            var boxDefPath = new VariablePath( Path.Combine( 基点フォルダパス.変数なしパス, @"box.def" ) );
+            var setDefPath = new VariablePath( Path.Combine( 基点フォルダパス.変数なしパス, @"set.def" ) );
+            bool サブフォルダを検索する = true;
+
+            if( boxdefが有効 && File.Exists( boxDefPath.変数なしパス ) )
+            {
+                #region " (A) このフォルダに box.def がある → BOXノードを作成し、子ノードリストを再帰的に構築する。"
+                //----------------
+                try
+                {
+                    // box.defを読み込んでBOXノードを作成する。
+                    var boxDef = new BoxDef( boxDefPath );
+                    var boxNode = new BoxNode( boxDef );
+                    追加ノードリスト.Add( boxNode );
+
+                    // BOXノードの子ノードリストの先頭に「戻る」と「ランダムセレクト」を追加する。
+                    boxNode.子ノードリスト.Add( new BackNode() { 親ノード = boxNode } );
+                    boxNode.子ノードリスト.Add( new RandomSelectNode() { 親ノード = boxNode } );
+
+                    // このフォルダを対象として再帰的に構築する。ただし box.def は無効とする。
+                    // 構築結果のノードリストは、BOXノードの子として付与される。
+                    this._構築する( 基点フォルダパス, boxNode, boxdefが有効: false );
+
+                    // box.def があった場合、サブフォルダは検索しない。
+                    サブフォルダを検索する = false;
+                }
+                catch( Exception e )
+                {
+                    Log.ERROR( $"box.def に対応するノードの生成に失敗しました。[{boxDefPath.変数付きパス}][{Folder.絶対パスをフォルダ変数付き絶対パスに変換して返す( e.Message )}]" );
+                }
+                //----------------
+                #endregion
+            }
+            else if( File.Exists( setDefPath.変数なしパス ) )
+            {
+                #region " (B) このフォルダに set.def がある → その内容でノードを作成する。"
+                //----------------
+                try
+                {
+                    // set.def を読み込む。
+                    var setDef = new SetDef( setDefPath );
+
+                    // set.def 内のすべてのブロックについて、Song と SongNode を作成する。
+                    foreach( var block in setDef.Blocks )
+                    {
+                        // set.def のブロックから Song を生成する。
+                        var song = new Song( block, dirInfo.FullName );
+
+                        // L1～L5が1つ以上有効なら、SongNode を生成して登録する。
+                        if( song.譜面リスト.Any( ( score ) => null != score ) )
+                            追加ノードリスト.Add( new SongNode( song ) );
+                    }
+
+                    // set.def があった場合、サブフォルダは検索しない。
+                    サブフォルダを検索する = false;
+                }
+                catch( Exception e )
+                {
+                    Log.ERROR( $"set.def からのノードの生成に失敗しました。[{setDefPath.変数付きパス}][{Folder.絶対パスをフォルダ変数付き絶対パスに変換して返す( e.Message )}]" );
+                }
+                //----------------
+                #endregion
+            }
+            else
+            {
+                #region " (C) box.def も set.def もない → このフォルダにあるすべての譜面ファイルを検索してノードを作成する。"
+                //----------------
+                var 対応する拡張子 = new[] { ".sstf", ".dtx", ".gda", ".g2d", "bms", "bme" };
+
+                // 譜面ファイルを検索する。曲ファイルは、対応する拡張子を持つファイルである。
+                var fileInfos = dirInfo.GetFiles( "*.*", SearchOption.TopDirectoryOnly )
+                    .Where( ( fileInfo ) => 対応する拡張子.Any( 拡張子名 => ( Path.GetExtension( fileInfo.Name ).ToLower() == 拡張子名 ) ) );
+
+                // 列挙されたすべての譜面ファイルについて……
+                foreach( var fileInfo in fileInfos )
+                {
+                    var path = new VariablePath( fileInfo.FullName );
+                    try
+                    {
+                        // 1つの譜面を持つ Song を生成する。
+                        var song = new Song( path );
+                        追加ノードリスト.Add( new SongNode( song ) );
+                    }
+                    catch( Exception e )
+                    {
+                        Log.ERROR( $"SongNode の生成に失敗しました。[{path.変数付きパス}][{Folder.絶対パスをフォルダ変数付き絶対パスに変換して返す( e.Message )}]" );
+                    }
+
+                    // 続けて、サブフォルダも検索する。
+                    サブフォルダを検索する = true;
+                }
+                //----------------
+                #endregion
+            }
+
+            #region " 作成した一時リストを親ノードの子として正式に追加する。"
+            //----------------
+            foreach( var node in 追加ノードリスト )
+            {
+                // 親ノードの子として登録する。
+
+                親ノード.子ノードリスト.Add( node );
+                node.親ノード = 親ノード;
+
+
+                // SongNode なら Score[] を全譜面リストにも追加する。
+
+                if( node is SongNode snode )
+                {
+                    for( int i = 0; i < 5; i++ )
+                    {
+                        if( null != snode.曲.譜面リスト[ i ] )
+                            Global.App.全譜面リスト[ snode.曲.譜面リスト[ i ]!.譜面.ScorePath ] = snode.曲.譜面リスト[ i ]!;
+                    }
+                }
+            }
+            //----------------
+            #endregion
+
+            if( サブフォルダを検索する )
+            {
+                // すべてのサブフォルダについて……
+                foreach( var di in dirInfo.GetDirectories() )
+                {
+                    if( di.Name.StartsWith( "DTXFiles.", StringComparison.OrdinalIgnoreCase ) )
+                    {
+                        #region " (A) サブフォルダが DTXFiles. で始まるBOXである → BOXノードを追加し、サブフォルダを再帰的に検索する。"
+                        //----------------
+                        // BOXノードを作成し、ツリーに登録する。
+                        var boxNode = new BoxNode( di.Name[ ( "DTXFiles.".Length ).. ] ) { 親ノード = 親ノード };
+                        親ノード.子ノードリスト.Add( boxNode );
+
+                        // BOXノードの先頭に「戻る」と「ランダムセレクト」を追加する。
+                        boxNode.子ノードリスト.Add( new BackNode() { 親ノード = boxNode } );         // 戻る
+                        boxNode.子ノードリスト.Add( new RandomSelectNode() { 親ノード = boxNode } ); // ランタムセレクト
+
+                        // BOXノードを親として、サブフォルダを検索する。
+                        this._構築する( di.FullName, boxNode );
+                        //----------------
+                        #endregion
+                    }
+                    else
+                    {
+                        #region " (B) それ以外 → サブフォルダを再帰検索し、その内容を同じ親ノードに追加する。"
+                        //----------------
+                        this._構築する( di.FullName, 親ノード );
+                        //----------------
+                        #endregion
+                    }
+                }
+            }
+        }
+    }
+}

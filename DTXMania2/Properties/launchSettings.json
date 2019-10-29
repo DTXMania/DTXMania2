@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DTXMania2": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

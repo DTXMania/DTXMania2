@@ -29,6 +29,11 @@ MemoryTributary
 	The Code Project Open License (CPOL)
 	https://www.codeproject.com/Articles/348590/A-replacement-for-MemoryStream
 
+Microsoft.Data.SQLite
+	(C) Microsoft Corporation. All rights reserved.
+	Apache-2.0 Licence
+    https://www.nuget.org/packages/Microsoft.Data.Sqlite/
+
 NVorbis
     Copyright (c) 2015 Andrew Ward
     Microsoft Public Licence (Ms-PL)
@@ -44,15 +49,10 @@ SharpDX
     The MIT License (MIT)
     https://github.com/sharpdx/SharpDX/blob/master/LICENSE
 
-System.Data.SQLite
-    SQLite Development Team
-    Public Domain
-    https://system.data.sqlite.org/index.html/doc/trunk/www/copyright.wiki
-
 YamlDotNet
     Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Antoine Aubry and contributors
     The MIT License (MIT)
-    https://github.com/aaubry/YamlDotNet/blob/master/LICENSE
+    https://github.com/aaubry/YamlDotNet/blob/master/LICENSE.txt
 
 Windows-API-Code-Pack
     Microsoft

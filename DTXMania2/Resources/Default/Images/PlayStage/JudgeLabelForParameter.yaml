@@ -1,0 +1,11 @@
+﻿# 矩形リスト:
+# 4つの数値は、Left, Top, Widht, Height の順。
+# 各 Name は 判定種別 列挙子の名前であること。
+RectangleList:
+    PERFECT: [0, 0, 87, 40]
+    GREAT: [0, 40, 87, 40]
+    GOOD: [0, 80, 87, 40]
+    OK: [87, 0, 87, 40]
+    MISS: [87, 40, 87, 40]
+    # 'MAX COMBO'
+    MaxCombo: [87, 80, 87, 40]

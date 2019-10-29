@@ -1,0 +1,35 @@
+﻿# 矩形リスト
+# 画像上の矩形。順に、Left, Top, Widht, Height。
+RectangleList:
+    LeftCymbalStand: [0, 99, 270, 293]
+    LeftCymbal: [366, 43, 287, 101]
+    LeftCymbalTop: [198, 43, 40, 40]
+    RightCymbalStand: [754, 99, 270, 293]
+    RightCymbal: [366, 164, 287, 101]
+    RightCymbalTop: [788, 40, 40, 40]
+    HiHatBottom: [0, 500, 252, 236]
+    HiHatTop: [0, 403, 252, 97]
+    Bass: [687, 471, 337, 436]
+    Snare: [2, 745, 247, 165]
+    HiTom: [263, 756, 196, 148]
+    LowTom: [477, 755, 196, 146]
+    FloorTom: [307, 451, 304, 260]
+    Bar: [0, 946, 808, 78]
+
+# 中心位置
+# 各パーツの表示中央位置。
+CenterPosition:
+    LeftCymbalStand: [391, 1030.5]
+    LeftCymbal: [471.5, 878.5]
+    LeftCymbalTop: [483, 848]
+    RightCymbalStand: [1276, 1040.5]
+    RightCymbal: [1207.5, 887.5]
+    RightCymbalTop: [1195, 854]
+    HiHatBottom: [586, 1044]
+    HiHatTop: [586, 931.5]
+    Bass: [893.5, 997]
+    Snare: [690.5, 1023.5]
+    HiTom: [807, 913]
+    LowTom: [983, 913]
+    FloorTom: [1098, 1055]
+    Bar: [844, 848]
