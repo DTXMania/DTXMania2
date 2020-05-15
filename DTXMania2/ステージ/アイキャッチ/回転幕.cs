@@ -4,9 +4,9 @@ using System.Diagnostics;
 using SharpDX;
 using SharpDX.Animation;
 using SharpDX.Direct2D1;
+using FDK;
 
-/*
- * 回転幕の仕様（推定）
+/* 回転幕の仕様（推定）
  * 
  *	※ 画面A ... 切り替え元画面
  *	　 画面B ... アイキャッチ遷移画面1（回転中）
@@ -618,7 +618,7 @@ namespace DTXMania2
 
             #region " 黒帯（全シーンで共通）"
             //----------------
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 var pretrans = dc.Transform;
 

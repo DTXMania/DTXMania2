@@ -5,6 +5,7 @@ using System.Linq;
 using SharpDX;
 using SharpDX.Animation;
 using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2.オプション設定
 {
@@ -43,7 +44,11 @@ namespace DTXMania2.オプション設定
             this.パネル名 = パネル名;
             this.ヘッダ色 = ( ヘッダ色.HasValue ) ? ヘッダ色.Value : ヘッダ色種別.青;  // 既定値は青
             this._値の変更処理 = 値の変更処理;
-            this._パネル名画像 = new 文字列画像D2D() { 表示文字列 = this.パネル名, フォントサイズpt = 34f, 前景色 = Color4.White };
+            this._パネル名画像 = new 文字列画像D2D() {
+                表示文字列 = this.パネル名,
+                フォントサイズpt = 34f,
+                前景色 = Color4.White
+            };
             this._パネルの高さ割合 = new Variable( Global.Animation.Manager, initialValue: 1.0 );
             this._パネルのストーリーボード = null;
         }
@@ -131,7 +136,7 @@ namespace DTXMania2.オプション設定
 
             // (1) パネルの下地部分の描画。
 
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 using( var パネル背景色 = new SolidColorBrush( dc, new Color4( Color3.Black, 0.5f ) ) )
                 using( var ヘッダ背景色 = new SolidColorBrush( dc, this.ヘッダ色 ) )

@@ -5,6 +5,7 @@ using System.Linq;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Animation;
+using FDK;
 
 namespace DTXMania2.演奏
 {
@@ -55,7 +56,7 @@ namespace DTXMania2.演奏
         /// </param>
         public void 進行描画する( DeviceContext dc, double ゲージ量 )
         {
-            ゲージ量 = Math.Max( Math.Min( ゲージ量, 1f ), 0f );
+            ゲージ量 = Math.Clamp( ゲージ量, min: 0f, max: 1f );
 
             var MAXゲージ領域 = new RectangleF( 557f, 971f, 628f, 26f );
 
@@ -95,7 +96,7 @@ namespace DTXMania2.演奏
 
             #region " ゲージの描画。"
             //----------------
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 var ゲージ領域 = MAXゲージ領域;
                 ゲージ領域.Width *= Math.Min( (float) this._ゲージ量.Value, 1.0f );

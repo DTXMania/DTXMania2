@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using SharpDX;
-using SharpDX.Direct2D1;
+using FDK;
 using DTXMania2.曲;
 
 namespace DTXMania2.曲読み込み

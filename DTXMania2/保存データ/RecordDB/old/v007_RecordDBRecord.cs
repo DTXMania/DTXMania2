@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using FDK;
 
 namespace DTXMania2.old.RecordDBRecord
 {

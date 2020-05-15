@@ -3,6 +3,10 @@
     "DTXMania2": {
       "commandName": "Project",
       "nativeDebugging": false
+    },
+    "DTXMania2 ビュアーモード": {
+      "commandName": "Project",
+      "commandLineArgs": "-S"
     }
   }
 }

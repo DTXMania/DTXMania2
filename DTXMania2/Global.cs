@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Diagnostics;
+using FDK;
 
 namespace DTXMania2
 {
@@ -731,54 +731,6 @@ namespace DTXMania2
                 +dz );                                          // 後方投影面までの距離
             転置済み射影行列.Transpose();  // 転置
         }
-
-        /// <summary>
-        ///		指定したレンダーターゲットに対して、D2D描画処理をバッチ実行する。
-        /// </summary>
-        /// <remarks>
-        ///		このメソッドを使うと、D2D描画処理がレンダーターゲットの BeginDraw() と EndDraw() の間で行われることが保証される。
-        ///		また、D2D描画処理中に例外が発生しても EndDraw() の呼び出しが確実に保証される。
-        ///		
-        ///     この処理中に D3Dの描画を実行すると、そちらが先に描画されてしまうので注意！！
-        ///     
-        /// </remarks>
-        /// <param name="rt">レンダリングターゲット。</param>
-        /// <param name="D2D描画処理">BeginDraw() と EndDraw() の間で行う処理。</param>
-        public static void D2DBatchDraw( SharpDX.Direct2D1.RenderTarget rt, Action D2D描画処理 )
-        {
-            // BatchDraw中のレンダーターゲットリストになかったら、この RenderTarget を使うのは初めてなので、BeginDraw/EndDraw() の呼び出しを行う。
-            // もしリストに登録されていたら、この RenderTarget は他の誰かが BeginDraw して EndDraw してない状態（D2DBatcDraw() の最中に
-            // D2DBatchDraw() が呼び出されている状態）なので、これらを呼び出してはならない。
-            bool BeginとEndを行う = !( _BatchDraw中のレンダーターゲットリスト.Contains( rt ) );
-
-            var pretrans = rt.Transform;
-            var preblend = ( rt is SharpDX.Direct2D1.DeviceContext dc ) ? dc.PrimitiveBlend : SharpDX.Direct2D1.PrimitiveBlend.SourceOver;
-
-            try
-            {
-                if( BeginとEndを行う )
-                {
-                    _BatchDraw中のレンダーターゲットリスト.Add( rt );     // Begin したらリストに追加。
-                    rt.BeginDraw();
-                }
-
-                D2D描画処理();
-            }
-            finally
-            {
-                rt.Transform = pretrans;
-                if( rt is SharpDX.Direct2D1.DeviceContext dc2 )
-                    dc2.PrimitiveBlend = preblend;
-
-                if( BeginとEndを行う )
-                {
-                    rt.EndDraw();
-                    _BatchDraw中のレンダーターゲットリスト.Remove( rt );  // End したらリストから削除。
-                }
-            }
-        }
-
-        private static readonly List<SharpDX.Direct2D1.RenderTarget> _BatchDraw中のレンダーターゲットリスト = new List<SharpDX.Direct2D1.RenderTarget>();
 
 
 

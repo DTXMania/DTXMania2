@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using SharpDX;
 using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2.演奏
 {
@@ -121,7 +121,7 @@ namespace DTXMania2.演奏
             Debug.Assert( 1 <= 桁数 && 10 >= 桁数 );    // 最大10桁まで
 
             int 最大値 = (int) Math.Pow( 10, 桁数 ) - 1;     // 1桁なら9, 2桁なら99, 3桁なら999, ... でカンスト。
-            int 判定数 = Math.Max( Math.Min( 描画する数値, 最大値 ), 0 );   // 丸める。
+            int 判定数 = Math.Clamp( 描画する数値, min: 0, max: 最大値 );   // 丸める。
             var 判定数文字列 = 判定数.ToString().PadLeft( 桁数 ).Replace( ' ', 'o' );  // グレーの '0' は 'o' で描画できる（矩形リスト参照）。
 
             this.パラメータ文字.不透明度 = 不透明度;

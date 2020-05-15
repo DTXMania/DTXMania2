@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using YamlDotNet.Core;
-using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using SharpDX;
+using FDK;
 
 namespace DTXMania2.old.SystemConfig
 {
@@ -212,7 +210,6 @@ namespace DTXMania2.old.SystemConfig
             var serializer = new SerializerBuilder()
                 .WithTypeInspector( inner => new CommentGatheringTypeInspector( inner ) )
                 .WithEmissionPhaseObjectGraphVisitor( args => new CommentsObjectGraphVisitor( args.InnerVisitor ) )
-                .EmitDefaults()
                 .Build();
 
             // ※ 値が既定値であるプロパティは出力されないので注意。

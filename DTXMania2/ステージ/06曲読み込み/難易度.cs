@@ -5,6 +5,7 @@ using System.Linq;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
+using FDK;
 using DTXMania2.曲;
 
 namespace DTXMania2.曲読み込み
@@ -44,7 +45,7 @@ namespace DTXMania2.曲読み込み
 
             // 難易度のラベルと値を描画する。
 
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 using var 見出し背景ブラシ = new SolidColorBrush( dc, Song.難易度色リスト[ Global.App.曲ツリーリスト.SelectedItem!.フォーカス難易度レベル ] );
                 using var 黒ブラシ = new SolidColorBrush( dc, Color4.Black );

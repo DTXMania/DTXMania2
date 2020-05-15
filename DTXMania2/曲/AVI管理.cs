@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using FDK;
 using SSTFormat.v004;
 
 namespace DTXMania2
@@ -67,7 +68,7 @@ namespace DTXMania2
                 this._動画リスト[ AVI番号 ].Dispose();
 
             // 新しいVideoを生成して登録する。
-            this._動画リスト[ AVI番号 ] = new Video( 動画ファイルの絶対パス, 再生速度 );
+            this._動画リスト[ AVI番号 ] = new Video( Global.MFDXGIDeviceManager, Global.既定のD2D1DeviceContext, 動画ファイルの絶対パス, 再生速度 );
         }
 
         public void 再生中の動画をすべて一時停止する()

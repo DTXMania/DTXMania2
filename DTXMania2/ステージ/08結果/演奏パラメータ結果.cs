@@ -5,6 +5,7 @@ using System.Linq;
 using SharpDX;
 using SharpDX.Animation;
 using SharpDX.Direct2D1;
+using FDK;
 using DTXMania2.演奏;
 
 namespace DTXMania2.結果
@@ -78,7 +79,7 @@ namespace DTXMania2.結果
                 this._フルコンボ音声再生済み = true; // 再生してようがしてまいが true
             }
 
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 var 拡大率 = new Size2F( 1.4f, 1.3f ); // 画像が小さいので少々拡大。
 

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using SharpDX;
+using FDK;
 
 namespace DTXMania2.演奏
 {

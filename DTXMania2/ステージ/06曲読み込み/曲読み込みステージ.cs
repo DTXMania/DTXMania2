@@ -4,8 +4,8 @@ using System.Diagnostics;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
+using FDK;
 using SSTFormat.v004;
-using DTXMania2.曲;
 
 namespace DTXMania2.曲読み込み
 {

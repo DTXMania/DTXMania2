@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using FDK;
 
 namespace DTXMania2.起動
 {
@@ -114,7 +115,7 @@ namespace DTXMania2.起動
                     Log.Info( "システムサウンドの読み込みが完了しました。" );
 
                     Global.App.ドラムサウンド.すべて生成する();
-                    Log.Info( "システムサウンドの読み込みが完了しました。" );
+                    Log.Info( "ドラムサウンドの読み込みが完了しました。" );
 
                     // 次のフェーズへ。
                     this._コンソール表示内容[ this._コンソール表示内容.Count - 1 ] += " done.";
@@ -137,7 +138,8 @@ namespace DTXMania2.起動
                         // (B) 通常モードでは曲ツリーの構築を開始する。
                         var tree = new 曲.標準の曲ツリー();
 
-                        tree.構築する( Global.App.システム設定.曲検索フォルダ, Global.App.全譜面リスト );   // 標準の曲ツリーは全譜面リストも一緒に構築する。
+                        // 標準の曲ツリーは、全曲/全譜面リストも一緒に構築する。
+                        tree.構築する( Global.App.システム設定.曲検索フォルダ );
 
                         Global.App.曲ツリーリスト.Add( tree );
                         Global.App.曲ツリーリスト.SelectFirst();

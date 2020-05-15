@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using SharpDX;
 using SharpDX.Direct2D1;
+using FDK;
 using DTXMania2.曲;
 
 namespace DTXMania2.選曲
@@ -39,7 +40,7 @@ namespace DTXMania2.選曲
 
         public void 進行描画する( DeviceContext dc, Node フォーカスノード )
         {
-            if( !( フォーカスノード is SongNode snode ) )
+            if( !( フォーカスノード is SongNode snode ) || snode.曲.フォーカス譜面 is null )
                 return; // 現状、表示できるノードは SongNode のみ。
 
             #region " フォーカスノードが変更されていれば情報を更新する。"

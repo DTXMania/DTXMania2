@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using SharpDX;
 using SharpDX.Direct2D1;
+using FDK;
 using DTXMania2.曲;
 using DTXMania2.演奏;
 
@@ -61,7 +62,7 @@ namespace DTXMania2.選曲
             //----------------
             #endregion
 
-            if( !( フォーカスノード is SongNode snode ) )
+            if( !( フォーカスノード is SongNode snode ) || snode.曲.フォーカス譜面 is null )
                 return;    // 現状、BPMを表示できるノードは MusicNode のみ。
 
             #region " フォーカスノードが変更されていれば更新する。"
@@ -78,7 +79,7 @@ namespace DTXMania2.選曲
 
                 if( null != map )
                 {
-                    Global.D2DBatchDraw( dc, () => {
+                    D2DBatch.Draw( dc, () => {
 
                         const float Yオフセット = +2f;
 

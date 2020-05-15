@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using FDK;
 using SSTFormat.v004;
 
 namespace DTXMania2
@@ -34,11 +35,11 @@ namespace DTXMania2
         // 生成と終了
 
 
-        public ドラム入力( SystemConfig config, KeyboardHID keyboard, GameControllersHID gameControllers, MidiIns midiIns, int 最大入力履歴数 = 32 )
+        public ドラム入力( KeyboardHID keyboard, GameControllersHID gameControllers, MidiIns midiIns, int 最大入力履歴数 = 32 )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._Config = new WeakReference<SystemConfig>( config );
+            var config = Global.App.システム設定;
             this.Keybaord = new WeakReference<KeyboardHID>( keyboard );
             this.GameControllers = new WeakReference<GameControllersHID>( gameControllers );
             this.MidiIn = new WeakReference<MidiIns>( midiIns );
@@ -428,7 +429,7 @@ namespace DTXMania2
 
             this.ポーリング結果.Clear();
 
-            if( this._Config.TryGetTarget( out var config ) )
+            var config = Global.App.システム設定;
             {
                 if( this.Keybaord.TryGetTarget( out var keyboard ) )
                 {
@@ -481,8 +482,6 @@ namespace DTXMania2
 
         // ローカル
 
-
-        private WeakReference<SystemConfig> _Config;
 
         /// <summary>
         ///		単一の IInputDevice をポーリングし、対応表に従ってドラム入力へ変換して、ポーリング結果 に追加登録する。

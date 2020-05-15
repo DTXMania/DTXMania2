@@ -6,6 +6,7 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 using SharpDX;
+using FDK;
 using SSTFormat.v004;
 using DTXMania2.曲;
 
@@ -43,6 +44,8 @@ namespace DTXMania2
         // [key: 譜面ファイルの絶対パス]
         public Dictionary<string, Score> 全譜面リスト { get; }
 
+        public List<Song> 全曲リスト { get; }
+
         public SelectableList<曲ツリー> 曲ツリーリスト { get; }
 
         public 現行化 現行化 { get; }
@@ -61,24 +64,24 @@ namespace DTXMania2
         ///     選曲ステージで選曲確定後に更新される。
         /// </summary>
         /// <remarks>
-        ///     RandomSelectNode がフォーカスされている場合は、ここには譜面がランダムに設定されるため
+        ///     <see cref="RandomSelectNode"/> がフォーカスされている場合は、ここには譜面がランダムに設定されるため
         ///     曲ツリーのフォーカス譜面とは必ずしも一致しないので注意。
         /// </remarks>
         public Score 演奏譜面 { get; set; } = null!;
 
         /// <summary>
         ///     現在演奏中のスコア。
-        ///     曲読み込みステージで<see cref="演奏譜面"/>を読み込んで生成される。
+        ///     曲読み込みステージで<see cref="App.演奏譜面"/>を読み込んで生成される。
         /// </summary>
         public スコア 演奏スコア { get; set; } = null!;
 
         /// <summary>
-        ///     <see cref="演奏スコア"/> に対応して生成されたWAVサウンドインスタンスの管理。
+        ///     <see cref="App.演奏スコア"/> に対応して生成されたWAVサウンドインスタンスの管理。
         /// </summary>
         public WAV管理 WAV管理 { get; set; } = null!;
 
         /// <summary>
-        ///     <see cref="演奏スコア"/>  に対応して生成されたAVI動画インスタンスの管理。
+        ///     <see cref="App.演奏スコア"/>  に対応して生成されたAVI動画インスタンスの管理。
         /// </summary>
         public AVI管理 AVI管理 { get; set; } = null!;
 
@@ -90,6 +93,10 @@ namespace DTXMania2
         /// <summary>
         ///     コンストラクタ。一部のグローバルリソースを初期化する。
         /// </summary>
+        /// <remarks>
+        ///     アプリの表示を高速化するために、コンストラクタでは必要最低限のグローバルリソースだけを生成し、
+        ///     残りは <see cref="App.グローバルリソースを作成する()"/> メソッドで生成する。
+        /// </remarks>
         public App()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
@@ -101,10 +108,11 @@ namespace DTXMania2
             this.システム設定 = SystemConfig.読み込む();
             this.ユーザリスト = new SelectableList<ユーザ設定>();
             this.全譜面リスト = new Dictionary<string, 曲.Score>();
+            this.全曲リスト = new List<Song>();
             this.曲ツリーリスト = new SelectableList<曲.曲ツリー>();
             this.現行化 = new 曲.現行化();
 
-            #region " Skin.yaml を読み込んで、リソース関連のフォルダ変数を更新する。"
+            #region " リソース関連のフォルダ変数を更新する。"
             //----------------
             {
                 // DrumSounds
@@ -148,7 +156,7 @@ namespace DTXMania2
         /// </remarks>
         public void グローバルリソースを作成する()
         {
-            this.ドラム入力 = new ドラム入力( this.システム設定, Global.AppForm.KeyboardHID, Global.AppForm.GameControllersHID, Global.AppForm.MidiIns );
+            this.ドラム入力 = new ドラム入力( Global.AppForm.KeyboardHID, Global.AppForm.GameControllersHID, Global.AppForm.MidiIns );
             this.サウンドタイマ = new SoundTimer( this.サウンドデバイス );
             this.アイキャッチ管理 = new アイキャッチ管理();
             this.WAVキャッシュ = new CacheStore<CSCore.ISampleSource>() {
@@ -175,6 +183,7 @@ namespace DTXMania2
             //----------------
             #endregion
 
+            // 各DBを最新版にバージョンアップする。
             ScoreDB.Update();
             RecordDB.Update();
             ScorePropertiesDB.Update();
@@ -189,13 +198,13 @@ namespace DTXMania2
 
             this._パイプラインサーバを終了する();
 
-            //this.現行化.終了する();  --> Globalが破棄されるより前に実行する必要があるので、進行描画のメインループの終了箇所に移動。
+            //this.現行化.終了する();  --> Globalが破棄されるより前に実行する必要があるので、進行描画のメインループの終了箇所（Globalが破棄されるところ）に移動。
 
             this.ステージ?.Dispose();  // 進行描画メインループ終了時にDispose済みだが念のため
             this.ステージ = null;      // 
 
-            foreach( var score in this.全譜面リスト.Values )
-                score.Dispose();
+            foreach( var song in this.全曲リスト )
+                song.Dispose(); // 全譜面リストもここで解放される。
 
             foreach( var tree in this.曲ツリーリスト )
                 tree.Dispose();
@@ -258,7 +267,7 @@ namespace DTXMania2
 
         /// <summary>
         ///     進行描画処理の初期化、メインループ、終了処理を行う。
-        ///     <see "TaskMessage"/>で終了が指示されるまで、このメソッドからは戻らない。
+        ///     <see cref="TaskMessage"/>で終了が指示されるまで、このメソッドからは戻らない。
         /// </summary>
         private void _進行描画のメインループを実行する( Size2F 設計画面サイズ, Size2F 物理画面サイズ )
         {
@@ -272,16 +281,15 @@ namespace DTXMania2
                 //----------------
                 const int 希望オンラインスレッド数 = 32;
 
-                //  既定の数はCPUコア数に同じ。.NET の仕様により、Taskの同時利用数がこの数を超えると、それ以降の Task.Run での起動には最大2回/秒もの制限がかかる。
+                // 既定の数はCPUコア数に同じ。.NET の仕様により、Taskの同時利用数がこの数を超えると、それ以降の Task.Run での起動には最大2回/秒もの制限がかかる。
                 ThreadPool.GetMaxThreads( out int workMax, out int compMax );
                 ThreadPool.GetMinThreads( out int workMin, out int compMin );
 
-                ThreadPool.SetMinThreads( 
-                    Math.Max( Math.Min( 希望オンラインスレッド数, workMax ), workMin ),     // workMin ～ workMax の範囲を越えない
-                    Math.Max( Math.Min( 希望オンラインスレッド数, compMax ), compMin ) );   // compMin ～ compMax の範囲を越えない
+                ThreadPool.SetMinThreads(
+                    Math.Clamp( 希望オンラインスレッド数, min: workMin, max: workMax ),     // workMin ～ workMax の範囲を越えない
+                    Math.Clamp( 希望オンラインスレッド数, min: compMin, max: compMax ) );   // compMin ～ compMax の範囲を越えない
                 //----------------
                 #endregion
-
 
                 QueueTimer timer;
                 AutoResetEvent tick通知;
@@ -290,13 +298,12 @@ namespace DTXMania2
                 {
                     // グローバルリソースの大半は、進行描画タスクの中で生成する。
                     Global.生成する( 設計画面サイズ, 物理画面サイズ );
-                    画像.全インスタンスで共有するリソースを作成する();
+                    画像.全インスタンスで共有するリソースを作成する( Global.D3D11Device1 );
 
                     // 1ms ごとに進行描画ループを行うよう仕込む。
                     tick通知 = new AutoResetEvent( false );
                     timer = new QueueTimer( 1, 1, () => tick通知.Set() );   // 1ms ごとに Tick通知を set する
                 }
-
 
                 var スワップチェーン表示タスク = new PresentSwapChainVSync();
                 TaskMessage? 終了指示メッセージ = null;
@@ -576,7 +583,11 @@ namespace DTXMania2
                         this.ステージ = new 演奏.演奏ステージ();
 
                         // 曲読み込みステージ画面をキャプチャする（演奏ステージのクロスフェードで使う）
-                        ( (演奏.演奏ステージ) this.ステージ ).キャプチャ画面 = 画面キャプチャ.取得する();
+                        ( (演奏.演奏ステージ) this.ステージ ).キャプチャ画面 = 画面キャプチャ.取得する(
+                            Global.D3D11Device1,
+                            Global.DXGISwapChain1,
+                            Global.既定のD3D11RenderTargetView,
+                            Global.既定のD2D1DeviceContext );
                     }
                     //----------------
                     #endregion
@@ -621,7 +632,7 @@ namespace DTXMania2
 
                     #region " 即時終了 → ビュアーステージへ "
                     //----------------
-                    else if( stage.現在のフェーズ == 演奏.演奏ステージ.フェーズ.即時終了 )
+                    else if( stage.現在のフェーズ == 演奏.演奏ステージ.フェーズ.即時終了 ) // ビュアーモードでのみ設定される
                     {
                         this.ステージ.Dispose();
 
@@ -764,6 +775,7 @@ namespace DTXMania2
                 Log.Info( "パイプラインサーバを起動しました。" );
 
                 int 例外発生回数 = 0;
+                bool ビュアーモードではない = !Global.Options.ビュアーモードである;
 
                 while( !cancelToken.IsCancellationRequested )
                 {
@@ -788,11 +800,11 @@ namespace DTXMania2
                         Trace.WriteLine( $"{yamlText}" );
                         Trace.WriteLine( "--- ここまで ---" );
 
-                        if( yamlText == "ping" )
-                            continue;   // テスト送信
+                        if( yamlText.Nullまたは空である() || yamlText == "ping" )
+                            continue;   // 空送信またはテスト送信
 
                         // 受け取ったオプションは、ビュアーモードでなければ実行されない。
-                        if( !Global.Options.ビュアーモードである )
+                        if( ビュアーモードではない )
                             continue;
 
                         // YAMLからコマンドラインオプションを復元する。

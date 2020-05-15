@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Data.Sqlite;
+using FDK;
 using SSTFormat.v004;
 
 namespace DTXMania2

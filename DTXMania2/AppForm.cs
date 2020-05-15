@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
+using DTXMania2.Properties;
+using FDK;
 
 namespace DTXMania2
 {
@@ -25,7 +24,7 @@ namespace DTXMania2
         /// </summary>
         /// <remarks>
         ///     <see cref="AppForm"/> インスタンスの終了時にこのフラグが true になっている場合には、
-        ///     このインスタンスの保持者（おそらくProgramクラス）は適切に再起動（<see cref="Application.Restart"/>の呼び出し）を行うこと。
+        ///     このインスタンスの保持者（おそらくProgramクラス）は適切に再起動を行うこと。
         /// </remarks>
         public bool 再起動が必要 { get; protected set; } = false;
 
@@ -75,6 +74,7 @@ namespace DTXMania2
             this.KeyboardHID = new KeyboardHID();
             this.GameControllersHID = new GameControllersHID( this.Handle );
             this.MidiIns = new MidiIns();
+            this.Icon = Resources.DTXMania2;
         }
 
         /// <summary>
@@ -88,6 +88,7 @@ namespace DTXMania2
             this.Text = $"DTXMania2 Release {int.Parse( Application.ProductVersion.Split( '.' ).ElementAt( 0 ) ):000} {( ( Environment.Is64BitProcess ) ? "" : "(x86)" )}";
             this.ClientSize = new Size( 1024, 576 );
 
+            // App を生成して進行描画タスクを起動する。
             Global.AppForm = this;
             Global.Handle = this.Handle;
             Global.App = new App();
@@ -212,10 +213,9 @@ namespace DTXMania2
         /// <summary>
         ///     いずれかのスレッドで例外が発生したことを通知する。
         /// </summary>
-        /// <returns>通知が受信されれば set されるイベント。</returns>
         /// <remarks>
         ///     通常、メインスレッド（UIスレッド）以外のスレッドで例外が発生した場合、
-        ///     デバッグ環境ではデバッガに catch されるが、リリース環境では放置される。
+        ///     デバッグ環境ではデバッガで catch することもできるが、リリース環境では放置される。
         ///     そのため、メインスレッド以外のスレッドで致命的な例外が発生した場合にこのメソッドを呼び出すと、
         ///     他スレッドで致命的な例外が発生したことをメインスレッドに通知することができる。
         /// </remarks>
@@ -225,6 +225,8 @@ namespace DTXMania2
                 throw e;
             } ) );
         }
+
+
 
         // ローカル
 
@@ -284,12 +286,10 @@ namespace DTXMania2
 
             #region " RawInput データを取得する。"
             //----------------
+            unsafe 
             {
-                // RawInputData は、可変長構造体である。
-                // ひとまず、その構造体サイズを仮サイズで設定する。
-                int dataSize = Marshal.SizeOf<RawInput.RawInputData>();
-
-                // RawInputData 構造体の実サイズを取得する。
+                // RawInputData 構造体（可変長）の実サイズを取得する。
+                int dataSize = 0;
                 if( 0 > RawInput.GetRawInputData( msg.LParam, RawInput.DataType.Input, null, ref dataSize, Marshal.SizeOf<RawInput.RawInputHeader>() ) )
                 {
                     Log.ERROR( $"GetRawInputData(): error = { Marshal.GetLastWin32Error()}" );
@@ -297,17 +297,15 @@ namespace DTXMania2
                 }
 
                 // RawInputData 構造体の実データを取得する。
-                var dataBytes = new byte[ dataSize ];
-                if( 0 > RawInput.GetRawInputData( msg.LParam, RawInput.DataType.Input, dataBytes, ref dataSize, Marshal.SizeOf<RawInput.RawInputHeader>() ) )
+                var dataBytes = stackalloc byte[ dataSize ];
+                if( 0 > RawInput.GetRawInputData( msg.LParam, RawInput.DataType.Input, dataBytes, &dataSize, Marshal.SizeOf<RawInput.RawInputHeader>() ) )
                 {
                     Log.ERROR( $"GetRawInputData(): error = { Marshal.GetLastWin32Error()}" );
                     return;
                 }
 
                 // 取得された実データは byte[] なので、これを RawInputData 構造体に変換する。
-                var gch = GCHandle.Alloc( dataBytes, GCHandleType.Pinned );
-                rawInputData = Marshal.PtrToStructure<RawInput.RawInputData>( gch.AddrOfPinnedObject() );
-                gch.Free();
+                rawInputData = Marshal.PtrToStructure<RawInput.RawInputData>( new IntPtr( dataBytes ) );
             }
             //----------------
             #endregion

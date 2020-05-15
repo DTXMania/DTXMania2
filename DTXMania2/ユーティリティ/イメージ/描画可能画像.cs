@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using SharpDX;
-using SharpDX.Direct2D1;
 using SharpDX.Direct3D11;
+using FDK;
 
 namespace DTXMania2
 {
@@ -11,81 +11,66 @@ namespace DTXMania2
     ///		D3Dテクスチャとメモリを共有するD2Dビットマップを持つテクスチャ。
     ///		D2Dビットマップに対して描画を行えば、それをD3Dテクスチャとして表示することができる。
     /// </summary>
-    class 描画可能画像 : 画像
+    class 描画可能画像 : FDK.描画可能画像
     {
-
-        // 生成と終了
-
-
         /// <summary>
         ///     指定した画像ファイルから描画可能画像を作成する。
         /// </summary>
         public 描画可能画像( VariablePath 画像ファイルパス, BindFlags bindFlags = BindFlags.ShaderResource )
-            : base( 画像ファイルパス, bindFlags | BindFlags.RenderTarget )
+            : base( Global.D3D11Device1, Global.既定のD2D1DeviceContext, 画像ファイルパス, bindFlags | BindFlags.RenderTarget )
         {
-            //using var _ = new LogBlock( Log.現在のメソッド名 );
-
-            this._Bitmap = this._作成したテクスチャとデータを共有するビットマップターゲットを作成する();
         }
 
         /// <summary>
         ///     指定したサイズの、空の描画可能画像を作成する。
         /// </summary>
         public 描画可能画像( Size2F サイズ, BindFlags bindFlags = BindFlags.ShaderResource )
-            : base( サイズ, bindFlags | BindFlags.RenderTarget )
+            : base( Global.D3D11Device1, Global.既定のD2D1DeviceContext, サイズ, bindFlags | BindFlags.RenderTarget )
         {
-            //using var _ = new LogBlock( Log.現在のメソッド名 );
-
-            this._Bitmap = this._作成したテクスチャとデータを共有するビットマップターゲットを作成する();
         }
-
-        public override void Dispose()
-        {
-            //using var _ = new LogBlock( Log.現在のメソッド名 );
-
-            this._Bitmap.Dispose();
-            base.Dispose();
-        }
-
-
-
-        // 進行と描画
-
 
         public void 画像へ描画する( Action<SharpDX.Direct2D1.DeviceContext> 描画アクション )
         {
-            var dc = Global.既定のD2D1DeviceContext;
-
-            Global.D2DBatchDraw( dc, () => {
-
-                dc.Target = this._Bitmap;           // 描画先
-                dc.Transform = Matrix3x2.Identity;  // 等倍描画（dpx to dpx）
-                dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
-
-                描画アクション( dc );
-
-                dc.Target = Global.既定のD2D1RenderBitmap1;
-
-            } );
+            base.画像へ描画する( Global.既定のD2D1DeviceContext, Global.既定のD2D1RenderBitmap1, 描画アクション );
         }
 
-
-
-        // ローカル
-
-
-        private Bitmap1 _Bitmap;
-
-        private Bitmap1 _作成したテクスチャとデータを共有するビットマップターゲットを作成する()
+        /// <summary>
+        ///		画像を描画する。
+        ///	</summary>
+        public void 描画する( float 左位置, float 上位置, float 不透明度0to1 = 1.0f, float X方向拡大率 = 1.0f, float Y方向拡大率 = 1.0f, RectangleF? 転送元矩形 = null )
         {
-            using var dxgiSurface = this.Texture.QueryInterfaceOrNull<SharpDX.DXGI.Surface>();
+            base.描画する(
+                Global.D3D11Device1.ImmediateContext,
+                Global.設計画面サイズ,
+                Global.既定のD3D11ViewPort,
+                Global.既定のD3D11DepthStencilView,
+                Global.既定のD3D11RenderTargetView,
+                Global.既定のD3D11DepthStencilState,
+                左位置,
+                上位置,
+                不透明度0to1,
+                X方向拡大率,
+                Y方向拡大率,
+                転送元矩形 );
+        }
 
-            var bmpProp = new BitmapProperties1() {
-                PixelFormat = new PixelFormat( dxgiSurface.Description.Format, AlphaMode.Premultiplied ),
-                BitmapOptions = BitmapOptions.Target | BitmapOptions.CannotDraw,
-            };
-
-            return new Bitmap1( Global.既定のD2D1DeviceContext, dxgiSurface, bmpProp );
+        /// <summary>
+        ///		画像を描画する。
+        ///	</summary>
+        /// <param name="ワールド行列変換">画像は原寸（<see cref="サイズ"/>）にスケーリングされており、その後にこのワールド行列が適用される。</param>
+        /// <param name="転送元矩形">テクスチャ座標(値域0～1)で指定する。</param>
+        public void 描画する( Matrix ワールド行列変換, float 不透明度0to1 = 1f, RectangleF? 転送元矩形 = null )
+        {
+            base.描画する(
+                Global.D3D11Device1.ImmediateContext,
+                Global.設計画面サイズ,
+                Global.既定のD3D11ViewPort,
+                Global.既定のD3D11DepthStencilView,
+                Global.既定のD3D11RenderTargetView,
+                Global.既定のD3D11DepthStencilState,
+                ワールド行列変換,
+                不透明度0to1,
+                転送元矩形 );
         }
     }
 }

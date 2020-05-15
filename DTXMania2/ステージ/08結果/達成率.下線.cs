@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Animation;
+using FDK;
 
 namespace DTXMania2.結果
 {
@@ -44,19 +43,33 @@ namespace DTXMania2.結果
                 this._ストーリーボード?.Dispose();
                 this._ストーリーボード = new Storyboard( Global.Animation.Manager );
 
-                #region " 長さdpx のアニメ構築 "
+                #region " ストーリーボードの構築 "
                 //----------------
-                // 初期値 0.0
-                this._長さdpx?.Dispose();
-                this._長さdpx = new Variable( Global.Animation.Manager, initialValue: 0.0 );
+                {
+                    // 初期状態
+                    this._長さdpx?.Dispose();
+                    this._長さdpx = new Variable( Global.Animation.Manager, initialValue: 0.0 );
 
-                // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 達成率.最初の待機時間sec ) )
-                    this._ストーリーボード.AddTransition( this._長さdpx, 遷移 );
+                    // シーン1. 待つ
+                    {
+                        double シーン期間 = 達成率.最初の待機時間sec;
+                        using( var 長さdpsの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
+                        {
+                            this._ストーリーボード.AddTransition( this._長さdpx, 長さdpsの遷移 );
+                        }
+                    }
 
-                // 全長dpx へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 達成率.アニメ時間sec / 3, finalValue: _全長dpx, accelerationRatio: 0.8, decelerationRatio: 0.2 ) )
-                    this._ストーリーボード.AddTransition( this._長さdpx, 遷移 );
+                    // シーン2. 全長dpx へ
+                    {
+                        double シーン期間 = 達成率.アニメ時間sec / 3;
+                        using( var 長さdpxの遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: シーン期間, finalValue: _全長dpx, accelerationRatio: 0.8, decelerationRatio: 0.2 ) )
+                        {
+                            this._ストーリーボード.AddTransition( this._長さdpx, 長さdpxの遷移 );
+                        }
+                    }
+                }
+
+
                 //----------------
                 #endregion
 
@@ -66,15 +79,17 @@ namespace DTXMania2.結果
 
             public void アニメを完了する()
             {
-                this._ストーリーボード?.Finish( 0.1 );
+                this._ストーリーボード?.Finish( 0.0 );
             }
 
             public void 進行描画する( DeviceContext dc, float left, float top )
             {
-                Global.D2DBatchDraw( dc, () => {
+                D2DBatch.Draw( dc, () => {
+                    
                     float 長さdpx = (float) this._長さdpx.Value;
-                    using( var brush = new SolidColorBrush( dc, Color4.White ) )
-                        dc.FillRectangle( new RectangleF( left + ( _全長dpx - 長さdpx ) / 2f, top, 長さdpx, 3f ), brush );
+                    using var brush = new SolidColorBrush( dc, Color4.White );
+                    dc.FillRectangle( new RectangleF( left + ( _全長dpx - 長さdpx ) / 2f, top, 長さdpx, 3f ), brush );
+
                 } );
             }
 

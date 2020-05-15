@@ -4,8 +4,9 @@ using System.Diagnostics;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Animation;
-using DTXMania2.曲;
+using FDK;
 using SSTFormat.v004;
+using DTXMania2.曲;
 
 namespace DTXMania2.選曲
 {
@@ -125,7 +126,7 @@ namespace DTXMania2.選曲
 
                             // ランダムに選曲する
 
-                            Global.App.演奏譜面 = randomNode.譜面をランダムに選んで返す( randomNode );
+                            Global.App.演奏譜面 = randomNode.譜面をランダムに選んで返す();
 
                             Global.App.システムサウンド.再生する( システムサウンド種別.選曲ステージ_曲決定音 );
                             Global.App.アイキャッチ管理.アイキャッチを選択しクローズする( nameof( GO ) );
@@ -133,7 +134,7 @@ namespace DTXMania2.選曲
                             this._フェートアウト後のフェーズ = フェーズ.確定_選曲;
                             this.現在のフェーズ = フェーズ.フェードアウト;
                         }
-                        else if( フォーカスノード is SongNode snode )
+                        else if( フォーカスノード is SongNode snode && null != snode.曲.フォーカス譜面 )
                         {
                             // 曲ツリーの現行化タスクが動いていれば、一時停止する。
                             Global.App.現行化.一時停止する();
@@ -328,7 +329,7 @@ namespace DTXMania2.選曲
 
         private void _その他パネルを描画する( DeviceContext dc )
         {
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
 
@@ -378,7 +379,7 @@ namespace DTXMania2.選曲
 
             var 全矩形 = new RectangleF( 1901f, 231f, 9f, 732f );  // 枠線含まず
 
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 using var スクロールバー背景色 = new SolidColorBrush( dc, new Color4( 0.2f, 0.2f, 0.2f, 1.0f ) );
                 using var スクロールバー枠色 = new SolidColorBrush( dc, Color4.Black );

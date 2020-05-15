@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using SharpDX;
 using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2
 {

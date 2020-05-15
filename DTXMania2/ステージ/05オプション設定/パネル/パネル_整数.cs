@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using SharpDX;
 using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2.オプション設定
 {
@@ -39,7 +40,11 @@ namespace DTXMania2.オプション設定
             this.現在の値 = 初期値;
             this.増加減単位値 = 増加減単位値;
             this.単位 = 単位;
-            this._項目画像 = new 文字列画像D2D() { 表示文字列 = "", フォントサイズpt = 34f, 前景色 = Color4.White };
+            this._項目画像 = new 文字列画像D2D() {
+                表示文字列 = "",
+                フォントサイズpt = 34f,
+                前景色 = Color4.White
+            };
         }
 
         public override void Dispose()

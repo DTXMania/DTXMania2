@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using YamlDotNet.RepresentationModel;
+using FDK;
 
 namespace DTXMania2
 {

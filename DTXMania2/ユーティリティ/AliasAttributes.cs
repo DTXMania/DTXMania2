@@ -7,7 +7,7 @@ namespace DTXMania2
     /// <summary>
     ///     <see cref="Enum"/>にAliasという属性を設ける。
     /// </summary>
-    public static class AliasAttributeExtension
+    static class AliasAttributeExtension
     {
         public static string GetAlias( this Enum value )
         {
@@ -20,7 +20,7 @@ namespace DTXMania2
     }
 
     [AttributeUsage( AttributeTargets.Field, Inherited = false, AllowMultiple = false )]
-    public sealed class AliasAttribute : Attribute
+    sealed class AliasAttribute : Attribute
     {
         public string 別名 { get; private set; }
         public AliasAttribute( string 別名 )

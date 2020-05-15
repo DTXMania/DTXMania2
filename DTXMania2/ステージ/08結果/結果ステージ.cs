@@ -6,6 +6,7 @@ using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using Microsoft.Data.Sqlite;
+using FDK;
 using SSTFormat.v004;
 
 namespace DTXMania2.結果
@@ -36,7 +37,23 @@ namespace DTXMania2.結果
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._結果 = result;
-            
+
+            Global.App.システムサウンド.再生する( システムサウンド種別.ステージクリア );
+
+            #region " 成績をDBへ反映する。"
+            //----------------
+            if( !Global.App.ログオン中のユーザ.AutoPlayがすべてONである )
+            {
+                this._最高成績である = this._成績を反映する();
+            }
+            else
+            {
+                // 全AUTOなら反映しない。
+                this._最高成績である = false;
+            }
+            //----------------
+            #endregion
+
             this._背景 = new 舞台画像();
             this._既定のノード画像 = new 画像( @"$(Images)\DefaultPreviewImage.png" );
             this._現行化前のノード画像 = new 画像( @"$(Images)\PreviewImageWaitForActivation.png" );
@@ -65,16 +82,12 @@ namespace DTXMania2.結果
             this._ランク = new ランク();
             this._難易度 = new 難易度();
             this._曲別SKILL = new 曲別SKILL();
-            this._達成率 = new 達成率();
+            this._達成率 = ( this._最高成績である ) ? (達成率Base) new 達成率更新() : new 達成率();
+
             this._システム情報 = new システム情報();
             this._黒マスクブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( Color3.Black, 0.75f ) );
             this._プレビュー枠ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0xFF209292 ) );
- 
-            Global.App.システムサウンド.再生する( システムサウンド種別.ステージクリア );
 
-            // 成績の反映。
-            if( !Global.App.ログオン中のユーザ.AutoPlayがすべてONである )   //ただし、全AUTOなら行わない。
-                this._成績を反映する();
 
             var 選択曲 = Global.App.演奏スコア;
             this._曲名画像.表示文字列 = 選択曲.曲名;
@@ -153,7 +166,7 @@ namespace DTXMania2.結果
 
                         #region " すべてのアニメ化完了 → アニメ完了へ "
                         //----------------
-                        if( this._曲別SKILL.アニメ完了 && this._達成率.アニメ完了 && this._難易度.アニメ完了 )
+                        if( this._曲別SKILL.アニメ完了 && this._難易度.アニメ完了 && this._達成率.アニメ完了 )
                         {
                             this.現在のフェーズ = フェーズ.アニメ完了;
                         }
@@ -195,7 +208,7 @@ namespace DTXMania2.結果
             this._システム情報.VPSをカウントする();
 
             this._背景.進行描画する( dc );
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
                 dc.FillRectangle( new RectangleF( 0f, 36f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Height - 72f ), this._黒マスクブラシ );
             } );
             this._プレビュー画像を描画する( dc );
@@ -223,7 +236,7 @@ namespace DTXMania2.結果
         private void _プレビュー画像を描画する( DeviceContext dc )
         {
             // 枠
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
                 const float 枠の太さdpx = 5f;
                 dc.FillRectangle(
                     new RectangleF(
@@ -275,6 +288,8 @@ namespace DTXMania2.結果
         // ローカル
 
 
+        private readonly bool _最高成績である;
+
         private readonly 舞台画像 _背景;
 
         private readonly 画像 _既定のノード画像;
@@ -295,7 +310,7 @@ namespace DTXMania2.結果
 
         private readonly 曲別SKILL _曲別SKILL;
 
-        private readonly 達成率 _達成率;
+        private readonly 達成率Base _達成率;
 
         private readonly システム情報 _システム情報;
 
@@ -309,9 +324,13 @@ namespace DTXMania2.結果
 
         private readonly Vector3 _プレビュー画像表示サイズdpx = new Vector3( 574f, 574f, 0f );
 
-        private void _成績を反映する()
+        /// <summary>
+        ///     成績を、RecordDB と演奏譜面へ追加または反映する。
+        /// </summary>
+        /// <return>最高達成率を更新していればtrueを返す。</return>
+        private bool _成績を反映する()
         {
-            // 成績を、RecordDB と演奏譜面へ追加または反映する。
+            bool 最高成績である = false;
 
             using var recorddb = new RecordDB();
             using var query = new SqliteCommand( "SELECT * FROM Records WHERE ScorePath = @ScorePath AND UserId = @UserId", recorddb.Connection );
@@ -332,11 +351,13 @@ namespace DTXMania2.結果
                     record.Achievement = this._結果.Achievement;
                     record.CountMap = this._結果.CountMap;
 
+                    最高成績である = true;
                     Global.App.演奏譜面.最高記録 = record;
                     Global.App.演奏譜面.最高記録を現行化済み = true;
                 }
                 else
                 {
+                    最高成績である = ( Global.App.演奏譜面.最高記録 is null ); // 初回なら最高記録。
                     Global.App.演奏譜面.最高記録 ??= record;    // 初回なら代入。
                     Global.App.演奏譜面.最高記録を現行化済み = true;
                 }
@@ -356,11 +377,14 @@ namespace DTXMania2.結果
                 };
                 record.InsertTo( recorddb );
 
+                最高成績である = true;
                 Global.App.演奏譜面.最高記録 ??= record;
                 Global.App.演奏譜面.最高記録を現行化済み = true;
                 //----------------
                 #endregion
             }
+
+            return 最高成績である;
         }
 
         private チップ? _一番最後のチップを返す( ドラム入力種別 drumType )

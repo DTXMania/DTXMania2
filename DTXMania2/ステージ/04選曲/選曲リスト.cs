@@ -6,6 +6,7 @@ using System.Linq;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Animation;
+using FDK;
 using DTXMania2.曲;
 
 namespace DTXMania2.選曲
@@ -83,8 +84,12 @@ namespace DTXMania2.選曲
 
                 if( 2 > 距離 )
                     オフセットの加減算速度 = 1;
-                else
+                else if( 4 > 距離 )
                     オフセットの加減算速度 = 2;
+                else if( 6 > 距離 )
+                    オフセットの加減算速度 = 3;
+                else
+                    オフセットの加減算速度 = 4;
                 //------------------
                 #endregion
 
@@ -135,7 +140,7 @@ namespace DTXMania2.選曲
                 this._現在のフォーカスノード = フォーカスノード;
                 this._プレビュー音声.停止する();
 
-                if( フォーカスノード is SongNode snode )
+                if( フォーカスノード is SongNode snode && null != snode.曲.フォーカス譜面 )
                 {
                     // (A-a) 新しくフォーカスされたのは SongNode である
 
@@ -159,7 +164,7 @@ namespace DTXMania2.選曲
                     // (A-b) 新しくフォーカスされたのは SongNode ではない
                 }
             }
-            else if( フォーカスノード is SongNode snode )
+            else if( フォーカスノード is SongNode snode && null != snode.曲.フォーカス譜面 )
             {
                 // (B) フォーカスノードは変更されておらず、同一の SongNode のままである
 
@@ -349,7 +354,7 @@ namespace DTXMania2.選曲
 
             #region " 背景 "
             //----------------
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
 
@@ -475,87 +480,90 @@ namespace DTXMania2.選曲
             if( node is SongNode snode )
             {
                 var score = snode.曲.フォーカス譜面;
-                if( score.最高記録を現行化済み && ( null != score.最高記録 ) )
+                if( null != score )
                 {
-                    var 最高ランク = score.最高ランク!;
-                    var 達成率 = score.最高記録.Achievement;
+                    if( score.最高記録を現行化済み && ( null != score.最高記録 ) )
+                    {
+                        var 最高ランク = score.最高ランク!;
+                        var 達成率 = score.最高記録.Achievement;
 
-                    #region " 成績アイコン "
-                    //----------------
-                    this._成績アイコン.描画する(
-                        ノード左上dpx.X + 6f,
-                        ノード左上dpx.Y + 57f,
-                        転送元矩形: this._成績アイコンの矩形リスト[ 最高ランク.ToString()! ] );
-                    //----------------
-                    #endregion
+                        #region " 成績アイコン "
+                        //----------------
+                        this._成績アイコン.描画する(
+                            ノード左上dpx.X + 6f,
+                            ノード左上dpx.Y + 57f,
+                            転送元矩形: this._成績アイコンの矩形リスト[ 最高ランク.ToString()! ] );
+                        //----------------
+                        #endregion
 
-                    #region " 達成率ゲージ "
-                    //----------------
-                    this._達成率ゲージアイコン.描画する(
-                        ノード左上dpx.X + 160f,
-                        ノード左上dpx.Y - 27f,
-                        X方向拡大率: 0.4f,
-                        Y方向拡大率: 0.4f );
+                        #region " 達成率ゲージ "
+                        //----------------
+                        this._達成率ゲージアイコン.描画する(
+                            ノード左上dpx.X + 160f,
+                            ノード左上dpx.Y - 27f,
+                            X方向拡大率: 0.4f,
+                            Y方向拡大率: 0.4f );
 
-                    this._達成率数字画像.描画する(
-                        ノード左上dpx.X + 204f,
-                        ノード左上dpx.Y + 4,
-                        score.最高記録.Achievement.ToString( "0.00" ).PadLeft( 6 ) + '%',
-                        拡大率: new Size2F( 0.3f, 0.3f ) );
+                        this._達成率数字画像.描画する(
+                            ノード左上dpx.X + 204f,
+                            ノード左上dpx.Y + 4,
+                            score.最高記録.Achievement.ToString( "0.00" ).PadLeft( 6 ) + '%',
+                            拡大率: new Size2F( 0.3f, 0.3f ) );
 
-                    Global.D2DBatchDraw( dc, () => {
+                        D2DBatch.Draw( dc, () => {
 
-                        using var ゲージ色 = new SolidColorBrush( dc, new Color( 184, 156, 231, 255 ) );
-                        using var ゲージ枠色 = new SolidColorBrush( dc, Color.White );
-                        using var ゲージ背景色 = new SolidColorBrush( dc, new Color( 0.25f, 0.25f, 0.25f, 1f ) );
-                        using var ゲージ枠ジオメトリ = new PathGeometry( Global.D2D1Factory1 );
-                        using var ゲージジオメトリ = new PathGeometry( Global.D2D1Factory1 );
+                            using var ゲージ色 = new SolidColorBrush( dc, new Color( 184, 156, 231, 255 ) );
+                            using var ゲージ枠色 = new SolidColorBrush( dc, Color.White );
+                            using var ゲージ背景色 = new SolidColorBrush( dc, new Color( 0.25f, 0.25f, 0.25f, 1f ) );
+                            using var ゲージ枠ジオメトリ = new PathGeometry( Global.D2D1Factory1 );
+                            using var ゲージジオメトリ = new PathGeometry( Global.D2D1Factory1 );
 
-                        var ゲージサイズdpx = new Size2F( 448f, 17f );
-                        var ゲージ位置 = new Vector2( ノード左上dpx.X + 310f, ノード左上dpx.Y + 10f );
+                            var ゲージサイズdpx = new Size2F( 448f, 17f );
+                            var ゲージ位置 = new Vector2( ノード左上dpx.X + 310f, ノード左上dpx.Y + 10f );
 
-                        using( var sink = ゲージジオメトリ.Open() )
-                        {
-                            var 割合0to1 = (float) ( 達成率 / 100.0 );
-                            var p = new Vector2[] {
+                            using( var sink = ゲージジオメトリ.Open() )
+                            {
+                                var 割合0to1 = (float) ( 達成率 / 100.0 );
+                                var p = new Vector2[] {
                                 new Vector2( ゲージ位置.X, ゲージ位置.Y ),                                                                    // 左上
                                 new Vector2( ゲージ位置.X + ゲージサイズdpx.Width * 割合0to1, ゲージ位置.Y ),                                 // 右上
                                 new Vector2( ゲージ位置.X + ゲージサイズdpx.Width * 割合0to1 - 3f, ゲージ位置.Y + ゲージサイズdpx.Height ),   // 右下
                                 new Vector2( ゲージ位置.X - 3f, ゲージ位置.Y + ゲージサイズdpx.Height ),                                      // 左下
                             };
-                            sink.SetFillMode( FillMode.Winding );
-                            sink.BeginFigure( p[ 0 ], FigureBegin.Filled );
-                            sink.AddLine( p[ 1 ] );
-                            sink.AddLine( p[ 2 ] );
-                            sink.AddLine( p[ 3 ] );
-                            sink.EndFigure( FigureEnd.Closed );
-                            sink.Close();
-                        }
-                        using( var sink = ゲージ枠ジオメトリ.Open() )
-                        {
-                            var p = new Vector2[] {
+                                sink.SetFillMode( FillMode.Winding );
+                                sink.BeginFigure( p[ 0 ], FigureBegin.Filled );
+                                sink.AddLine( p[ 1 ] );
+                                sink.AddLine( p[ 2 ] );
+                                sink.AddLine( p[ 3 ] );
+                                sink.EndFigure( FigureEnd.Closed );
+                                sink.Close();
+                            }
+                            using( var sink = ゲージ枠ジオメトリ.Open() )
+                            {
+                                var p = new Vector2[] {
                                 new Vector2( ゲージ位置.X, ゲージ位置.Y ),                                                         // 左上
                                 new Vector2( ゲージ位置.X + ゲージサイズdpx.Width, ゲージ位置.Y ),                                 // 右上
                                 new Vector2( ゲージ位置.X + ゲージサイズdpx.Width - 3f, ゲージ位置.Y + ゲージサイズdpx.Height ),   // 右下
                                 new Vector2( ゲージ位置.X - 3f, ゲージ位置.Y + ゲージサイズdpx.Height ),                           // 左下
                             };
-                            sink.SetFillMode( FillMode.Winding );
-                            sink.BeginFigure( p[ 0 ], FigureBegin.Filled );
-                            sink.AddLine( p[ 1 ] );
-                            sink.AddLine( p[ 2 ] );
-                            sink.AddLine( p[ 3 ] );
-                            sink.EndFigure( FigureEnd.Closed );
-                            sink.Close();
-                        }
+                                sink.SetFillMode( FillMode.Winding );
+                                sink.BeginFigure( p[ 0 ], FigureBegin.Filled );
+                                sink.AddLine( p[ 1 ] );
+                                sink.AddLine( p[ 2 ] );
+                                sink.AddLine( p[ 3 ] );
+                                sink.EndFigure( FigureEnd.Closed );
+                                sink.Close();
+                            }
 
-                        dc.FillGeometry( ゲージ枠ジオメトリ, ゲージ背景色 );
-                        dc.FillGeometry( ゲージジオメトリ, ゲージ色 );
-                        dc.DrawGeometry( ゲージジオメトリ, ゲージ枠色, 1f );
-                        dc.DrawGeometry( ゲージ枠ジオメトリ, ゲージ枠色, 2f );
+                            dc.FillGeometry( ゲージ枠ジオメトリ, ゲージ背景色 );
+                            dc.FillGeometry( ゲージジオメトリ, ゲージ色 );
+                            dc.DrawGeometry( ゲージジオメトリ, ゲージ枠色, 1f );
+                            dc.DrawGeometry( ゲージ枠ジオメトリ, ゲージ枠色, 2f );
 
-                    } );
-                    //----------------
-                    #endregion
+                        } );
+                        //----------------
+                        #endregion
+                    }
                 }
             }
             //----------------
@@ -646,7 +654,7 @@ namespace DTXMania2.選曲
             var focusNode = Global.App.曲ツリーリスト.SelectedItem!.フォーカスノード;
 
             if( null != focusNode && focusNode is SongNode && !focusNode.現行化済み )
-{
+            {
                 await Global.App.現行化.追加するAsync( new Node[] { focusNode } );
             }
         }

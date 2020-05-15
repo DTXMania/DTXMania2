@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using SharpDX;
 using SharpDX.Animation;
 using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2.演奏
 {
@@ -72,7 +72,7 @@ namespace DTXMania2.演奏
                 this._現在表示中のスコア = Math.Min( this._現在表示中のスコア + 追っかけ分, 現在の成績.Score );
             }
 
-            int スコア値 = Math.Min( Math.Max( this._現在表示中のスコア, 0 ), 999999999 );  // プロパティには制限はないが、表示は999999999（9桁）でカンスト。
+            int スコア値 = Math.Clamp( this._現在表示中のスコア, min: 0, max: 999999999 );  // プロパティには制限はないが、表示は999999999（9桁）でカンスト。
 
             string 数字 = スコア値.ToString().PadLeft( 9 );   // 右詰め9桁、余白は ' '。
             var 全体のサイズ = new Vector2( 62f * 9f, 99f );  // 固定とする
@@ -83,7 +83,7 @@ namespace DTXMania2.演奏
             var 文字間隔補正 = -10f;
             var 文字の位置 = new Vector2( -( 全体のサイズ.X / 2f ), 0f );
 
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 var pretrans = dc.Transform;
 

@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="pictureBoxプレビュー画像.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="buttonプレビュー画像参照.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBoxプレビュー画像.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="labelプレビュー画像.Size" type="System.Drawing.Size, System.Drawing">
+    <value>73, 12</value>
+  </data>
+  <data name="labelプレビュー画像.Text" xml:space="preserve">
+    <value>プレビュー画像</value>
+  </data>
+  <data name="labelプレビュー画像.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="buttonプレビューサウンド参照.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBoxプレビュー音声.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="labelプレビュー音声.Size" type="System.Drawing.Size, System.Drawing">
+    <value>86, 12</value>
+  </data>
+  <data name="labelプレビュー音声.Text" xml:space="preserve">
+    <value>プレビューサウンド</value>
+  </data>
+  <data name="labelプレビュー音声.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="labelメモ用小節番号.Location" type="System.Drawing.Point, System.Drawing">
+    <value>151, 526</value>
+  </data>
+  <data name="labelメモ用小節番号.Size" type="System.Drawing.Size, System.Drawing">
+    <value>53, 12</value>
+  </data>
+  <data name="labelメモ用小節番号.Text" xml:space="preserve">
+    <value>小節番号</value>
+  </data>
+  <data name="labelメモ用小節番号.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="labelアーティスト名.Size" type="System.Drawing.Size, System.Drawing">
+    <value>69, 12</value>
+  </data>
+  <data name="labelアーティスト名.Text" xml:space="preserve">
+    <value>アーティスト名</value>
+  </data>
+  <data name="labelアーティスト名.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBoxアーティスト名.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="buttonBGM参照.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="labelBGM.Size" type="System.Drawing.Size, System.Drawing">
+    <value>30, 12</value>
+  </data>
+  <data name="labelBGM.Text" xml:space="preserve">
+    <value>BGM</value>
+  </data>
+  <data name="labelBGM.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBoxBGM.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="buttonBGV参照.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBoxLevel.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="trackBarLevel.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="labelLevel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>34, 12</value>
+  </data>
+  <data name="labelLevel.Text" xml:space="preserve">
+    <value>レベル</value>
+  </data>
+  <data name="labelLevel.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBoxサウンド遅延ms.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="labelサウンド遅延ms.Text" xml:space="preserve">
+    <value>サウンド遅延 [ms] (自動検出)</value>
+  </data>
+  <data name="labelサウンド遅延ms.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBoxメモ.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="numericUpDownメモ用小節番号.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="labelメモ小節単位.Size" type="System.Drawing.Size, System.Drawing">
+    <value>82, 12</value>
+  </data>
+  <data name="labelメモ小節単位.Text" xml:space="preserve">
+    <value>メモ（小節単位）</value>
+  </data>
+  <data name="labelメモ小節単位.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="labelBGV.Size" type="System.Drawing.Size, System.Drawing">
+    <value>29, 12</value>
+  </data>
+  <data name="labelBGV.Text" xml:space="preserve">
+    <value>動画</value>
+  </data>
+  <data name="labelBGV.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBoxBGV.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="label説明.Size" type="System.Drawing.Size, System.Drawing">
+    <value>29, 12</value>
+  </data>
+  <data name="label説明.Text" xml:space="preserve">
+    <value>説明</value>
+  </data>
+  <data name="label説明.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBox説明.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="label曲名.Size" type="System.Drawing.Size, System.Drawing">
+    <value>29, 12</value>
+  </data>
+  <data name="label曲名.Text" xml:space="preserve">
+    <value>曲名</value>
+  </data>
+  <data name="label曲名.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="textBox曲名.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tabPage基本情報.Text" xml:space="preserve">
+    <value>基本情報</value>
+  </data>
+  <data name="tabPage基本情報.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tabControl情報タブコンテナ.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="splitContainer分割パネルコンテナ.Panel1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="label現在のチップ種別.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="labelCurrentChipType.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 24</value>
+  </data>
+  <data name="labelCurrentChipType.Text" xml:space="preserve">
+    <value>現在のレーンのチップ種別：
+(SPACEキーで変更)</value>
+  </data>
+  <data name="labelCurrentChipType.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="pictureBox譜面パネル.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="splitContainer分割パネルコンテナ.Panel2.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="splitContainer分割パネルコンテナ.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="statusStripステータスバー.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="toolStripMenuItem新規作成.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem新規作成.Text" xml:space="preserve">
+    <value>新規作成(&amp;N)</value>
+  </data>
+  <data name="toolStripMenuItem開く.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem開く.Text" xml:space="preserve">
+    <value>開く(&amp;O) ...</value>
+  </data>
+  <data name="toolStripMenuItem上書き保存.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem上書き保存.Text" xml:space="preserve">
+    <value>上書き保存(&amp;S)</value>
+  </data>
+  <data name="toolStripMenuItem名前を付けて保存.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem名前を付けて保存.Text" xml:space="preserve">
+    <value>名前を付けて保存(&amp;A)</value>
+  </data>
+  <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>181, 6</value>
+  </data>
+  <data name="toolStripMenuItem終了.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem終了.Text" xml:space="preserve">
+    <value>終了(&amp;X)</value>
+  </data>
+  <data name="toolStripMenuItemファイル.Size" type="System.Drawing.Size, System.Drawing">
+    <value>67, 20</value>
+  </data>
+  <data name="toolStripMenuItemファイル.Text" xml:space="preserve">
+    <value>ファイル(&amp;F)</value>
+  </data>
+  <data name="toolStripMenuItem元に戻す.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem元に戻す.Text" xml:space="preserve">
+    <value>元に戻す(&amp;U)</value>
+  </data>
+  <data name="toolStripMenuItemやり直す.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItemやり直す.Text" xml:space="preserve">
+    <value>やり直す(&amp;R)</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>181, 6</value>
+  </data>
+  <data name="toolStripMenuItem切り取り.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem切り取り.Text" xml:space="preserve">
+    <value>切り取り(&amp;T)</value>
+  </data>
+  <data name="toolStripMenuItemコピー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItemコピー.Text" xml:space="preserve">
+    <value>コピー(&amp;C)</value>
+  </data>
+  <data name="toolStripMenuItem貼り付け.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem貼り付け.Text" xml:space="preserve">
+    <value>貼り付け(&amp;P)</value>
+  </data>
+  <data name="toolStripMenuItem削除.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem削除.Text" xml:space="preserve">
+    <value>削除(&amp;D)</value>
+  </data>
+  <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>181, 6</value>
+  </data>
+  <data name="toolStripMenuItemすべて選択.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItemすべて選択.Text" xml:space="preserve">
+    <value>すべて選択(&amp;A)</value>
+  </data>
+  <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>181, 6</value>
+  </data>
+  <data name="toolStripMenuItem選択モード.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択モード.Text" xml:space="preserve">
+    <value>選択モード(&amp;S)</value>
+  </data>
+  <data name="toolStripMenuItem編集モード.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem編集モード.Text" xml:space="preserve">
+    <value>編集モード(&amp;E)</value>
+  </data>
+  <data name="toolStripMenuItemモード切替え.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItemモード切替え.Text" xml:space="preserve">
+    <value>モード切替え(&amp;M)</value>
+  </data>
+  <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>181, 6</value>
+  </data>
+  <data name="toolStripMenuItem検索.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 22</value>
+  </data>
+  <data name="toolStripMenuItem検索.Text" xml:space="preserve">
+    <value>検索(&amp;F)</value>
+  </data>
+  <data name="toolStripMenuItem編集.Size" type="System.Drawing.Size, System.Drawing">
+    <value>57, 20</value>
+  </data>
+  <data name="toolStripMenuItem編集.Text" xml:space="preserve">
+    <value>編集(&amp;E)</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔4分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔6分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔8分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔12分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔16分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔24分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔32分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔36分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔48分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔64分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔128分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔フリー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔フリー.Text" xml:space="preserve">
+    <value>フリー</value>
+  </data>
+  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>133, 6</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔拡大.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔拡大.Text" xml:space="preserve">
+    <value>拡大(&amp;W)</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔縮小.Size" type="System.Drawing.Size, System.Drawing">
+    <value>136, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔縮小.Text" xml:space="preserve">
+    <value>縮小(&amp;N)</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔.Size" type="System.Drawing.Size, System.Drawing">
+    <value>141, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔.Text" xml:space="preserve">
+    <value>ガイド間隔(&amp;G)</value>
+  </data>
+  <data name="toolStripMenuItem表示.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 20</value>
+  </data>
+  <data name="toolStripMenuItem表示.Text" xml:space="preserve">
+    <value>表示(&amp;V)</value>
+  </data>
+  <data name="toolStripMenuItem先頭から再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="toolStripMenuItem先頭から再生.Text" xml:space="preserve">
+    <value>最初から再生(&amp;T)</value>
+  </data>
+  <data name="toolStripMenuItem現在位置から再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="toolStripMenuItem現在位置から再生.Text" xml:space="preserve">
+    <value>現在の位置から再生(&amp;P)</value>
+  </data>
+  <data name="toolStripMenuItem現在位置からBGMのみ再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="toolStripMenuItem現在位置からBGMのみ再生.Text" xml:space="preserve">
+    <value>現在の位置からBGMのみ再生(&amp;B)</value>
+  </data>
+  <data name="toolStripMenuItem再生停止.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="toolStripMenuItem再生停止.Text" xml:space="preserve">
+    <value>再生停止(&amp;S)</value>
+  </data>
+  <data name="toolStripMenuItem再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 20</value>
+  </data>
+  <data name="toolStripMenuItem再生.Text" xml:space="preserve">
+    <value>再生(&amp;P)</value>
+  </data>
+  <data name="toolStripMenuItemオプション.Size" type="System.Drawing.Size, System.Drawing">
+    <value>135, 22</value>
+  </data>
+  <data name="toolStripMenuItemオプション.Text" xml:space="preserve">
+    <value>オプション(&amp;O)</value>
+  </data>
+  <data name="toolStripMenuItemツール.Size" type="System.Drawing.Size, System.Drawing">
+    <value>60, 20</value>
+  </data>
+  <data name="toolStripMenuItemツール.Text" xml:space="preserve">
+    <value>ツール(&amp;T)</value>
+  </data>
+  <data name="toolStripMenuItemバージョン.Size" type="System.Drawing.Size, System.Drawing">
+    <value>133, 22</value>
+  </data>
+  <data name="toolStripMenuItemバージョン.Text" xml:space="preserve">
+    <value>バージョン(&amp;V)</value>
+  </data>
+  <data name="toolStripMenuItemヘルプ.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 20</value>
+  </data>
+  <data name="toolStripMenuItemヘルプ.Text" xml:space="preserve">
+    <value>ヘルプ(&amp;H)</value>
+  </data>
+  <data name="menuStripメニューバー.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="toolStripButton新規作成.ToolTipText" xml:space="preserve">
+    <value>新しい譜面を作成します。</value>
+  </data>
+  <data name="toolStripButton開く.ToolTipText" xml:space="preserve">
+    <value>新しいSSTFファイルを開きます。</value>
+  </data>
+  <data name="toolStripButton上書き保存.ToolTipText" xml:space="preserve">
+    <value>上書き保存します。</value>
+  </data>
+  <data name="toolStripButton切り取り.ToolTipText" xml:space="preserve">
+    <value>選択されているチップをクリップボードへ切り取ります。</value>
+  </data>
+  <data name="toolStripButtonコピー.ToolTipText" xml:space="preserve">
+    <value>選択されているチップをクリップボードにコピーします。</value>
+  </data>
+  <data name="toolStripButton貼り付け.ToolTipText" xml:space="preserve">
+    <value>クリップボードのチップを譜面に貼り付けます。</value>
+  </data>
+  <data name="toolStripButton削除.ToolTipText" xml:space="preserve">
+    <value>選択されているチップを削除します。</value>
+  </data>
+  <data name="toolStripButton元に戻す.ToolTipText" xml:space="preserve">
+    <value>作業を1つ元に戻します。</value>
+  </data>
+  <data name="toolStripButtonやり直す.ToolTipText" xml:space="preserve">
+    <value>作業を1つやり直します。</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items" xml:space="preserve">
+    <value>x1</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items1" xml:space="preserve">
+    <value>x1.25</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items2" xml:space="preserve">
+    <value>x1.5</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items3" xml:space="preserve">
+    <value>x1.75</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items4" xml:space="preserve">
+    <value>x2</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items5" xml:space="preserve">
+    <value>x2.25</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items6" xml:space="preserve">
+    <value>x2.5</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items7" xml:space="preserve">
+    <value>x2.75</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items8" xml:space="preserve">
+    <value>x3</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items9" xml:space="preserve">
+    <value>x3.25</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.ToolTipText" xml:space="preserve">
+    <value>譜面の縦方向の表示倍率を指定します。</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items11" xml:space="preserve">
+    <value>フリー</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.ToolTipText" xml:space="preserve">
+    <value>ガイド線の間隔を指定します。</value>
+  </data>
+  <data name="toolStripButton選択モード.ToolTipText" xml:space="preserve">
+    <value>選択モードに切替えます。</value>
+  </data>
+  <data name="toolStripButton編集モード.ToolTipText" xml:space="preserve">
+    <value>編集モードに切替えます。</value>
+  </data>
+  <data name="toolStripButton先頭から再生.ToolTipText" xml:space="preserve">
+    <value>Viewer で先頭から再生します。</value>
+  </data>
+  <data name="toolStripButton現在位置から再生.ToolTipText" xml:space="preserve">
+    <value>Viewer で現在の位置から再生します。</value>
+  </data>
+  <data name="toolStripButton現在位置からBGMのみ再生.ToolTipText" xml:space="preserve">
+    <value>Viewer で現在の位置からBGMのみ再生します。</value>
+  </data>
+  <data name="toolStripButton再生停止.ToolTipText" xml:space="preserve">
+    <value>Viewer での再生を停止します。</value>
+  </data>
+  <data name="toolStripButton音量Down.ToolTipText" xml:space="preserve">
+    <value>チップ音量を下げる</value>
+  </data>
+  <data name="toolStripLabel音量.ToolTipText" xml:space="preserve">
+    <value>現在のチップの音量（小:1～4:大)</value>
+  </data>
+  <data name="toolStripButton音量UP.ToolTipText" xml:space="preserve">
+    <value>チップ音量を上げる</value>
+  </data>
+  <data name="toolStripツールバー.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="vScrollBar譜面用垂直スクロールバー.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="toolStripMenuItem選択チップの切り取り.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの切り取り.Text" xml:space="preserve">
+    <value>選択チップの切り取り(&amp;T)</value>
+  </data>
+  <data name="toolStripMenuItem選択チップのコピー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択チップのコピー.Text" xml:space="preserve">
+    <value>選択チップのコピー(&amp;C)</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの貼り付け.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの貼り付け.Text" xml:space="preserve">
+    <value>選択チップの貼り付け(&amp;P)</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの削除.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの削除.Text" xml:space="preserve">
+    <value>選択チップの削除(&amp;D)</value>
+  </data>
+  <data name="toolStripSeparator12.Size" type="System.Drawing.Size, System.Drawing">
+    <value>187, 6</value>
+  </data>
+  <data name="toolStripMenuItemすべてのチップの選択.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 22</value>
+  </data>
+  <data name="toolStripMenuItemすべてのチップの選択.Text" xml:space="preserve">
+    <value>すべてのチップの選択(&amp;A)</value>
+  </data>
+  <data name="toolStripSeparator13.Size" type="System.Drawing.Size, System.Drawing">
+    <value>187, 6</value>
+  </data>
+  <data name="toolStripMenuItem小節長変更.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 22</value>
+  </data>
+  <data name="toolStripMenuItem小節長変更.Text" xml:space="preserve">
+    <value>小節長の変更(&amp;B)</value>
+  </data>
+  <data name="toolStripSeparator14.Size" type="System.Drawing.Size, System.Drawing">
+    <value>187, 6</value>
+  </data>
+  <data name="toolStripMenuItem小節の挿入.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 22</value>
+  </data>
+  <data name="toolStripMenuItem小節の挿入.Text" xml:space="preserve">
+    <value>小節の挿入(&amp;I)</value>
+  </data>
+  <data name="toolStripMenuItem小節の削除.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 22</value>
+  </data>
+  <data name="toolStripMenuItem小節の削除.Text" xml:space="preserve">
+    <value>小節の削除(&amp;E)</value>
+  </data>
+  <data name="contextMenuStrip譜面右メニュー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>191, 198</value>
+  </data>
+  <data name="contextMenuStrip譜面右メニュー.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="$this.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+</root>

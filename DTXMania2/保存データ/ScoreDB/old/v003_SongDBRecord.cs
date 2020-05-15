@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace DTXMania2.old.SongDBRecord
 {
-    public class v003_SongDBRecord
+    class v003_SongDBRecord
     {
         public const int VERSION = 3;
 

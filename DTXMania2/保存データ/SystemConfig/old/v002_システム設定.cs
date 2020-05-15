@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using FDK;
 
 namespace DTXMania2.old.SystemConfig
 {

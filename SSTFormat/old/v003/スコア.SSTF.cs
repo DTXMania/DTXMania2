@@ -531,7 +531,7 @@ namespace SSTFormat.v003
 
                     try
                     {
-                        現在の.スコア.難易度 = Math.Max( Math.Min( double.Parse( items[ 1 ].Trim() ), 9.99 ), 0.00 );
+                        現在の.スコア.難易度 = Math.Clamp( double.Parse( items[ 1 ].Trim() ), min: 0.00, max: 9.99 );
                     }
                     catch
                     {

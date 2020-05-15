@@ -5,7 +5,7 @@ using SharpDX;
 
 namespace DTXMania2.曲
 {
-    public partial class SetDef
+    partial class SetDef
     {
         /// <summary>
         ///		最大５曲をレベル別に保有できるブロック。

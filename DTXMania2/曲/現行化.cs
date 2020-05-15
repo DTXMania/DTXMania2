@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.DirectWrite;
 using Microsoft.Data.Sqlite;
-using SSTFormat.v004;
+using FDK;
 
 namespace DTXMania2.曲
 {
@@ -41,9 +41,26 @@ namespace DTXMania2.曲
 
                 this.終了する();
 
-                this._現行化待ちスタック.Clear();
+                // 全譜面のユーザ依存の現行化フラグをリセットする（現在のユーザに合わせて現行化しなおすため）。
+                foreach( var node in root.Traverse() )
+                {
+                    if( node is SongNode snode )
+                    {
+                        snode.現行化済み = false;
+                        foreach( var score in snode.曲.譜面リスト )
+                        {
+                            if( score is null )
+                                continue;
+                            score.最高記録 = null;
+                            score.最高記録を現行化済み = false;
+                            score.譜面の属性 = null;
+                            score.譜面の属性を現行化済み = false;
+                        }
+                    }
+                }
 
-                // 全ノード投入
+                // 全ノードをスタックに投入。
+                this._現行化待ちスタック.Clear();
                 foreach( var node in root.Traverse() )
                     this._現行化待ちスタック.Push( node );
 

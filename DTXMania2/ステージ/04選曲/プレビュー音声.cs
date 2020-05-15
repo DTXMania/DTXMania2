@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CSCore;
+using FDK;
 
 namespace DTXMania2.選曲
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using FDK;
 using SSTFormat.v004;
 
 namespace DTXMania2.演奏

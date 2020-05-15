@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2.選曲
 {

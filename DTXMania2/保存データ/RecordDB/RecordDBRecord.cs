@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using FDK;
 
 namespace DTXMania2
 {
@@ -15,12 +15,12 @@ namespace DTXMania2
         public const int VERSION = 9;
 
         /// <summary>
-        ///		譜面ファイルの絶対パス。
+        ///		譜面ファイルの絶対パス。主キー。
         /// </summary>
         public string ScorePath { get; set; }
 
         /// <summary>
-        ///		ユーザを一意に識別するID。
+        ///		ユーザを一意に識別するID。主キー。
         /// </summary>
         public string UserId { get; set; }
 
@@ -62,9 +62,9 @@ namespace DTXMania2
         }
 
         /// <summary>
-        ///     SqliteDataReader からレコードを読み込んでフィールドを更新する。
+        ///     <see cref="SqliteDataReader"/>から現在のレコードを読み込んでフィールドを更新する。
         /// </summary>
-        /// <param name="record">Read() 済みの SqliteDataReader。</param>
+        /// <param name="record">Read() 済みの <see cref="SqliteDataReader"/>。</param>
         public void UpdateFrom( SqliteDataReader record )
         {
             for( int i = 0; i < record.FieldCount; i++ )

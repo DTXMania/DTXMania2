@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using SharpDX;
 using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2.オプション設定
 {
@@ -43,7 +44,7 @@ namespace DTXMania2.オプション設定
 
             // (1) パネルの下地部分の描画。
 
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
                 using var テキスト背景色 = new SolidColorBrush( dc, Color.LightGray );
                 dc.FillRectangle( テキスト矩形, テキスト背景色 );
             } );

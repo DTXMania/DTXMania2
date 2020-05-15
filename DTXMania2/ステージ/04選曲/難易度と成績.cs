@@ -4,6 +4,7 @@ using System.Diagnostics;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
+using FDK;
 using DTXMania2.曲;
 
 namespace DTXMania2.選曲
@@ -53,7 +54,7 @@ namespace DTXMania2.選曲
 
             #region " 背景 "
             //----------------
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
                 using var _黒透過ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, 0.5f ) );
                 dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
                 dc.FillRectangle( 背景領域dpx, _黒透過ブラシ );
@@ -87,7 +88,7 @@ namespace DTXMania2.選曲
                 ULTIMATE色ブラシ,
             };
 
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
                 for( int i = 0; i < 5; i++ )
                     this._難易度パネルの背景を１つ描画する( dc, パネル位置リスト[ i ].X, パネル位置リスト[ i ].Y, 難易度パネル色[ i ], 黒ブラシ );
             } );
@@ -130,7 +131,7 @@ namespace DTXMania2.選曲
 
             #region " 難易度パネル（テキスト、数値）"
             //----------------
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
                 for( int i = 0; i < 5; i++ )
                     this._難易度パネルのテキストを１つ描画する( dc, フォーカスノード, パネル位置リスト[ i ].X, パネル位置リスト[ i ].Y,難易度ラベルリスト[i], 難易度リスト[i], 白ブラシ );
             } );
@@ -157,7 +158,7 @@ namespace DTXMania2.選曲
 
         private void _難易度パネルの背景を１つ描画する( DeviceContext dc, float 基点X, float 基点Y, Brush 見出し背景ブラシ, Brush 数値背景ブラシ )
         {
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 dc.FillRectangle( new RectangleF( 基点X, 基点Y, 157f, 20f ), 見出し背景ブラシ );
                 dc.FillRectangle( new RectangleF( 基点X, 基点Y + 20f, 157f, 66f ), 数値背景ブラシ );
@@ -167,7 +168,7 @@ namespace DTXMania2.選曲
 
         private void _難易度パネルのテキストを１つ描画する( DeviceContext dc, Node node, float 基点X, float 基点Y, string 難易度ラベル, double 難易度値, Brush 文字ブラシ )
         {
-            Global.D2DBatchDraw( dc, () => {
+            D2DBatch.Draw( dc, () => {
 
                 #region " 難易度ラベル "
                 //----------------

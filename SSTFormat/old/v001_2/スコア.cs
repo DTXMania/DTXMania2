@@ -377,8 +377,8 @@ namespace SSTFormat.v001_2
                         #endregion
                         #region " 小節番号を取得する。"
                         //-----------------
-                        string 小説番号文字列 = 行.Substring( 0, カンマ位置 );
-                        if( false == int.TryParse( 小説番号文字列, out int 小節番号 ) || ( 0 > 小節番号 ) )
+                        string 小節番号文字列 = 行.Substring( 0, カンマ位置 );
+                        if( false == int.TryParse( 小節番号文字列, out int 小節番号 ) || ( 0 > 小節番号 ) )
                         {
                             Trace.TraceError( $"PartMemo の小節番号が不正です。スキップします。[{行番号}]行目]" );
                             continue;

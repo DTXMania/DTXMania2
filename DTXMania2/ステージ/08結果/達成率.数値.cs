@@ -66,67 +66,49 @@ namespace DTXMania2.結果
                 this._ストーリーボード?.Dispose();
                 this._ストーリーボード = new Storyboard( Global.Animation.Manager );
 
-                #region " 左位置dpx のアニメ構築 "
+                #region " ストーリーボードの構築 "
                 //----------------
-                // 初期値 +200
-                this._左位置dpx?.Dispose();
-                this._左位置dpx = new Variable( Global.Animation.Manager, initialValue: +200.0 );
+                {
+                    // 初期状態
+                    this._左位置dpx?.Dispose();
+                    this._不透明度?.Dispose();
+                    this._MAX用拡大角度rad?.Dispose();
+                    this._MAX用半径倍率?.Dispose();
+                    this._左位置dpx = new Variable( Global.Animation.Manager, initialValue: +200.0 );
+                    this._不透明度 = new Variable( Global.Animation.Manager, initialValue: 0.0 );
+                    this._MAX用拡大角度rad = new Variable( Global.Animation.Manager, initialValue: 0.0 );
+                    this._MAX用半径倍率 = new Variable( Global.Animation.Manager, initialValue: 1.0 );
 
-                // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 達成率.最初の待機時間sec ) )
-                    this._ストーリーボード.AddTransition( this._左位置dpx, 遷移 );
+                    // シーン1. 待つ
+                    {
+                        double シーン期間 = 達成率.最初の待機時間sec;
+                        using( var 左位置dpxの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
+                        using( var 不透明度の遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
+                        using( var MAX用拡大角度radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
+                        using( var MAX用半径倍率の遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
+                        {
+                            this._ストーリーボード.AddTransition( this._左位置dpx, 左位置dpxの遷移 );
+                            this._ストーリーボード.AddTransition( this._不透明度, 不透明度の遷移 );
+                            this._ストーリーボード.AddTransition( this._MAX用拡大角度rad, MAX用拡大角度radの遷移 );
+                            this._ストーリーボード.AddTransition( this._MAX用半径倍率, MAX用半径倍率の遷移 );
+                        }
+                    }
 
-                // 0.0 へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 達成率.アニメ時間sec / 2, finalValue: 0.0, accelerationRatio: 0.2, decelerationRatio: 0.8 ) )
-                    this._ストーリーボード.AddTransition( this._左位置dpx, 遷移 );
-                //----------------
-                #endregion
-
-                #region " 不透明度 のアニメ構築 "
-                //----------------
-                // 初期値 0.0
-                this._不透明度?.Dispose();
-                this._不透明度 = new Variable( Global.Animation.Manager, initialValue: 0.0 );
-
-                // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 達成率.最初の待機時間sec ) )
-                    this._ストーリーボード.AddTransition( this._不透明度, 遷移 );
-
-                // 1.0 へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Linear( duration: 達成率.アニメ時間sec, finalValue: 1.0 ) )
-                    this._ストーリーボード.AddTransition( this._不透明度, 遷移 );
-                //----------------
-                #endregion
-
-                #region " MAX用拡大角度rad のアニメ構築 "
-                //----------------
-                // 初期値 0.0
-                this._MAX用拡大角度rad?.Dispose();
-                this._MAX用拡大角度rad = new Variable( Global.Animation.Manager, initialValue: 0.0 );
-
-                // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 達成率.最初の待機時間sec ) )
-                    this._ストーリーボード.AddTransition( this._MAX用拡大角度rad, 遷移 );
-
-                // 2π へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Linear( duration: 達成率.アニメ時間sec, finalValue: 2 * Math.PI ) )
-                    this._ストーリーボード.AddTransition( this._MAX用拡大角度rad, 遷移 );
-                //----------------
-                #endregion
-
-                #region " MAX用半径倍率 のアニメ構築 "
-                //----------------
-                // 初期値 1.0
-                this._MAX用半径倍率?.Dispose();
-                this._MAX用半径倍率 = new Variable( Global.Animation.Manager, initialValue: 1.0 );
-
-                // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 達成率.最初の待機時間sec ) )
-                    this._ストーリーボード.AddTransition( this._MAX用半径倍率, 遷移 );
-
-                // 0.0 へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 達成率.アニメ時間sec, finalValue: 0.0, accelerationRatio: 0.9, decelerationRatio: 0.1 ) )
-                    this._ストーリーボード.AddTransition( this._MAX用半径倍率, 遷移 );
+                    // シーン2. アニメする
+                    {
+                        double シーン期間 = 達成率.アニメ時間sec;
+                        using( var 左位置dpxの遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: シーン期間 / 2, finalValue: 0.0, accelerationRatio: 0.2, decelerationRatio: 0.8 ) )
+                        using( var 不透明度の遷移 = Global.Animation.TrasitionLibrary.Linear( duration: シーン期間, finalValue: 1.0 ) )
+                        using( var MAX用拡大角度radの遷移 = Global.Animation.TrasitionLibrary.Linear( duration: シーン期間, finalValue: 2 * Math.PI ) )
+                        using( var MAX用半径倍率の遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: シーン期間, finalValue: 0.0, accelerationRatio: 0.9, decelerationRatio: 0.1 ) )
+                        {
+                            this._ストーリーボード.AddTransition( this._左位置dpx, 左位置dpxの遷移 );
+                            this._ストーリーボード.AddTransition( this._不透明度, 不透明度の遷移 );
+                            this._ストーリーボード.AddTransition( this._MAX用拡大角度rad, MAX用拡大角度radの遷移 );
+                            this._ストーリーボード.AddTransition( this._MAX用半径倍率, MAX用半径倍率の遷移 );
+                        }
+                    }
+                }
                 //----------------
                 #endregion
 
@@ -136,7 +118,7 @@ namespace DTXMania2.結果
 
             public void アニメを完了する()
             {
-                this._ストーリーボード?.Finish( 0.1 );
+                this._ストーリーボード?.Finish( 0.0 );
             }
 
             public void 進行描画する( DeviceContext dc, float left, float top )

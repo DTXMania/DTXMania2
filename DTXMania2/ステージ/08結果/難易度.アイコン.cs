@@ -75,7 +75,7 @@ namespace DTXMania2.結果
                     this._ストーリーボード.AddTransition( this._半径倍率, 遷移 );
 
                 // 0.0 へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Linear( duration: 難易度.アニメ時間sec, finalValue: 0.0 ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 難易度.アニメ時間sec, finalValue: 0.0, accelerationRatio: 0.1, decelerationRatio: 0.9 ) )
                     this._ストーリーボード.AddTransition( this._半径倍率, 遷移 );
                 //----------------
                 #endregion

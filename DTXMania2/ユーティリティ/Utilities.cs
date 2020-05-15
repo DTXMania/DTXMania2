@@ -9,28 +9,6 @@ namespace DTXMania2
     class Utilities
     {
         /// <summary>
-        ///		指定された位置を、それを超えないブロック境界に揃えて返す。
-        /// </summary>
-        /// <param name="position">位置[byte]。</param>
-        /// <param name="blockAlign">ブロック境界[byte]。</param>
-        /// <returns></returns>
-        public static int 位置をブロック境界単位にそろえて返す( int position, int blockAlign )
-        {
-            return ( position - ( position % blockAlign ) );
-        }
-
-        /// <summary>
-        ///		指定された位置を、それを超えないブロック境界に揃えて返す。
-        /// </summary>
-        /// <param name="position">位置[byte]。</param>
-        /// <param name="blockAlign">ブロック境界[byte]。</param>
-        /// <returns></returns>
-        public static long 位置をブロック境界単位にそろえて返す( long position, long blockAlign )
-        {
-            return ( position - ( position % blockAlign ) );
-        }
-
-        /// <summary>
         ///		指定されたコマンド名が対象文字列内で使用されている場合に、パラメータ部分の文字列を返す。
         /// </summary>
         /// <remarks>
@@ -61,21 +39,5 @@ namespace DTXMania2
                 return false;
             }
         }
-
-        /// <summary>
-        ///     ゲームモードが有効である場合はtrueを、そうでなければfalseを返す。
-        /// </summary>
-        public static bool ゲームモードである
-        {
-            get
-            {
-                HasExpandedResources( out bool bHas );
-                return bHas;
-            }
-        }
-
-
-        [DllImport( "gamemode.dll" )]
-        public static extern int HasExpandedResources( out bool bHas );
     }
 }

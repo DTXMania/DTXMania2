@@ -1,5 +1,5 @@
 ﻿# 矩形リスト
-# 4つの数値は、Left, Top, Widht, Height の順。
+# 4つの数値は、Left, Top, Width, Height の順。
 RectangleList:
     '0': [80, 32, 20, 32]
     '1': [100, 32, 20, 32]

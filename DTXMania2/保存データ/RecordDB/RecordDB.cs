@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.Data.Sqlite;
+using FDK;
 
 namespace DTXMania2
 {

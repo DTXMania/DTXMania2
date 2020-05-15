@@ -4,10 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using YamlDotNet.Serialization;
+using FDK;
 
 namespace DTXMania2
 {
-    class CommandLineOptions
+    public class CommandLineOptions
     {
         [YamlIgnore]
         public bool ビュアーモードである => ( this.再生開始 || this.再生停止 );
@@ -84,7 +85,6 @@ namespace DTXMania2
             var serializer = new SerializerBuilder()
                 .WithTypeInspector( inner => new CommentGatheringTypeInspector( inner ) )
                 .WithEmissionPhaseObjectGraphVisitor( args => new CommentsObjectGraphVisitor( args.InnerVisitor ) )
-                .EmitDefaults()
                 .Build();
 
             return serializer.Serialize( this );

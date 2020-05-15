@@ -253,7 +253,7 @@ namespace SSTFormat.v003
                                 if( 現在の.VOLUME定義マップ.ContainsKey( chip.チップサブID ) )
                                 {
                                     // それをチップに設定する。
-                                    var DTX音量 = Math.Min( Math.Max( 現在の.VOLUME定義マップ[ chip.チップサブID ], 0 ), 100 );    // 無音:0 ～ 100:原音
+                                    var DTX音量 = Math.Clamp( 現在の.VOLUME定義マップ[ chip.チップサブID ], min: 0, max: 100 );    // 無音:0 ～ 100:原音
 
                                     chip.音量 =
                                         ( 100 == DTX音量 ) ? チップ.最大音量 :
@@ -452,7 +452,7 @@ namespace SSTFormat.v003
                     return;
                 }
 
-                現在の.スコア.難易度 = Math.Min( Math.Max( level, 0 ), 99 ) / 10.0;     // 0～99 → 0.0～9.90
+                現在の.スコア.難易度 = Math.Clamp( level, min: 0, max: 99 ) / 10.0;     // 0～99 → 0.0～9.90
             }
             internal static void _コマンド_PREVIEW()
             {
@@ -505,7 +505,7 @@ namespace SSTFormat.v003
                     return;
                 }
 
-                現在の.PAN定義マップ[ 現在の.zz36進数 ] = Math.Min( Math.Max( PAN値, -100 ), +100 );  // あれば上書き、なければ追加
+                現在の.PAN定義マップ[ 現在の.zz36進数 ] = Math.Clamp( PAN値, min: -100, max: +100 );  // あれば上書き、なければ追加
             }
             internal static void _コマンド_VOLUMEzz_WAVVOLzz()
             {
@@ -526,7 +526,7 @@ namespace SSTFormat.v003
                     return;
                 }
 
-                現在の.VOLUME定義マップ[ 現在の.zz16進数 ] = Math.Min( Math.Max( VOLUME値, 0 ), 100 );  // あれば上書き、なければ追加
+                現在の.VOLUME定義マップ[ 現在の.zz16進数 ] = Math.Clamp( VOLUME値, min: 0, max: 100 );  // あれば上書き、なければ追加
             }
             internal static void _コマンド_BASEBPM()
             {

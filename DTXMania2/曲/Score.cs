@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using FDK;
 using DTXMania2.演奏;
 
 namespace DTXMania2.曲
@@ -108,6 +109,7 @@ namespace DTXMania2.曲
         }
 
         /// <summary>
+        ///     この譜面に存在するノートの、レーン別の総数。
         ///     現行化されていなければ null。
         /// </summary>
         public IReadOnlyDictionary<表示レーン種別, int>? レーン別ノート数

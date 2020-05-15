@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using SharpDX;
 using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2
 {
@@ -59,7 +60,7 @@ namespace DTXMania2
 
             this._文字列画像.表示文字列 =
                 $"VPS: {this._FPS.現在のVPS.ToString()} / FPS: {this._FPS.現在のFPS.ToString()} (" + FPSの周期ms.ToString( "0.000" ) + "ms)" + Environment.NewLine +
-                $"GameMode: {ONOFF[ Utilities.ゲームモードである ]}" + Environment.NewLine +
+                $"GameMode: {ONOFF[ GameMode.ゲームモードである ]}" + Environment.NewLine +
                 追加文字列;
 
             this._文字列画像.描画する( dc, 0f, 0f );

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using SharpDX;
+using FDK;
 
 namespace DTXMania2.認証
 {

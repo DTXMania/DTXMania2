@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Animation;
+using FDK;
 
 namespace DTXMania2.結果
 {
@@ -71,7 +70,7 @@ namespace DTXMania2.結果
 
             public void 進行描画する( DeviceContext dc, float left, float top )
             {
-                Global.D2DBatchDraw( dc, () => {
+                D2DBatch.Draw( dc, () => {
                     float 長さdpx = (float) this._長さdpx.Value;
                     using( var brush = new SolidColorBrush( dc, Color4.White ) )
                         dc.FillRectangle( new RectangleF( left + ( _全長dpx - 長さdpx ) / 2f, top, 長さdpx, 3f ), brush );

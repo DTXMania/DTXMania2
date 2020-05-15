@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2.結果
 {
@@ -77,7 +76,7 @@ namespace DTXMania2.結果
 
         private const double 最初の待機時間sec = 0.75;
 
-        private const double アニメ時間sec = 0.5;
+        private const double アニメ時間sec = 0.25;
 
         private bool _初めての進行描画;
 

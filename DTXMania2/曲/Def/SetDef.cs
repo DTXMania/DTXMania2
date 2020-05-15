@@ -4,10 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using SharpDX;
+using FDK;
 
 namespace DTXMania2.曲
 {
-    public partial class SetDef
+    partial class SetDef
     {
 
         // プロパティ

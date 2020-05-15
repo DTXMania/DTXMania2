@@ -1,5 +1,5 @@
 ﻿# 矩形リスト
-# 画像上の矩形。順に、Left, Top, Widht, Height。
+# 画像上の矩形。順に、Left, Top, Width, Height。
 RectangleList:
     LeftCymbalStand: [0, 99, 270, 293]
     LeftCymbal: [366, 43, 287, 101]

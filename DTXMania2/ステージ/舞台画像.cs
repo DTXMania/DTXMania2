@@ -5,6 +5,7 @@ using SharpDX;
 using SharpDX.Animation;
 using SharpDX.Direct2D1;
 using SharpDX.Direct2D1.Effects;
+using FDK;
 
 namespace DTXMania2
 {
@@ -174,7 +175,7 @@ namespace DTXMania2
                 this._ガウスぼかしエフェクト黒幕付き用.StandardDeviation = (float) ( 割合 * 10.0 );       // 0～10
                 this._クリッピングエフェクト黒幕付き用.Rectangle = ( null != 表示領域 ) ? ( (Vector4) 表示領域 ) : new Vector4( 0f, 0f, this._背景黒幕付き画像.サイズ.Width, this._背景黒幕付き画像.サイズ.Height );
 
-                Global.D2DBatchDraw( dc, () => {
+                D2DBatch.Draw( dc, () => {
 
                     dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
 
@@ -206,7 +207,7 @@ namespace DTXMania2
                 this._ガウスぼかしエフェクト.StandardDeviation = (float) ( 割合 * 10.0 );       // 0～10
                 this._クリッピングエフェクト.Rectangle = ( null != 表示領域 ) ? ( (Vector4) 表示領域 ) : new Vector4( 0f, 0f, this._背景画像.サイズ.Width, this._背景画像.サイズ.Height );
 
-                Global.D2DBatchDraw( dc, () => {
+                D2DBatch.Draw( dc, () => {
 
                     dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
 

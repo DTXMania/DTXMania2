@@ -1,0 +1,2389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="splitContainer分割パネルコンテナ.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="splitContainer分割パネルコンテナ.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 50</value>
+  </data>
+  <data name="pictureBoxプレビュー画像.Location" type="System.Drawing.Point, System.Drawing">
+    <value>83, 6</value>
+  </data>
+  <data name="pictureBoxプレビュー画像.Size" type="System.Drawing.Size, System.Drawing">
+    <value>111, 111</value>
+  </data>
+  <data name="pictureBoxプレビュー画像.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
+    <value>StretchImage</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="pictureBoxプレビュー画像.TabIndex" type="System.Int32, mscorlib">
+    <value>28</value>
+  </data>
+  <data name="&gt;&gt;pictureBoxプレビュー画像.Name" xml:space="preserve">
+    <value>pictureBoxプレビュー画像</value>
+  </data>
+  <data name="&gt;&gt;pictureBoxプレビュー画像.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pictureBoxプレビュー画像.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;pictureBoxプレビュー画像.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="buttonプレビュー画像参照.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="buttonプレビュー画像参照.Location" type="System.Drawing.Point, System.Drawing">
+    <value>262, 285</value>
+  </data>
+  <data name="buttonプレビュー画像参照.Size" type="System.Drawing.Size, System.Drawing">
+    <value>20, 23</value>
+  </data>
+  <data name="buttonプレビュー画像参照.TabIndex" type="System.Int32, mscorlib">
+    <value>12</value>
+  </data>
+  <data name="buttonプレビュー画像参照.Text" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="&gt;&gt;buttonプレビュー画像参照.Name" xml:space="preserve">
+    <value>buttonプレビュー画像参照</value>
+  </data>
+  <data name="&gt;&gt;buttonプレビュー画像参照.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonプレビュー画像参照.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;buttonプレビュー画像参照.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="textBoxプレビュー画像.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 287</value>
+  </data>
+  <data name="textBoxプレビュー画像.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 19</value>
+  </data>
+  <data name="textBoxプレビュー画像.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="&gt;&gt;textBoxプレビュー画像.Name" xml:space="preserve">
+    <value>textBoxプレビュー画像</value>
+  </data>
+  <data name="&gt;&gt;textBoxプレビュー画像.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxプレビュー画像.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBoxプレビュー画像.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="labelプレビュー画像.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelプレビュー画像.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelプレビュー画像.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 272</value>
+  </data>
+  <data name="labelプレビュー画像.Size" type="System.Drawing.Size, System.Drawing">
+    <value>79, 12</value>
+  </data>
+  <data name="labelプレビュー画像.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="labelプレビュー画像.Text" xml:space="preserve">
+    <value>Preview Image</value>
+  </data>
+  <data name="&gt;&gt;labelプレビュー画像.Name" xml:space="preserve">
+    <value>labelプレビュー画像</value>
+  </data>
+  <data name="&gt;&gt;labelプレビュー画像.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelプレビュー画像.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;labelプレビュー画像.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="buttonプレビューサウンド参照.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="buttonプレビューサウンド参照.Location" type="System.Drawing.Point, System.Drawing">
+    <value>262, 248</value>
+  </data>
+  <data name="buttonプレビューサウンド参照.Size" type="System.Drawing.Size, System.Drawing">
+    <value>20, 23</value>
+  </data>
+  <data name="buttonプレビューサウンド参照.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="buttonプレビューサウンド参照.Text" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="&gt;&gt;buttonプレビューサウンド参照.Name" xml:space="preserve">
+    <value>buttonプレビューサウンド参照</value>
+  </data>
+  <data name="&gt;&gt;buttonプレビューサウンド参照.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonプレビューサウンド参照.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;buttonプレビューサウンド参照.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="textBoxプレビュー音声.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 250</value>
+  </data>
+  <data name="textBoxプレビュー音声.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 19</value>
+  </data>
+  <data name="textBoxプレビュー音声.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;textBoxプレビュー音声.Name" xml:space="preserve">
+    <value>textBoxプレビュー音声</value>
+  </data>
+  <data name="&gt;&gt;textBoxプレビュー音声.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxプレビュー音声.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBoxプレビュー音声.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="labelプレビュー音声.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelプレビュー音声.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 235</value>
+  </data>
+  <data name="labelプレビュー音声.Size" type="System.Drawing.Size, System.Drawing">
+    <value>80, 12</value>
+  </data>
+  <data name="labelプレビュー音声.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="labelプレビュー音声.Text" xml:space="preserve">
+    <value>Preview Sound</value>
+  </data>
+  <data name="&gt;&gt;labelプレビュー音声.Name" xml:space="preserve">
+    <value>labelプレビュー音声</value>
+  </data>
+  <data name="&gt;&gt;labelプレビュー音声.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelプレビュー音声.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;labelプレビュー音声.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="labelメモ用小節番号.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelメモ用小節番号.Location" type="System.Drawing.Point, System.Drawing">
+    <value>158, 526</value>
+  </data>
+  <data name="labelメモ用小節番号.Size" type="System.Drawing.Size, System.Drawing">
+    <value>36, 12</value>
+  </data>
+  <data name="labelメモ用小節番号.TabIndex" type="System.Int32, mscorlib">
+    <value>22</value>
+  </data>
+  <data name="labelメモ用小節番号.Text" xml:space="preserve">
+    <value>Part #</value>
+  </data>
+  <data name="&gt;&gt;labelメモ用小節番号.Name" xml:space="preserve">
+    <value>labelメモ用小節番号</value>
+  </data>
+  <data name="&gt;&gt;labelメモ用小節番号.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelメモ用小節番号.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;labelメモ用小節番号.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="labelアーティスト名.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelアーティスト名.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelアーティスト名.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 147</value>
+  </data>
+  <data name="labelアーティスト名.Size" type="System.Drawing.Size, System.Drawing">
+    <value>34, 12</value>
+  </data>
+  <data name="labelアーティスト名.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="labelアーティスト名.Text" xml:space="preserve">
+    <value>Artist</value>
+  </data>
+  <data name="&gt;&gt;labelアーティスト名.Name" xml:space="preserve">
+    <value>labelアーティスト名</value>
+  </data>
+  <data name="&gt;&gt;labelアーティスト名.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelアーティスト名.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;labelアーティスト名.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="textBoxアーティスト名.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 162</value>
+  </data>
+  <data name="textBoxアーティスト名.Size" type="System.Drawing.Size, System.Drawing">
+    <value>275, 19</value>
+  </data>
+  <data name="textBoxアーティスト名.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;textBoxアーティスト名.Name" xml:space="preserve">
+    <value>textBoxアーティスト名</value>
+  </data>
+  <data name="&gt;&gt;textBoxアーティスト名.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxアーティスト名.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBoxアーティスト名.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="buttonBGM参照.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="buttonBGM参照.Location" type="System.Drawing.Point, System.Drawing">
+    <value>262, 490</value>
+  </data>
+  <data name="buttonBGM参照.Size" type="System.Drawing.Size, System.Drawing">
+    <value>20, 23</value>
+  </data>
+  <data name="buttonBGM参照.TabIndex" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="buttonBGM参照.Text" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="&gt;&gt;buttonBGM参照.Name" xml:space="preserve">
+    <value>buttonBGM参照</value>
+  </data>
+  <data name="&gt;&gt;buttonBGM参照.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonBGM参照.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;buttonBGM参照.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="labelBGM.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelBGM.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelBGM.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 477</value>
+  </data>
+  <data name="labelBGM.Size" type="System.Drawing.Size, System.Drawing">
+    <value>99, 12</value>
+  </data>
+  <data name="labelBGM.TabIndex" type="System.Int32, mscorlib">
+    <value>18</value>
+  </data>
+  <data name="labelBGM.Text" xml:space="preserve">
+    <value>Background Music</value>
+  </data>
+  <data name="&gt;&gt;labelBGM.Name" xml:space="preserve">
+    <value>labelBGM</value>
+  </data>
+  <data name="&gt;&gt;labelBGM.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelBGM.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;labelBGM.ZOrder" xml:space="preserve">
+    <value>11</value>
+  </data>
+  <data name="textBoxBGM.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 492</value>
+  </data>
+  <data name="textBoxBGM.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 19</value>
+  </data>
+  <data name="textBoxBGM.TabIndex" type="System.Int32, mscorlib">
+    <value>19</value>
+  </data>
+  <data name="&gt;&gt;textBoxBGM.Name" xml:space="preserve">
+    <value>textBoxBGM</value>
+  </data>
+  <data name="&gt;&gt;textBoxBGM.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxBGM.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBoxBGM.ZOrder" xml:space="preserve">
+    <value>12</value>
+  </data>
+  <data name="buttonBGV参照.Location" type="System.Drawing.Point, System.Drawing">
+    <value>262, 453</value>
+  </data>
+  <data name="buttonBGV参照.Size" type="System.Drawing.Size, System.Drawing">
+    <value>20, 23</value>
+  </data>
+  <data name="buttonBGV参照.TabIndex" type="System.Int32, mscorlib">
+    <value>17</value>
+  </data>
+  <data name="buttonBGV参照.Text" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="&gt;&gt;buttonBGV参照.Name" xml:space="preserve">
+    <value>buttonBGV参照</value>
+  </data>
+  <data name="&gt;&gt;buttonBGV参照.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonBGV参照.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;buttonBGV参照.ZOrder" xml:space="preserve">
+    <value>13</value>
+  </data>
+  <data name="textBoxLevel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 200</value>
+  </data>
+  <data name="textBoxLevel.MaxLength" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="textBoxLevel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>51, 19</value>
+  </data>
+  <data name="textBoxLevel.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="textBoxLevel.Text" xml:space="preserve">
+    <value>5.00</value>
+  </data>
+  <data name="textBoxLevel.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="&gt;&gt;textBoxLevel.Name" xml:space="preserve">
+    <value>textBoxLevel</value>
+  </data>
+  <data name="&gt;&gt;textBoxLevel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxLevel.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBoxLevel.ZOrder" xml:space="preserve">
+    <value>14</value>
+  </data>
+  <data name="trackBarLevel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>67, 187</value>
+  </data>
+  <data name="trackBarLevel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>217, 45</value>
+  </data>
+  <data name="trackBarLevel.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;trackBarLevel.Name" xml:space="preserve">
+    <value>trackBarLevel</value>
+  </data>
+  <data name="&gt;&gt;trackBarLevel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TrackBar, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;trackBarLevel.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;trackBarLevel.ZOrder" xml:space="preserve">
+    <value>15</value>
+  </data>
+  <data name="labelLevel.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelLevel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelLevel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 184</value>
+  </data>
+  <data name="labelLevel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>32, 12</value>
+  </data>
+  <data name="labelLevel.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="labelLevel.Text" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="&gt;&gt;labelLevel.Name" xml:space="preserve">
+    <value>labelLevel</value>
+  </data>
+  <data name="&gt;&gt;labelLevel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelLevel.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;labelLevel.ZOrder" xml:space="preserve">
+    <value>16</value>
+  </data>
+  <data name="textBoxサウンド遅延ms.Location" type="System.Drawing.Point, System.Drawing">
+    <value>210, 634</value>
+  </data>
+  <data name="textBoxサウンド遅延ms.Size" type="System.Drawing.Size, System.Drawing">
+    <value>72, 19</value>
+  </data>
+  <data name="textBoxサウンド遅延ms.TabIndex" type="System.Int32, mscorlib">
+    <value>26</value>
+  </data>
+  <data name="textBoxサウンド遅延ms.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="&gt;&gt;textBoxサウンド遅延ms.Name" xml:space="preserve">
+    <value>textBoxサウンド遅延ms</value>
+  </data>
+  <data name="&gt;&gt;textBoxサウンド遅延ms.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxサウンド遅延ms.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBoxサウンド遅延ms.ZOrder" xml:space="preserve">
+    <value>17</value>
+  </data>
+  <data name="labelサウンド遅延ms.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelサウンド遅延ms.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelサウンド遅延ms.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 637</value>
+  </data>
+  <data name="labelサウンド遅延ms.Size" type="System.Drawing.Size, System.Drawing">
+    <value>153, 12</value>
+  </data>
+  <data name="labelサウンド遅延ms.TabIndex" type="System.Int32, mscorlib">
+    <value>25</value>
+  </data>
+  <data name="labelサウンド遅延ms.Text" xml:space="preserve">
+    <value>Sound Delay [ms] (auto find)</value>
+  </data>
+  <data name="&gt;&gt;labelサウンド遅延ms.Name" xml:space="preserve">
+    <value>labelサウンド遅延ms</value>
+  </data>
+  <data name="&gt;&gt;labelサウンド遅延ms.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelサウンド遅延ms.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;labelサウンド遅延ms.ZOrder" xml:space="preserve">
+    <value>18</value>
+  </data>
+  <data name="textBoxメモ.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 549</value>
+  </data>
+  <data name="textBoxメモ.Multiline" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="textBoxメモ.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
+    <value>Both</value>
+  </data>
+  <data name="textBoxメモ.Size" type="System.Drawing.Size, System.Drawing">
+    <value>274, 71</value>
+  </data>
+  <data name="textBoxメモ.TabIndex" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="textBoxメモ.WordWrap" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;textBoxメモ.Name" xml:space="preserve">
+    <value>textBoxメモ</value>
+  </data>
+  <data name="&gt;&gt;textBoxメモ.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxメモ.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBoxメモ.ZOrder" xml:space="preserve">
+    <value>19</value>
+  </data>
+  <data name="numericUpDownメモ用小節番号.Location" type="System.Drawing.Point, System.Drawing">
+    <value>210, 524</value>
+  </data>
+  <data name="numericUpDownメモ用小節番号.Size" type="System.Drawing.Size, System.Drawing">
+    <value>72, 19</value>
+  </data>
+  <data name="numericUpDownメモ用小節番号.TabIndex" type="System.Int32, mscorlib">
+    <value>23</value>
+  </data>
+  <data name="numericUpDownメモ用小節番号.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="&gt;&gt;numericUpDownメモ用小節番号.Name" xml:space="preserve">
+    <value>numericUpDownメモ用小節番号</value>
+  </data>
+  <data name="&gt;&gt;numericUpDownメモ用小節番号.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;numericUpDownメモ用小節番号.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;numericUpDownメモ用小節番号.ZOrder" xml:space="preserve">
+    <value>20</value>
+  </data>
+  <data name="labelメモ小節単位.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelメモ小節単位.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelメモ小節単位.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 526</value>
+  </data>
+  <data name="labelメモ小節単位.Size" type="System.Drawing.Size, System.Drawing">
+    <value>108, 12</value>
+  </data>
+  <data name="labelメモ小節単位.TabIndex" type="System.Int32, mscorlib">
+    <value>21</value>
+  </data>
+  <data name="labelメモ小節単位.Text" xml:space="preserve">
+    <value>Memo (in each part)</value>
+  </data>
+  <data name="&gt;&gt;labelメモ小節単位.Name" xml:space="preserve">
+    <value>labelメモ小節単位</value>
+  </data>
+  <data name="&gt;&gt;labelメモ小節単位.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelメモ小節単位.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;labelメモ小節単位.ZOrder" xml:space="preserve">
+    <value>21</value>
+  </data>
+  <data name="labelBGV.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelBGV.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 440</value>
+  </data>
+  <data name="labelBGV.Size" type="System.Drawing.Size, System.Drawing">
+    <value>98, 12</value>
+  </data>
+  <data name="labelBGV.TabIndex" type="System.Int32, mscorlib">
+    <value>15</value>
+  </data>
+  <data name="labelBGV.Text" xml:space="preserve">
+    <value>Background Video</value>
+  </data>
+  <data name="&gt;&gt;labelBGV.Name" xml:space="preserve">
+    <value>labelBGV</value>
+  </data>
+  <data name="&gt;&gt;labelBGV.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelBGV.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;labelBGV.ZOrder" xml:space="preserve">
+    <value>22</value>
+  </data>
+  <data name="textBoxBGV.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 455</value>
+  </data>
+  <data name="textBoxBGV.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 19</value>
+  </data>
+  <data name="textBoxBGV.TabIndex" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="&gt;&gt;textBoxBGV.Name" xml:space="preserve">
+    <value>textBoxBGV</value>
+  </data>
+  <data name="&gt;&gt;textBoxBGV.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxBGV.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBoxBGV.ZOrder" xml:space="preserve">
+    <value>23</value>
+  </data>
+  <data name="label説明.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label説明.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label説明.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 319</value>
+  </data>
+  <data name="label説明.Size" type="System.Drawing.Size, System.Drawing">
+    <value>63, 12</value>
+  </data>
+  <data name="label説明.TabIndex" type="System.Int32, mscorlib">
+    <value>13</value>
+  </data>
+  <data name="label説明.Text" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="&gt;&gt;label説明.Name" xml:space="preserve">
+    <value>label説明</value>
+  </data>
+  <data name="&gt;&gt;label説明.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label説明.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;label説明.ZOrder" xml:space="preserve">
+    <value>24</value>
+  </data>
+  <data name="textBox説明.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 334</value>
+  </data>
+  <data name="textBox説明.Multiline" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="textBox説明.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
+    <value>Both</value>
+  </data>
+  <data name="textBox説明.Size" type="System.Drawing.Size, System.Drawing">
+    <value>275, 103</value>
+  </data>
+  <data name="textBox説明.TabIndex" type="System.Int32, mscorlib">
+    <value>14</value>
+  </data>
+  <data name="&gt;&gt;textBox説明.Name" xml:space="preserve">
+    <value>textBox説明</value>
+  </data>
+  <data name="&gt;&gt;textBox説明.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBox説明.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBox説明.ZOrder" xml:space="preserve">
+    <value>25</value>
+  </data>
+  <data name="label曲名.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label曲名.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 110</value>
+  </data>
+  <data name="label曲名.Size" type="System.Drawing.Size, System.Drawing">
+    <value>28, 12</value>
+  </data>
+  <data name="label曲名.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="label曲名.Text" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="&gt;&gt;label曲名.Name" xml:space="preserve">
+    <value>label曲名</value>
+  </data>
+  <data name="&gt;&gt;label曲名.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label曲名.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;label曲名.ZOrder" xml:space="preserve">
+    <value>26</value>
+  </data>
+  <data name="textBox曲名.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 125</value>
+  </data>
+  <data name="textBox曲名.Size" type="System.Drawing.Size, System.Drawing">
+    <value>275, 19</value>
+  </data>
+  <data name="textBox曲名.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;textBox曲名.Name" xml:space="preserve">
+    <value>textBox曲名</value>
+  </data>
+  <data name="&gt;&gt;textBox曲名.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBox曲名.Parent" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;textBox曲名.ZOrder" xml:space="preserve">
+    <value>27</value>
+  </data>
+  <data name="tabPage基本情報.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 22</value>
+  </data>
+  <data name="tabPage基本情報.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="tabPage基本情報.Size" type="System.Drawing.Size, System.Drawing">
+    <value>291, 712</value>
+  </data>
+  <data name="tabPage基本情報.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="tabPage基本情報.Text" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="&gt;&gt;tabPage基本情報.Name" xml:space="preserve">
+    <value>tabPage基本情報</value>
+  </data>
+  <data name="&gt;&gt;tabPage基本情報.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabPage基本情報.Parent" xml:space="preserve">
+    <value>tabControl情報タブコンテナ</value>
+  </data>
+  <data name="&gt;&gt;tabPage基本情報.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tabControl情報タブコンテナ.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="tabControl情報タブコンテナ.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="tabControl情報タブコンテナ.Size" type="System.Drawing.Size, System.Drawing">
+    <value>299, 738</value>
+  </data>
+  <data name="tabControl情報タブコンテナ.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;tabControl情報タブコンテナ.Name" xml:space="preserve">
+    <value>tabControl情報タブコンテナ</value>
+  </data>
+  <data name="&gt;&gt;tabControl情報タブコンテナ.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabControl情報タブコンテナ.Parent" xml:space="preserve">
+    <value>splitContainer分割パネルコンテナ.Panel1</value>
+  </data>
+  <data name="&gt;&gt;tabControl情報タブコンテナ.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Panel1.Name" xml:space="preserve">
+    <value>splitContainer分割パネルコンテナ.Panel1</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Panel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Panel1.Parent" xml:space="preserve">
+    <value>splitContainer分割パネルコンテナ</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Panel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="label現在のチップ種別.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label現在のチップ種別.Font" type="System.Drawing.Font, System.Drawing">
+    <value>MS UI Gothic, 12pt</value>
+  </data>
+  <data name="label現在のチップ種別.Location" type="System.Drawing.Point, System.Drawing">
+    <value>148, 6</value>
+  </data>
+  <data name="label現在のチップ種別.Size" type="System.Drawing.Size, System.Drawing">
+    <value>0, 16</value>
+  </data>
+  <data name="label現在のチップ種別.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;label現在のチップ種別.Name" xml:space="preserve">
+    <value>label現在のチップ種別</value>
+  </data>
+  <data name="&gt;&gt;label現在のチップ種別.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label現在のチップ種別.Parent" xml:space="preserve">
+    <value>splitContainer分割パネルコンテナ.Panel2</value>
+  </data>
+  <data name="&gt;&gt;label現在のチップ種別.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="labelCurrentChipType.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelCurrentChipType.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 6</value>
+  </data>
+  <data name="labelCurrentChipType.Size" type="System.Drawing.Size, System.Drawing">
+    <value>145, 24</value>
+  </data>
+  <data name="labelCurrentChipType.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="labelCurrentChipType.Text" xml:space="preserve">
+    <value>Chip type of current lane :
+(Change to hit SPACE key)</value>
+  </data>
+  <data name="&gt;&gt;labelCurrentChipType.Name" xml:space="preserve">
+    <value>labelCurrentChipType</value>
+  </data>
+  <data name="&gt;&gt;labelCurrentChipType.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelCurrentChipType.Parent" xml:space="preserve">
+    <value>splitContainer分割パネルコンテナ.Panel2</value>
+  </data>
+  <data name="&gt;&gt;labelCurrentChipType.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="pictureBox譜面パネル.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Left</value>
+  </data>
+  <data name="pictureBox譜面パネル.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 30</value>
+  </data>
+  <data name="pictureBox譜面パネル.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="pictureBox譜面パネル.Size" type="System.Drawing.Size, System.Drawing">
+    <value>245, 708</value>
+  </data>
+  <data name="pictureBox譜面パネル.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;pictureBox譜面パネル.Name" xml:space="preserve">
+    <value>pictureBox譜面パネル</value>
+  </data>
+  <data name="&gt;&gt;pictureBox譜面パネル.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pictureBox譜面パネル.Parent" xml:space="preserve">
+    <value>splitContainer分割パネルコンテナ.Panel2</value>
+  </data>
+  <data name="&gt;&gt;pictureBox譜面パネル.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Panel2.Name" xml:space="preserve">
+    <value>splitContainer分割パネルコンテナ.Panel2</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Panel2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Panel2.Parent" xml:space="preserve">
+    <value>splitContainer分割パネルコンテナ</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Panel2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="splitContainer分割パネルコンテナ.Size" type="System.Drawing.Size, System.Drawing">
+    <value>735, 738</value>
+  </data>
+  <data name="splitContainer分割パネルコンテナ.SplitterDistance" type="System.Int32, mscorlib">
+    <value>299</value>
+  </data>
+  <data name="splitContainer分割パネルコンテナ.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Name" xml:space="preserve">
+    <value>splitContainer分割パネルコンテナ</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitContainer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;splitContainer分割パネルコンテナ.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <metadata name="statusStripステータスバー.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>0, 653</value>
+  </metadata>
+  <data name="statusStripステータスバー.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 788</value>
+  </data>
+  <data name="statusStripステータスバー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>752, 22</value>
+  </data>
+  <data name="statusStripステータスバー.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="statusStripステータスバー.Text" xml:space="preserve">
+    <value>statusStrip1</value>
+  </data>
+  <data name="&gt;&gt;statusStripステータスバー.Name" xml:space="preserve">
+    <value>statusStripステータスバー</value>
+  </data>
+  <data name="&gt;&gt;statusStripステータスバー.Type" xml:space="preserve">
+    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;statusStripステータスバー.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;statusStripステータスバー.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <metadata name="menuStripメニューバー.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>0, 0</value>
+  </metadata>
+  <data name="toolStripMenuItem新規作成.Size" type="System.Drawing.Size, System.Drawing">
+    <value>157, 22</value>
+  </data>
+  <data name="toolStripMenuItem新規作成.Text" xml:space="preserve">
+    <value>&amp;New</value>
+  </data>
+  <data name="toolStripMenuItem開く.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+O</value>
+  </data>
+  <data name="toolStripMenuItem開く.Size" type="System.Drawing.Size, System.Drawing">
+    <value>157, 22</value>
+  </data>
+  <data name="toolStripMenuItem開く.Text" xml:space="preserve">
+    <value>&amp;Open ...</value>
+  </data>
+  <data name="toolStripMenuItem上書き保存.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+S</value>
+  </data>
+  <data name="toolStripMenuItem上書き保存.Size" type="System.Drawing.Size, System.Drawing">
+    <value>157, 22</value>
+  </data>
+  <data name="toolStripMenuItem上書き保存.Text" xml:space="preserve">
+    <value>&amp;Save</value>
+  </data>
+  <data name="toolStripMenuItem名前を付けて保存.Size" type="System.Drawing.Size, System.Drawing">
+    <value>157, 22</value>
+  </data>
+  <data name="toolStripMenuItem名前を付けて保存.Text" xml:space="preserve">
+    <value>S&amp;ave as ...</value>
+  </data>
+  <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>154, 6</value>
+  </data>
+  <data name="toolStripMenuItem終了.Size" type="System.Drawing.Size, System.Drawing">
+    <value>157, 22</value>
+  </data>
+  <data name="toolStripMenuItem終了.Text" xml:space="preserve">
+    <value>E&amp;xit</value>
+  </data>
+  <data name="toolStripMenuItemファイル.Size" type="System.Drawing.Size, System.Drawing">
+    <value>37, 20</value>
+  </data>
+  <data name="toolStripMenuItemファイル.Text" xml:space="preserve">
+    <value>&amp;File</value>
+  </data>
+  <data name="toolStripMenuItem元に戻す.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+Z</value>
+  </data>
+  <data name="toolStripMenuItem元に戻す.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItem元に戻す.Text" xml:space="preserve">
+    <value>&amp;Undo</value>
+  </data>
+  <data name="toolStripMenuItemやり直す.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+Y</value>
+  </data>
+  <data name="toolStripMenuItemやり直す.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItemやり直す.Text" xml:space="preserve">
+    <value>&amp;Redo</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 6</value>
+  </data>
+  <data name="toolStripMenuItem切り取り.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripMenuItem切り取り.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+X</value>
+  </data>
+  <data name="toolStripMenuItem切り取り.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItem切り取り.Text" xml:space="preserve">
+    <value>Cu&amp;t</value>
+  </data>
+  <data name="toolStripMenuItemコピー.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripMenuItemコピー.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+C</value>
+  </data>
+  <data name="toolStripMenuItemコピー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItemコピー.Text" xml:space="preserve">
+    <value>&amp;Copy</value>
+  </data>
+  <data name="toolStripMenuItem貼り付け.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripMenuItem貼り付け.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+V</value>
+  </data>
+  <data name="toolStripMenuItem貼り付け.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItem貼り付け.Text" xml:space="preserve">
+    <value>&amp;Paste</value>
+  </data>
+  <data name="toolStripMenuItem削除.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripMenuItem削除.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Delete</value>
+  </data>
+  <data name="toolStripMenuItem削除.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItem削除.Text" xml:space="preserve">
+    <value>&amp;Delete</value>
+  </data>
+  <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 6</value>
+  </data>
+  <data name="toolStripMenuItemすべて選択.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+A</value>
+  </data>
+  <data name="toolStripMenuItemすべて選択.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItemすべて選択.Text" xml:space="preserve">
+    <value>Select &amp;All</value>
+  </data>
+  <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 6</value>
+  </data>
+  <data name="toolStripMenuItem選択モード.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択モード.Text" xml:space="preserve">
+    <value>&amp;Select mode</value>
+  </data>
+  <data name="toolStripMenuItem編集モード.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItem編集モード.Text" xml:space="preserve">
+    <value>&amp;Edit mode</value>
+  </data>
+  <data name="toolStripMenuItemモード切替え.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F8</value>
+  </data>
+  <data name="toolStripMenuItemモード切替え.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItemモード切替え.Text" xml:space="preserve">
+    <value>&amp;Mode change</value>
+  </data>
+  <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 6</value>
+  </data>
+  <data name="toolStripMenuItem検索.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+F</value>
+  </data>
+  <data name="toolStripMenuItem検索.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="toolStripMenuItem検索.Text" xml:space="preserve">
+    <value>Search(&amp;F)</value>
+  </data>
+  <data name="toolStripMenuItem編集.Size" type="System.Drawing.Size, System.Drawing">
+    <value>39, 20</value>
+  </data>
+  <data name="toolStripMenuItem編集.Text" xml:space="preserve">
+    <value>&amp;Edit</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔4分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔4分.Text" xml:space="preserve">
+    <value>1/4</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔6分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔6分.Text" xml:space="preserve">
+    <value>1/6</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔8分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔8分.Text" xml:space="preserve">
+    <value>1/8</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔12分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔12分.Text" xml:space="preserve">
+    <value>1/12</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔16分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔16分.Text" xml:space="preserve">
+    <value>1/16</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔24分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔24分.Text" xml:space="preserve">
+    <value>1/24</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔32分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔32分.Text" xml:space="preserve">
+    <value>1/32</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔36分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔36分.Text" xml:space="preserve">
+    <value>1/36</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔48分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔48分.Text" xml:space="preserve">
+    <value>1/48</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔64分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔64分.Text" xml:space="preserve">
+    <value>1/64</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔128分.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔128分.Text" xml:space="preserve">
+    <value>1/128</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔フリー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔フリー.Text" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>129, 6</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔拡大.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F3</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔拡大.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔拡大.Text" xml:space="preserve">
+    <value>&amp;Wide</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔縮小.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F4</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔縮小.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔縮小.Text" xml:space="preserve">
+    <value>&amp;Narrow</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔.Size" type="System.Drawing.Size, System.Drawing">
+    <value>145, 22</value>
+  </data>
+  <data name="toolStripMenuItemガイド間隔.Text" xml:space="preserve">
+    <value>&amp;Guide margin</value>
+  </data>
+  <data name="toolStripMenuItem表示.Size" type="System.Drawing.Size, System.Drawing">
+    <value>44, 20</value>
+  </data>
+  <data name="toolStripMenuItem表示.Text" xml:space="preserve">
+    <value>&amp;View</value>
+  </data>
+  <data name="toolStripMenuItem先頭から再生.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F5</value>
+  </data>
+  <data name="toolStripMenuItem先頭から再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>218, 22</value>
+  </data>
+  <data name="toolStripMenuItem先頭から再生.Text" xml:space="preserve">
+    <value>Play from &amp;top</value>
+  </data>
+  <data name="toolStripMenuItem現在位置から再生.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F6</value>
+  </data>
+  <data name="toolStripMenuItem現在位置から再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>218, 22</value>
+  </data>
+  <data name="toolStripMenuItem現在位置から再生.Text" xml:space="preserve">
+    <value>&amp;Play from current part</value>
+  </data>
+  <data name="toolStripMenuItem現在位置からBGMのみ再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>218, 22</value>
+  </data>
+  <data name="toolStripMenuItem現在位置からBGMのみ再生.Text" xml:space="preserve">
+    <value>Play &amp;BGM from current part</value>
+  </data>
+  <data name="toolStripMenuItem再生停止.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F7</value>
+  </data>
+  <data name="toolStripMenuItem再生停止.Size" type="System.Drawing.Size, System.Drawing">
+    <value>218, 22</value>
+  </data>
+  <data name="toolStripMenuItem再生停止.Text" xml:space="preserve">
+    <value>&amp;Stop</value>
+  </data>
+  <data name="toolStripMenuItem再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 20</value>
+  </data>
+  <data name="toolStripMenuItem再生.Text" xml:space="preserve">
+    <value>&amp;Play</value>
+  </data>
+  <data name="toolStripMenuItemオプション.Size" type="System.Drawing.Size, System.Drawing">
+    <value>111, 22</value>
+  </data>
+  <data name="toolStripMenuItemオプション.Text" xml:space="preserve">
+    <value>&amp;Option</value>
+  </data>
+  <data name="toolStripMenuItemツール.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 20</value>
+  </data>
+  <data name="toolStripMenuItemツール.Text" xml:space="preserve">
+    <value>&amp;Tool</value>
+  </data>
+  <data name="toolStripMenuItemバージョン.Size" type="System.Drawing.Size, System.Drawing">
+    <value>112, 22</value>
+  </data>
+  <data name="toolStripMenuItemバージョン.Text" xml:space="preserve">
+    <value>&amp;Version</value>
+  </data>
+  <data name="toolStripMenuItemヘルプ.Size" type="System.Drawing.Size, System.Drawing">
+    <value>44, 20</value>
+  </data>
+  <data name="toolStripMenuItemヘルプ.Text" xml:space="preserve">
+    <value>&amp;Help</value>
+  </data>
+  <data name="menuStripメニューバー.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="menuStripメニューバー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>752, 24</value>
+  </data>
+  <data name="menuStripメニューバー.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;menuStripメニューバー.Name" xml:space="preserve">
+    <value>menuStripメニューバー</value>
+  </data>
+  <data name="&gt;&gt;menuStripメニューバー.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuStripメニューバー.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;menuStripメニューバー.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <metadata name="toolStripツールバー.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>0, 26</value>
+  </metadata>
+  <data name="toolStripButton新規作成.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton新規作成.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton新規作成.ToolTipText" xml:space="preserve">
+    <value>Create a new file</value>
+  </data>
+  <data name="toolStripButton開く.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton開く.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton開く.ToolTipText" xml:space="preserve">
+    <value>Open a file</value>
+  </data>
+  <data name="toolStripButton上書き保存.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton上書き保存.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton上書き保存.ToolTipText" xml:space="preserve">
+    <value>Save to file</value>
+  </data>
+  <data name="toolStripSeparator7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 26</value>
+  </data>
+  <data name="toolStripButton切り取り.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripButton切り取り.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton切り取り.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton切り取り.ToolTipText" xml:space="preserve">
+    <value>Cut selected chip(s)</value>
+  </data>
+  <data name="toolStripButtonコピー.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripButtonコピー.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButtonコピー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButtonコピー.ToolTipText" xml:space="preserve">
+    <value>Copy selected chip(s)</value>
+  </data>
+  <data name="toolStripButton貼り付け.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripButton貼り付け.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton貼り付け.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton貼り付け.ToolTipText" xml:space="preserve">
+    <value>Paste chip(s)</value>
+  </data>
+  <data name="toolStripButton削除.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripButton削除.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton削除.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton削除.ToolTipText" xml:space="preserve">
+    <value>Delete selected chip(s)</value>
+  </data>
+  <data name="toolStripSeparator8.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 26</value>
+  </data>
+  <data name="toolStripButton元に戻す.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripButton元に戻す.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton元に戻す.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton元に戻す.ToolTipText" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="toolStripButtonやり直す.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripButtonやり直す.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButtonやり直す.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButtonやり直す.ToolTipText" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="toolStripSeparator9.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 26</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.IntegralHeight" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items1" xml:space="preserve">
+    <value>x2</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items2" xml:space="preserve">
+    <value>x3</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items3" xml:space="preserve">
+    <value>x4</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items4" xml:space="preserve">
+    <value>x5</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items5" xml:space="preserve">
+    <value>x6</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items6" xml:space="preserve">
+    <value>x7</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items7" xml:space="preserve">
+    <value>x8</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items8" xml:space="preserve">
+    <value>x9</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items9" xml:space="preserve">
+    <value>x10</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items10" xml:space="preserve">
+    <value>x3.5</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items11" xml:space="preserve">
+    <value>x3.75</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Items12" xml:space="preserve">
+    <value>x4</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 26</value>
+  </data>
+  <data name="toolStripComboBox譜面拡大率.ToolTipText" xml:space="preserve">
+    <value>Vertical sizing</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items" xml:space="preserve">
+    <value>1/4</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items1" xml:space="preserve">
+    <value>1/6</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items2" xml:space="preserve">
+    <value>1/8</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items3" xml:space="preserve">
+    <value>1/12</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items4" xml:space="preserve">
+    <value>1/16</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items5" xml:space="preserve">
+    <value>1/24</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items6" xml:space="preserve">
+    <value>1/32</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items7" xml:space="preserve">
+    <value>1/36</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items8" xml:space="preserve">
+    <value>1/48</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items9" xml:space="preserve">
+    <value>1/64</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items10" xml:space="preserve">
+    <value>1/128</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Items11" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.MaxDropDownItems" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 26</value>
+  </data>
+  <data name="toolStripComboBoxガイド間隔.ToolTipText" xml:space="preserve">
+    <value>Guide margin</value>
+  </data>
+  <data name="toolStripButton選択モード.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton選択モード.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton選択モード.ToolTipText" xml:space="preserve">
+    <value>Cange to select mode</value>
+  </data>
+  <data name="toolStripButton編集モード.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton編集モード.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton編集モード.ToolTipText" xml:space="preserve">
+    <value>Change to edit mode</value>
+  </data>
+  <data name="toolStripSeparator10.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 26</value>
+  </data>
+  <data name="toolStripButton先頭から再生.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton先頭から再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton先頭から再生.ToolTipText" xml:space="preserve">
+    <value>Play from top with a viewer</value>
+  </data>
+  <data name="toolStripButton現在位置から再生.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton現在位置から再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton現在位置から再生.ToolTipText" xml:space="preserve">
+    <value>Play from current part with a viewer</value>
+  </data>
+  <data name="toolStripButton現在位置からBGMのみ再生.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton現在位置からBGMのみ再生.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton現在位置からBGMのみ再生.ToolTipText" xml:space="preserve">
+    <value>Play BGM from currect part with a viewer</value>
+  </data>
+  <data name="toolStripButton再生停止.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton再生停止.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton再生停止.ToolTipText" xml:space="preserve">
+    <value>Stop viewer playing</value>
+  </data>
+  <data name="toolStripSeparator11.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 26</value>
+  </data>
+  <data name="toolStripButton音量Down.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton音量Down.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton音量Down.Text" xml:space="preserve">
+    <value>toolStripButton1</value>
+  </data>
+  <data name="toolStripButton音量Down.ToolTipText" xml:space="preserve">
+    <value>volume down</value>
+  </data>
+  <data name="toolStripLabel音量.AutoSize" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="toolStripLabel音量.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Courier New, 8.25pt</value>
+  </data>
+  <data name="toolStripLabel音量.Size" type="System.Drawing.Size, System.Drawing">
+    <value>90, 23</value>
+  </data>
+  <data name="toolStripLabel音量.Text" xml:space="preserve">
+    <value> 0 *******-</value>
+  </data>
+  <data name="toolStripLabel音量.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
+  </data>
+  <data name="toolStripLabel音量.ToolTipText" xml:space="preserve">
+    <value>Current volue of chip (smallest:1 - 4:largest)</value>
+  </data>
+  <data name="toolStripButton音量UP.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
+  </data>
+  <data name="toolStripButton音量UP.Size" type="System.Drawing.Size, System.Drawing">
+    <value>23, 23</value>
+  </data>
+  <data name="toolStripButton音量UP.Text" xml:space="preserve">
+    <value>toolStripButton2</value>
+  </data>
+  <data name="toolStripButton音量UP.ToolTipText" xml:space="preserve">
+    <value>volume up</value>
+  </data>
+  <data name="toolStripSeparator15.Size" type="System.Drawing.Size, System.Drawing">
+    <value>6, 26</value>
+  </data>
+  <data name="toolStripツールバー.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 24</value>
+  </data>
+  <data name="toolStripツールバー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>752, 26</value>
+  </data>
+  <data name="toolStripツールバー.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;toolStripツールバー.Name" xml:space="preserve">
+    <value>toolStripツールバー</value>
+  </data>
+  <data name="&gt;&gt;toolStripツールバー.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripツールバー.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;toolStripツールバー.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="vScrollBar譜面用垂直スクロールバー.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="vScrollBar譜面用垂直スクロールバー.Location" type="System.Drawing.Point, System.Drawing">
+    <value>735, 50</value>
+  </data>
+  <data name="vScrollBar譜面用垂直スクロールバー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>17, 738</value>
+  </data>
+  <data name="vScrollBar譜面用垂直スクロールバー.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;vScrollBar譜面用垂直スクロールバー.Name" xml:space="preserve">
+    <value>vScrollBar譜面用垂直スクロールバー</value>
+  </data>
+  <data name="&gt;&gt;vScrollBar譜面用垂直スクロールバー.Type" xml:space="preserve">
+    <value>System.Windows.Forms.VScrollBar, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;vScrollBar譜面用垂直スクロールバー.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;vScrollBar譜面用垂直スクロールバー.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <metadata name="toolTipメインフォーム.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>369, 17</value>
+  </metadata>
+  <metadata name="contextMenuStrip譜面右メニュー.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>548, 17</value>
+  </metadata>
+  <data name="toolStripMenuItem選択チップの切り取り.Size" type="System.Drawing.Size, System.Drawing">
+    <value>192, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの切り取り.Text" xml:space="preserve">
+    <value>Cu&amp;t selected chip(s)</value>
+  </data>
+  <data name="toolStripMenuItem選択チップのコピー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>192, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択チップのコピー.Text" xml:space="preserve">
+    <value>&amp;Copy selected chip(s)</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの貼り付け.Size" type="System.Drawing.Size, System.Drawing">
+    <value>192, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの貼り付け.Text" xml:space="preserve">
+    <value>&amp;Paste chip(s)</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの削除.Size" type="System.Drawing.Size, System.Drawing">
+    <value>192, 22</value>
+  </data>
+  <data name="toolStripMenuItem選択チップの削除.Text" xml:space="preserve">
+    <value>&amp;Delete selected chip(s)</value>
+  </data>
+  <data name="toolStripSeparator12.Size" type="System.Drawing.Size, System.Drawing">
+    <value>189, 6</value>
+  </data>
+  <data name="toolStripMenuItemすべてのチップの選択.Size" type="System.Drawing.Size, System.Drawing">
+    <value>192, 22</value>
+  </data>
+  <data name="toolStripMenuItemすべてのチップの選択.Text" xml:space="preserve">
+    <value>Select &amp;all chips</value>
+  </data>
+  <data name="toolStripSeparator13.Size" type="System.Drawing.Size, System.Drawing">
+    <value>189, 6</value>
+  </data>
+  <data name="toolStripMenuItem小節長変更.Size" type="System.Drawing.Size, System.Drawing">
+    <value>192, 22</value>
+  </data>
+  <data name="toolStripMenuItem小節長変更.Text" xml:space="preserve">
+    <value>Change part length(&amp;B)</value>
+  </data>
+  <data name="toolStripSeparator14.Size" type="System.Drawing.Size, System.Drawing">
+    <value>189, 6</value>
+  </data>
+  <data name="toolStripMenuItem小節の挿入.Size" type="System.Drawing.Size, System.Drawing">
+    <value>192, 22</value>
+  </data>
+  <data name="toolStripMenuItem小節の挿入.Text" xml:space="preserve">
+    <value>&amp;Insert part</value>
+  </data>
+  <data name="toolStripMenuItem小節の削除.Size" type="System.Drawing.Size, System.Drawing">
+    <value>192, 22</value>
+  </data>
+  <data name="toolStripMenuItem小節の削除.Text" xml:space="preserve">
+    <value>D&amp;elete part</value>
+  </data>
+  <data name="contextMenuStrip譜面右メニュー.Size" type="System.Drawing.Size, System.Drawing">
+    <value>193, 198</value>
+  </data>
+  <data name="&gt;&gt;contextMenuStrip譜面右メニュー.Name" xml:space="preserve">
+    <value>contextMenuStrip譜面右メニュー</value>
+  </data>
+  <data name="&gt;&gt;contextMenuStrip譜面右メニュー.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 12</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>752, 810</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>SSTFEditor</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemファイル.Name" xml:space="preserve">
+    <value>toolStripMenuItemファイル</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemファイル.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem新規作成.Name" xml:space="preserve">
+    <value>toolStripMenuItem新規作成</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem新規作成.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem開く.Name" xml:space="preserve">
+    <value>toolStripMenuItem開く</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem開く.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem上書き保存.Name" xml:space="preserve">
+    <value>toolStripMenuItem上書き保存</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem上書き保存.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem名前を付けて保存.Name" xml:space="preserve">
+    <value>toolStripMenuItem名前を付けて保存</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem名前を付けて保存.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator1.Name" xml:space="preserve">
+    <value>toolStripSeparator1</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem終了.Name" xml:space="preserve">
+    <value>toolStripMenuItem終了</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem終了.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem編集.Name" xml:space="preserve">
+    <value>toolStripMenuItem編集</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem編集.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem元に戻す.Name" xml:space="preserve">
+    <value>toolStripMenuItem元に戻す</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem元に戻す.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemやり直す.Name" xml:space="preserve">
+    <value>toolStripMenuItemやり直す</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemやり直す.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Name" xml:space="preserve">
+    <value>toolStripSeparator2</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem切り取り.Name" xml:space="preserve">
+    <value>toolStripMenuItem切り取り</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem切り取り.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemコピー.Name" xml:space="preserve">
+    <value>toolStripMenuItemコピー</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemコピー.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem貼り付け.Name" xml:space="preserve">
+    <value>toolStripMenuItem貼り付け</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem貼り付け.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem削除.Name" xml:space="preserve">
+    <value>toolStripMenuItem削除</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem削除.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator3.Name" xml:space="preserve">
+    <value>toolStripSeparator3</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemすべて選択.Name" xml:space="preserve">
+    <value>toolStripMenuItemすべて選択</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemすべて選択.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
+    <value>toolStripSeparator4</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択モード.Name" xml:space="preserve">
+    <value>toolStripMenuItem選択モード</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択モード.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem編集モード.Name" xml:space="preserve">
+    <value>toolStripMenuItem編集モード</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem編集モード.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemモード切替え.Name" xml:space="preserve">
+    <value>toolStripMenuItemモード切替え</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemモード切替え.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator5.Name" xml:space="preserve">
+    <value>toolStripSeparator5</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem検索.Name" xml:space="preserve">
+    <value>toolStripMenuItem検索</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem検索.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem表示.Name" xml:space="preserve">
+    <value>toolStripMenuItem表示</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem表示.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔4分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔4分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔4分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔6分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔6分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔6分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔8分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔8分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔8分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔12分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔12分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔12分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔16分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔16分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔16分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔24分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔24分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔24分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔32分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔32分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔32分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔36分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔36分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔36分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔48分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔48分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔48分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔64分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔64分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔64分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔128分.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔128分</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔128分.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔フリー.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔フリー</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔フリー.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator6.Name" xml:space="preserve">
+    <value>toolStripSeparator6</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔拡大.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔拡大</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔拡大.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔縮小.Name" xml:space="preserve">
+    <value>toolStripMenuItemガイド間隔縮小</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemガイド間隔縮小.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem再生.Name" xml:space="preserve">
+    <value>toolStripMenuItem再生</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem再生.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem先頭から再生.Name" xml:space="preserve">
+    <value>toolStripMenuItem先頭から再生</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem先頭から再生.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem現在位置から再生.Name" xml:space="preserve">
+    <value>toolStripMenuItem現在位置から再生</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem現在位置から再生.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem現在位置からBGMのみ再生.Name" xml:space="preserve">
+    <value>toolStripMenuItem現在位置からBGMのみ再生</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem現在位置からBGMのみ再生.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem再生停止.Name" xml:space="preserve">
+    <value>toolStripMenuItem再生停止</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem再生停止.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemツール.Name" xml:space="preserve">
+    <value>toolStripMenuItemツール</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemツール.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemオプション.Name" xml:space="preserve">
+    <value>toolStripMenuItemオプション</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemオプション.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemヘルプ.Name" xml:space="preserve">
+    <value>toolStripMenuItemヘルプ</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemヘルプ.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemバージョン.Name" xml:space="preserve">
+    <value>toolStripMenuItemバージョン</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemバージョン.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton新規作成.Name" xml:space="preserve">
+    <value>toolStripButton新規作成</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton新規作成.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton開く.Name" xml:space="preserve">
+    <value>toolStripButton開く</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton開く.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton上書き保存.Name" xml:space="preserve">
+    <value>toolStripButton上書き保存</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton上書き保存.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator7.Name" xml:space="preserve">
+    <value>toolStripSeparator7</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator7.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton切り取り.Name" xml:space="preserve">
+    <value>toolStripButton切り取り</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton切り取り.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButtonコピー.Name" xml:space="preserve">
+    <value>toolStripButtonコピー</value>
+  </data>
+  <data name="&gt;&gt;toolStripButtonコピー.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton貼り付け.Name" xml:space="preserve">
+    <value>toolStripButton貼り付け</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton貼り付け.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton削除.Name" xml:space="preserve">
+    <value>toolStripButton削除</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton削除.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator8.Name" xml:space="preserve">
+    <value>toolStripSeparator8</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton元に戻す.Name" xml:space="preserve">
+    <value>toolStripButton元に戻す</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton元に戻す.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButtonやり直す.Name" xml:space="preserve">
+    <value>toolStripButtonやり直す</value>
+  </data>
+  <data name="&gt;&gt;toolStripButtonやり直す.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator9.Name" xml:space="preserve">
+    <value>toolStripSeparator9</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator9.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripComboBox譜面拡大率.Name" xml:space="preserve">
+    <value>toolStripComboBox譜面拡大率</value>
+  </data>
+  <data name="&gt;&gt;toolStripComboBox譜面拡大率.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripComboBoxガイド間隔.Name" xml:space="preserve">
+    <value>toolStripComboBoxガイド間隔</value>
+  </data>
+  <data name="&gt;&gt;toolStripComboBoxガイド間隔.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton選択モード.Name" xml:space="preserve">
+    <value>toolStripButton選択モード</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton選択モード.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton編集モード.Name" xml:space="preserve">
+    <value>toolStripButton編集モード</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton編集モード.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator10.Name" xml:space="preserve">
+    <value>toolStripSeparator10</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator10.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton先頭から再生.Name" xml:space="preserve">
+    <value>toolStripButton先頭から再生</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton先頭から再生.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton現在位置から再生.Name" xml:space="preserve">
+    <value>toolStripButton現在位置から再生</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton現在位置から再生.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton現在位置からBGMのみ再生.Name" xml:space="preserve">
+    <value>toolStripButton現在位置からBGMのみ再生</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton現在位置からBGMのみ再生.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton再生停止.Name" xml:space="preserve">
+    <value>toolStripButton再生停止</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton再生停止.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator11.Name" xml:space="preserve">
+    <value>toolStripSeparator11</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator11.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton音量Down.Name" xml:space="preserve">
+    <value>toolStripButton音量Down</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton音量Down.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripLabel音量.Name" xml:space="preserve">
+    <value>toolStripLabel音量</value>
+  </data>
+  <data name="&gt;&gt;toolStripLabel音量.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton音量UP.Name" xml:space="preserve">
+    <value>toolStripButton音量UP</value>
+  </data>
+  <data name="&gt;&gt;toolStripButton音量UP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator15.Name" xml:space="preserve">
+    <value>toolStripSeparator15</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator15.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolTipメインフォーム.Name" xml:space="preserve">
+    <value>toolTipメインフォーム</value>
+  </data>
+  <data name="&gt;&gt;toolTipメインフォーム.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択チップの切り取り.Name" xml:space="preserve">
+    <value>toolStripMenuItem選択チップの切り取り</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択チップの切り取り.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択チップのコピー.Name" xml:space="preserve">
+    <value>toolStripMenuItem選択チップのコピー</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択チップのコピー.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択チップの貼り付け.Name" xml:space="preserve">
+    <value>toolStripMenuItem選択チップの貼り付け</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択チップの貼り付け.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択チップの削除.Name" xml:space="preserve">
+    <value>toolStripMenuItem選択チップの削除</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem選択チップの削除.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator12.Name" xml:space="preserve">
+    <value>toolStripSeparator12</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator12.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemすべてのチップの選択.Name" xml:space="preserve">
+    <value>toolStripMenuItemすべてのチップの選択</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItemすべてのチップの選択.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator13.Name" xml:space="preserve">
+    <value>toolStripSeparator13</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator13.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem小節長変更.Name" xml:space="preserve">
+    <value>toolStripMenuItem小節長変更</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem小節長変更.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator14.Name" xml:space="preserve">
+    <value>toolStripSeparator14</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator14.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem小節の挿入.Name" xml:space="preserve">
+    <value>toolStripMenuItem小節の挿入</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem小節の挿入.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem小節の削除.Name" xml:space="preserve">
+    <value>toolStripMenuItem小節の削除</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem小節の削除.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>メインフォーム</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>

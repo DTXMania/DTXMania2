@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using SharpDX;
-using SharpDX.Direct2D1;
+using FDK;
 
 namespace DTXMania2.演奏
 {
@@ -20,7 +20,7 @@ namespace DTXMania2.演奏
         public float 現在位置
         {
             get => this._現在位置;
-            set => this._現在位置 = Math.Min( Math.Max( 0.0f, value ), 1.0f );
+            set => this._現在位置 = Math.Clamp( value, min: 0.0f, max: 1.0f );
         }
 
 

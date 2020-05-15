@@ -1,5 +1,5 @@
 ﻿# 矩形リスト
-# ・4つの数値は、Left, Top, Widht, Height の順。
+# ・4つの数値は、Left, Top, Width, Height の順。
 # ・Bass, LeftBass, HiHat, Snare, Tom1～3 は、
 # 　縦に49枚、チップの高さは18pxだが、下部3pxを下のチップ、右部3pxを右のチップと
 # 　それぞれ共有している。

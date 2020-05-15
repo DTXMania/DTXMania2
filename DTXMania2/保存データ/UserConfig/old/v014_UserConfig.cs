@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using Microsoft.Data.Sqlite;
-using YamlDotNet.Serialization;
+using FDK;
 
 namespace DTXMania2.old.UserConfig
 {

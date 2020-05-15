@@ -180,7 +180,7 @@ namespace SSTFormat.v004
                             int 区切り位置 = 行.IndexOf( '#' );
                             if( 0 <= 区切り位置 )
                             {
-                                行 = 行[ 0..区切り位置 ];
+                                行 = 行[ ..区切り位置 ];
                                 行 = 行.Trim();
                             }
                         }
@@ -349,7 +349,7 @@ namespace SSTFormat.v004
 
                     try
                     {
-                        現在の.スコア.難易度 = Math.Max( Math.Min( double.Parse( items[ 1 ].Trim() ), 9.99 ), 0.00 );
+                        現在の.スコア.難易度 = Math.Clamp( double.Parse( items[ 1 ].Trim() ), min: 0.00, max: 9.99 );
                     }
                     catch
                     {
