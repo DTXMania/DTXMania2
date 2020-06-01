@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace FDK
 {
@@ -168,6 +169,7 @@ namespace FDK
                 Log._一定時間が経過していたら区切り線を表示する();
                 Trace.WriteLine( $"{tagINFO} {Log._日時とスレッドID} {Log._インデックスを返す( Log._深さ )}{開始ブロック名} --> 開始" );
 
+                Log._Info開始時刻.Push( DateTime.Now );
                 Log._深さ++;
             }
         }
@@ -176,10 +178,11 @@ namespace FDK
         {
             lock( Log._スレッド間同期 )
             {
+                var 経過時間ms = ( DateTime.Now - Log._Info開始時刻.Pop() ).TotalMilliseconds;
                 Log._深さ = Math.Max( ( Log._深さ - 1 ), 0 );
 
                 Log._一定時間が経過していたら区切り線を表示する();
-                Trace.WriteLine( $"{tagINFO} {Log._日時とスレッドID} {Log._インデックスを返す( Log._深さ )}{終了ブロック名} <-- 終了" );
+                Trace.WriteLine( $"{tagINFO} {Log._日時とスレッドID} {Log._インデックスを返す( Log._深さ )}{終了ブロック名} <-- 終了 ({経過時間ms}ms)" );
             }
         }
 
@@ -218,6 +221,8 @@ namespace FDK
         private static DateTime _最終表示時刻 = DateTime.Now;
 
         private static int _深さ = 0;
+
+        private static Stack<DateTime> _Info開始時刻 = new Stack<DateTime>();
 
         private static readonly object _スレッド間同期 = new object();
 

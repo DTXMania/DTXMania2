@@ -4,6 +4,8 @@ using System.Diagnostics;
 using SharpDX;
 using SharpDX.Direct2D1;
 using FDK;
+using System.Threading;
+using Windows.ApplicationModel.Background;
 
 namespace DTXMania2.タイトル
 {
@@ -45,8 +47,11 @@ namespace DTXMania2.タイトル
             Global.App.システムサウンド.再生する( システムサウンド種別.タイトルステージ_開始音 );
             Global.App.システムサウンド.再生する( システムサウンド種別.タイトルステージ_ループBGM, ループ再生する: true );
 
+            Global.App.ログオフする();
+
             // 最初のフェーズへ。
             this.現在のフェーズ = フェーズ.表示;
+            this._フェーズ完了 = false;
         }
 
         public void Dispose()
@@ -72,32 +77,59 @@ namespace DTXMania2.タイトル
         public void 進行する()
         {
             this._システム情報.FPSをカウントしプロパティを更新する();
-            
             Global.App.ドラム入力.すべての入力デバイスをポーリングする();
 
             switch( this.現在のフェーズ )
             {
                 case フェーズ.表示:
-
+                {
+                    #region " 入力処理。"
+                    //----------------
                     if( Global.App.ドラム入力.確定キーが入力された() )
                     {
-                        #region " 確定 "
+                        #region " 確定 → クローズアイキャッチを開始してフェードアウトへ "
                         //----------------
                         Global.App.システムサウンド.再生する( システムサウンド種別.タイトルステージ_確定音 );
                         Global.App.アイキャッチ管理.アイキャッチを選択しクローズする( nameof( シャッター ) );
+
                         this.現在のフェーズ = フェーズ.フェードアウト;
                         //----------------
                         #endregion
                     }
                     else if( Global.App.ドラム入力.キャンセルキーが入力された() )
                     {
-                        #region " キャンセル "
+                        #region " キャンセル → キャンセルフェーズへ "
                         //----------------
                         this.現在のフェーズ = フェーズ.キャンセル;
                         //----------------
                         #endregion
                     }
                     break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.フェードアウト:
+                {
+                    #region " フェードアウト描画が完了したら完了フェーズへ。"
+                    //----------------
+                    if( this._フェーズ完了 )
+                    {
+                        this.現在のフェーズ = フェーズ.完了;
+                        this._フェーズ完了 = false;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.キャンセル:
+                case フェーズ.完了:
+                {
+                    #region " 遷移終了。Appによるステージ遷移を待つ。"
+                    //----------------
+                    break;
+                    //----------------
+                    #endregion
+                }
             }
         }
 
@@ -111,46 +143,52 @@ namespace DTXMania2.タイトル
             switch( this.現在のフェーズ )
             {
                 case フェーズ.表示:
-
-                    #region " タイトル画面を表示する。"
+                {
+                    #region " タイトル画面。"
                     //----------------
                     this._舞台画像.進行描画する( dc );
+
                     this._タイトルロゴ.描画する(
                         ( Global.設計画面サイズ.Width - this._タイトルロゴ.サイズ.Width ) / 2f,
                         ( Global.設計画面サイズ.Height - this._タイトルロゴ.サイズ.Height ) / 2f - 100f );
+
                     this._帯メッセージを描画する( dc );
+
+                    this._システム情報.描画する( dc );
+                    break;
                     //----------------
                     #endregion
-
-                    break;
-
+                }
                 case フェーズ.フェードアウト:
-
-                    #region " タイトル画面を表示する。"
+                {
+                    #region " タイトル画面＆フェードアウト。"
                     //----------------
                     this._舞台画像.進行描画する( dc );
+
                     this._タイトルロゴ.描画する(
                         ( Global.設計画面サイズ.Width - this._タイトルロゴ.サイズ.Width ) / 2f,
                         ( Global.設計画面サイズ.Height - this._タイトルロゴ.サイズ.Height ) / 2f - 100f );
+
                     this._帯メッセージを描画する( dc );
-                    //----------------
-                    #endregion
 
-                    #region " アイキャッチを描画する。"
-                    //----------------
-                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
+                        this._フェーズ完了 = true;    // 完了
 
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.クローズ完了 )
-                    {
-                        this.現在のフェーズ = フェーズ.完了;
-                    }
-                    //----------------
-                    #endregion
-
+                    this._システム情報.描画する( dc );
                     break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.キャンセル:
+                case フェーズ.完了:
+                {
+                    #region " 最後の画面を維持。"
+                    //----------------
+                    break;
+                    //----------------
+                    #endregion
+                }
             }
-
-            this._システム情報.描画する( dc );
         }
 
 
@@ -167,6 +205,8 @@ namespace DTXMania2.タイトル
         private readonly Brush _帯ブラシ;
 
         private readonly 文字列画像D2D _パッドを叩いてください;
+
+        private bool _フェーズ完了;
 
 
         private void _帯メッセージを描画する( DeviceContext dc )

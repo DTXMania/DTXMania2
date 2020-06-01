@@ -156,15 +156,15 @@ namespace DTXMania2
             var 譜面 = スコア.ファイルから生成する( 譜面ファイルの絶対パス.変数なしパス );
 
             var ノーツ数マップ = _ノーツ数を算出して返す( 譜面, userConfig );
-            var BPMs = _最小最大BPMを調べて返す( 譜面 );
+            var (最小BPM, 最大BPM) = _最小最大BPMを調べて返す( 譜面 );
 
             // 読み込んだ譜面から反映する。
             this.ScorePath = 譜面ファイルの絶対パス.変数なしパス;
             this.Title = 譜面.曲名;
             this.LastWriteTime = File.GetLastWriteTime( this.ScorePath ).ToString( "G" );
             this.Level = 譜面.難易度;
-            this.MinBPM = BPMs.最小BPM;
-            this.MaxBPM = BPMs.最大BPM;
+            this.MinBPM = 最小BPM;
+            this.MaxBPM = 最大BPM;
             this.TotalNotes_LeftCymbal = ノーツ数マップ[ 演奏.表示レーン種別.LeftCymbal ];
             this.TotalNotes_HiHat = ノーツ数マップ[ 演奏.表示レーン種別.HiHat ];
             this.TotalNotes_LeftPedal = ノーツ数マップ[ 演奏.表示レーン種別.Foot ];
@@ -339,7 +339,6 @@ namespace DTXMania2
                 var ドラムチッププロパティ = userConfig.ドラムチッププロパティリスト[ chip.チップ種別 ];
 
                 // 1. AutoPlay ON のチップは、すべてが ON である場合を除いて、カウントしない。
-
                 if( userConfig.AutoPlay[ ドラムチッププロパティ.AutoPlay種別 ] )
                 {
                     if( !( userConfig.AutoPlayがすべてONである ) )
@@ -347,12 +346,10 @@ namespace DTXMania2
                 }
 
                 // 2. AutoPlay OFF 時でも、ユーザヒットの対象にならないチップはカウントしない。
-
                 if( !( ドラムチッププロパティ.AutoPlayOFF_ユーザヒット ) )
                     continue;
 
                 // カウント。
-
                 ノーツ数マップ[ ドラムチッププロパティ.表示レーン種別 ]++;
             }
 

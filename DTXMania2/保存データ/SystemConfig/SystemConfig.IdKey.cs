@@ -11,10 +11,10 @@ namespace DTXMania2
     partial class SystemConfig
     {
         /// <summary>
-        ///		入力コードのマッピング用 Dictionary のキーとなる型。
+        ///		入力のマッピング（Dictionary）のキーとなる型。
         /// </summary>
         /// <remarks>
-        ///		入力は、デバイスID（入力デバイスの内部識別用ID; FDKのIInputEvent.DeviceIDと同じ）と、
+        ///		入力は、デバイスID（入力デバイスの内部識別用ID; <see cref="FDK.InputEvent.DeviceID"/>と同じ）と、
         ///		キー（キーコード、ノート番号などデバイスから得られる入力値）の組で定義される。
         /// </remarks>
         public struct IdKey : IYamlConvertible

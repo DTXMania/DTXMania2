@@ -97,7 +97,7 @@ namespace DTXMania2.演奏
 
         private void _サムネイルを描画する()
         {
-            var サムネイル画像 = Global.App.演奏譜面.プレビュー画像 ?? this._既定のノード画像;
+            var サムネイル画像 = Global.App.演奏譜面?.プレビュー画像 ?? this._既定のノード画像;
 
             var 変換行列 =
                 Matrix.Scaling(

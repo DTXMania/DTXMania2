@@ -6,6 +6,9 @@ using System.Threading;
 
 namespace DTXMania2
 {
+    /// <summary>
+    ///     <see cref="TaskMessage"/> の送受信に使用するキュー。
+    /// </summary>
     class TaskMessageQueue
     {
 

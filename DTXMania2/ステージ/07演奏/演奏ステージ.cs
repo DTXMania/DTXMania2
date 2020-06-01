@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SharpDX;
 using SharpDX.Direct2D1;
 using FDK;
 using SSTFormat.v004;
+using System.Net.Http.Headers;
 
 namespace DTXMania2.演奏
 {
@@ -22,6 +24,7 @@ namespace DTXMania2.演奏
 
         public enum フェーズ
         {
+            演奏状態初期化,
             フェードイン,
             演奏開始,
             表示,
@@ -30,7 +33,11 @@ namespace DTXMania2.演奏
             キャンセル通知,
             キャンセル時フェードアウト,
             キャンセル完了,
-            即時終了,
+
+            // 以下、ビュアーモード用。
+            指示待機,
+            曲読み込み開始,
+            曲読み込み完了待ち,
         }
 
         public フェーズ 現在のフェーズ { get; protected set; } = フェーズ.キャンセル完了;
@@ -94,59 +101,15 @@ namespace DTXMania2.演奏
             this._小節線色 = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color.White );
             this._小節線影色 = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color.Blue );
             this._拍線色 = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color.Gray );
-
-            this._フェードインカウンタ = new Counter( 0, 100, 10 );
-
+            this._スコア指定の背景画像 = null!;
+            this._チップの演奏状態 = null!;
+            this._フェードインカウンタ = new Counter();
+            this._LoadingSpinner = new LoadingSpinner();
             this.成績 = new 成績();
 
-            #region " スコアに依存するデータを初期化する。"
-            //----------------
-            this._描画開始チップ番号 = -1;
-
-            this._チップの演奏状態 = new Dictionary<チップ, チップの演奏状態>();
-            foreach( var chip in Global.App.演奏スコア.チップリスト )
-                this._チップの演奏状態.Add( chip, new チップの演奏状態( chip ) );
-
-            this._スコア指定の背景画像 = string.IsNullOrEmpty( Global.App.演奏スコア.背景画像ファイル名 ) ?
-                null! :
-                new 画像( Path.Combine( Global.App.演奏スコア.PATH_WAV, Global.App.演奏スコア.背景画像ファイル名 ) );    // PATH_WAV は絶対パス
-            //----------------
-            #endregion
-
-            #region " WAVを生成する。"
-            //----------------
-            Global.App.WAVキャッシュ.世代を進める();
-
-            Global.App.WAV管理?.Dispose();
-            Global.App.WAV管理 = new WAV管理();
-
-            foreach( var kvp in Global.App.演奏スコア.WAVリスト )
-            {
-                var wavInfo = kvp.Value;
-
-                var path = Path.Combine( Global.App.演奏スコア.PATH_WAV, wavInfo.ファイルパス );
-                Global.App.WAV管理.登録する( kvp.Key, path, wavInfo.多重再生する, wavInfo.BGMである );
-            }
-            //----------------
-            #endregion
-
-            #region " AVIを生成する。"
-            //----------------
-            Global.App.AVI管理?.Dispose();
-            Global.App.AVI管理 = new AVI管理();
-
-            if( userConfig.演奏中に動画を表示する )
-            {
-                foreach( var kvp in Global.App.演奏スコア.AVIリスト )
-                {
-                    var path = Path.Combine( Global.App.演奏スコア.PATH_WAV, kvp.Value );
-                    Global.App.AVI管理.登録する( kvp.Key, path, userConfig.再生速度 );
-                }
-            }
-            //----------------
-            #endregion
-
-            this.現在のフェーズ = ( Global.Options.ビュアーモードである ) ? フェーズ.演奏開始 : フェーズ.フェードイン;
+            // 最初のフェーズへ。
+            this.現在のフェーズ = ( Global.Options.ビュアーモードである ) ? フェーズ.指示待機 : フェーズ.演奏状態初期化;
+            this._フェーズ完了 = false;
         }
 
         public virtual void Dispose()
@@ -158,7 +121,7 @@ namespace DTXMania2.演奏
             this._描画開始チップ番号 = -1;
 
             //Global.App.WAV管理?.Dispose();	    --> ここではまだ解放しない。
-            Global.App.AVI管理.Dispose();
+            Global.App.AVI管理?.Dispose();
             //----------------
             #endregion
 
@@ -168,6 +131,7 @@ namespace DTXMania2.演奏
             this.キャプチャ画面?.Dispose();
             this._スコア指定の背景画像?.Dispose();
 
+            this._LoadingSpinner.Dispose();
             this._拍線色.Dispose();
             this._小節線影色.Dispose();
             this._小節線色.Dispose();
@@ -202,479 +166,600 @@ namespace DTXMania2.演奏
 
         public void 進行する()
         {
-            try
+            this._システム情報.FPSをカウントしプロパティを更新する();
+
+            CommandLineOptions? options = null!;
+            var userConfig = Global.App.ログオン中のユーザ;
+
+            #region " 全フェーズ共通：ビュアーモード時、オプションが届いていれば処理する。"
+            //----------------
+            if( Global.Options.ビュアーモードである && OptionsQueue.TryDequeue( out options ) )
             {
-                this._システム情報.FPSをカウントしプロパティを更新する();
-
-                #region " オプションが届いていれば、取り出して処理する。"
-                //----------------
-                if( Global.Options.ビュアーモードである && OptionsQueue.TryDequeue( out var options ) )
+                if( options.再生停止 )
                 {
-                    if( options.再生停止 )
-                    {
-                        Log.Info( "演奏を即時終了します。" );
-                        Global.App.WAV管理.すべての発声を停止する();    // DTXでのBGMサウンドはこっちに含まれる。
-                        this.現在のフェーズ = フェーズ.即時終了;
-                    }
+                    Log.Info( "演奏を即時終了します。" );
+                    Global.App.WAV管理?.すべての発声を停止する();    // DTXでのBGMサウンドはこっちに含まれる。
+
+                    this.現在のフェーズ = フェーズ.指示待機;
                 }
-                //----------------
-                #endregion
+            }
+            //----------------
+            #endregion
 
-                var userConfig = Global.App.ログオン中のユーザ;
-
-                switch( this.現在のフェーズ )
+            switch( this.現在のフェーズ )
+            {
+                case フェーズ.演奏状態初期化:
                 {
-                    case フェーズ.フェードイン:
-                        {
-                            if( this._フェードインカウンタ.終了値に達した )
-                            {
-                                Log.Info( "演奏を開始します。" );
-                                this.現在のフェーズ = フェーズ.演奏開始;
-                            }
-                        }
+                    #region " 演奏状態を初期化し、演奏開始またはフェードインフェーズへ。"
+                    //----------------
+                    this._演奏状態を初期化する();
+                    this._フェードインカウンタ = new Counter( 0, 100, 10 );
+
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = ( Global.Options.ビュアーモードである ) ? フェーズ.演奏開始 : フェーズ.フェードイン;
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.フェードイン:
+                {
+                    #region " フェードインが完了したら演奏開始フェーズへ。"
+                    //----------------
+                    if( this._フェードインカウンタ.終了値に達した )
+                    {
+                        Log.Info( "演奏を開始します。" );
+                        this.現在のフェーズ = フェーズ.演奏開始;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.演奏開始:
+                {
+                    #region " 演奏を開始し、表示フェーズへ。"
+                    //----------------
+                    this._描画開始チップ番号 = -1; // -1 以外になれば演奏開始。
+
+                    // 演奏を開始する。
+                    if( Global.Options.ビュアーモードである && 0 <= 演奏ステージ.演奏開始小節番号 )
+                    {
+                        #region " (A) 演奏開始小節番号から演奏を開始する。"
+                        //----------------
+                        var 演奏開始時刻sec = this._指定小節へ移動する( 演奏ステージ.演奏開始小節番号 );
+                        Global.App.サウンドタイマ.リセットする( 演奏開始時刻sec );
+                        //----------------
+                        #endregion
+                    }
+                    else
+                    {
+                        #region " (B) 最初から再生する。"
+                        //----------------
+                        this._描画開始チップ番号 = 0;
+                        Global.App.サウンドタイマ.リセットする();
+                        //----------------
+                        #endregion
+                    }
+
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.表示;
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.表示:
+                {
+                    #region " フェーズが完了していれば、指示待機またはクリアフェーズへ。"
+                    //----------------
+                    if( this._フェーズ完了 )
+                    {
+                        this.現在のフェーズ = ( Global.Options.ビュアーモードである ) ? フェーズ.指示待機 : フェーズ.クリア;
+                        this._フェーズ完了 = false;
                         break;
+                    }
+                    //----------------
+                    #endregion
 
-                    case フェーズ.演奏開始:
+                    #region " 入力処理。"
+                    //----------------
+                    double 現在の演奏時刻sec = this._演奏開始からの経過時間secを返す();
+                    long 現在の演奏時刻qpc = QPCTimer.生カウント;
+
+                    #region " 自動ヒット処理。"
+                    //----------------
+                    this._描画範囲内のすべてのチップに対して( 現在の演奏時刻sec, ( chip, index, ヒット判定バーと描画との時間sec, ヒット判定バーと発声との時間sec, ヒット判定バーとの距離dpx ) => {
+
+                        var ドラムチッププロパティ = userConfig.ドラムチッププロパティリスト[ chip.チップ種別 ];
+
+                        bool AutoPlayである = userConfig.AutoPlay[ ドラムチッププロパティ.AutoPlay種別 ];
+                        bool チップはヒット済みである = this._チップの演奏状態[ chip ].ヒット済みである;
+                        bool チップはまだヒットされていない = !( チップはヒット済みである );
+                        bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec > userConfig.最大ヒット距離sec[ 判定種別.OK ] );
+                        bool チップは描画についてヒット判定バーを通過した = ( 0 <= ヒット判定バーと描画との時間sec );
+                        bool チップは発声についてヒット判定バーを通過した = ( 0 <= ヒット判定バーと発声との時間sec );
+
+                        if( チップはまだヒットされていない && チップはMISSエリアに達している )
                         {
-                            this._描画開始チップ番号 = -1; // -1 以外になれば演奏開始。
-
-                            if( Global.Options.ビュアーモードである && 0 <= 演奏ステージ.演奏開始小節番号 )
+                            #region " MISS判定。"
+                            //----------------
+                            if( AutoPlayである && ドラムチッププロパティ.AutoPlayON_Miss判定 )
                             {
-                                // ビュアーモードの場合、演奏開始小節番号から演奏を開始する。
-                                var 演奏開始時刻sec = this._指定小節へ移動する( 演奏ステージ.演奏開始小節番号 );
-                                Global.App.サウンドタイマ.リセットする( 演奏開始時刻sec );
+                                // AutoPlay時
+                                this._チップのヒット処理を行う(
+                                    chip,
+                                    判定種別.MISS,
+                                    ドラムチッププロパティ.AutoPlayON_自動ヒット_再生,
+                                    ドラムチッププロパティ.AutoPlayON_自動ヒット_判定,
+                                    ドラムチッププロパティ.AutoPlayON_自動ヒット_非表示,
+                                    ヒット判定バーと発声との時間sec,
+                                    ヒット判定バーと描画との時間sec );
+                                return;
+                            }
+                            else if( !AutoPlayである && ドラムチッププロパティ.AutoPlayOFF_Miss判定 )
+                            {
+                                // 手動演奏時
+                                this._チップのヒット処理を行う(
+                                    chip,
+                                    判定種別.MISS,
+                                    ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_再生,
+                                    ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_判定,
+                                    ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_非表示,
+                                    ヒット判定バーと発声との時間sec,
+                                    ヒット判定バーと描画との時間sec );
+
+                                // 手動演奏なら MISS はエキサイトゲージに反映。
+                                this.成績.エキサイトゲージを更新する( 判定種別.MISS );
+                                return;
                             }
                             else
                             {
-                                // 通常モードの場合、最初から。
-                                this._描画開始チップ番号 = 0;
-                                Global.App.サウンドタイマ.リセットする();
+                                // 通過。
                             }
-
-                            this.現在のフェーズ = フェーズ.表示;
-
-                            // ここで break すると、次の表示フェーズまで１フレーム分の時間（数ミリ秒）が空いてしまう。
-                            // なので、フレームが空かないように、ここですぐさま最初の表示フェーズを実行する。
-                            this.進行する();
-                        }
-                        break;
-
-                    case フェーズ.表示:
-                        {
-                            // ※注:クリアや失敗の判定は、ここではなく描画側で行っている。
-
-                            double 現在の演奏時刻sec = this._演奏開始からの経過時間secを返す();
-                            long 現在の演奏時刻qpc = QPCTimer.生カウント;
-
-                            #region " 自動ヒット処理。"
                             //----------------
-                            this._描画範囲内のすべてのチップに対して( 現在の演奏時刻sec, ( chip, index, ヒット判定バーと描画との時間sec, ヒット判定バーと発声との時間sec, ヒット判定バーとの距離dpx ) => {
+                            #endregion
+                        }
 
-                                var ドラムチッププロパティ = userConfig.ドラムチッププロパティリスト[ chip.チップ種別 ];
-
-                                bool AutoPlayである = userConfig.AutoPlay[ ドラムチッププロパティ.AutoPlay種別 ];
-                                bool チップはヒット済みである = this._チップの演奏状態[ chip ].ヒット済みである;
-                                bool チップはまだヒットされていない = !( チップはヒット済みである );
-                                bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec > userConfig.最大ヒット距離sec[ 判定種別.OK ] );
-                                bool チップは描画についてヒット判定バーを通過した = ( 0 <= ヒット判定バーと描画との時間sec );
-                                bool チップは発声についてヒット判定バーを通過した = ( 0 <= ヒット判定バーと発声との時間sec );
-
-                                if( チップはまだヒットされていない && チップはMISSエリアに達している )
+                        // ヒット処理(1) 発声時刻
+                        if( チップは発声についてヒット判定バーを通過した )    // ヒット済みかどうかには関係ない
+                        {
+                            #region " 自動ヒット判定（再生）"
+                            //----------------
+                            if( ( AutoPlayである && ドラムチッププロパティ.AutoPlayON_自動ヒット_再生 ) ||
+                                ( !AutoPlayである && ドラムチッププロパティ.AutoPlayOFF_自動ヒット_再生 ) )
+                            {
+                                // チップの発声がまだなら発声を行う。
+                                if( !( this._チップの演奏状態[ chip ].発声済みである ) )
                                 {
-                                    #region " MISS判定。"
-                                    //----------------
-                                    if( AutoPlayである && ドラムチッププロパティ.AutoPlayON_Miss判定 )
-                                    {
-                                        // AutoPlay時
-                                        this._チップのヒット処理を行う(
-                                            chip,
-                                            判定種別.MISS,
-                                            ドラムチッププロパティ.AutoPlayON_自動ヒット_再生,
-                                            ドラムチッププロパティ.AutoPlayON_自動ヒット_判定,
-                                            ドラムチッププロパティ.AutoPlayON_自動ヒット_非表示,
-                                            ヒット判定バーと発声との時間sec,
-                                            ヒット判定バーと描画との時間sec );
-                                        return;
-                                    }
-                                    else if( !AutoPlayである && ドラムチッププロパティ.AutoPlayOFF_Miss判定 )
-                                    {
-                                        // 手動演奏時
-                                        this._チップのヒット処理を行う(
-                                            chip,
-                                            判定種別.MISS,
-                                            ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_再生,
-                                            ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_判定,
-                                            ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_非表示,
-                                            ヒット判定バーと発声との時間sec,
-                                            ヒット判定バーと描画との時間sec );
-
-                                        // 手動演奏なら MISS はエキサイトゲージに反映。
-                                        this.成績.エキサイトゲージを更新する( 判定種別.MISS ); 
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        // 通過。
-                                    }
-                                    //----------------
-                                    #endregion
+                                    this._チップの発声を行う( chip, userConfig.ドラムの音を発声する );
+                                    this._チップの演奏状態[ chip ].発声済みである = true;
                                 }
+                            }
+                            //----------------
+                            #endregion
+                        }
 
-                                // ヒット処理(1) 発声時刻
-                                if( チップは発声についてヒット判定バーを通過した )    // ヒット済みかどうかには関係ない
+                        // ヒット処理(2) 描画時刻
+                        if( チップはまだヒットされていない && チップは描画についてヒット判定バーを通過した )
+                        {
+                            #region " 自動ヒット判定（判定）"
+                            //----------------
+                            if( AutoPlayである && ドラムチッププロパティ.AutoPlayON_自動ヒット )
+                            {
+                                // 自動演奏時
+                                this._チップのヒット処理を行う(
+                                    chip,
+                                    判定種別.PERFECT,   // AutoPlay 時は Perfect 扱い。
+                                    ドラムチッププロパティ.AutoPlayON_自動ヒット_再生,
+                                    ドラムチッププロパティ.AutoPlayON_自動ヒット_判定,
+                                    ドラムチッププロパティ.AutoPlayON_自動ヒット_非表示,
+                                    ヒット判定バーと発声との時間sec,
+                                    ヒット判定バーと描画との時間sec );
+
+                                //this.成績.エキサイトゲージを加算する( 判定種別.PERFECT ); -> エキサイトゲージには反映しない。
+                                this._ドラムキットとヒットバー.ヒットアニメ開始( ドラムチッププロパティ.表示レーン種別 );
+
+                                return; // ここで終了。
+                            }
+                            else if( !AutoPlayである && ドラムチッププロパティ.AutoPlayOFF_自動ヒット )
+                            {
+                                // 手動演奏時
+                                this._チップのヒット処理を行う(
+                                    chip,
+                                    判定種別.PERFECT,   // AutoPlay OFF でも自動ヒットする場合は Perfect 扱い。
+                                    ドラムチッププロパティ.AutoPlayOFF_自動ヒット_再生,
+                                    ドラムチッププロパティ.AutoPlayOFF_自動ヒット_判定,
+                                    ドラムチッププロパティ.AutoPlayOFF_自動ヒット_非表示,
+                                    ヒット判定バーと発声との時間sec,
+                                    ヒット判定バーと描画との時間sec );
+
+                                //this.成績.エキサイトゲージを加算する( 判定種別.PERFECT ); -> エキサイトゲージには反映しない。
+                                this._ドラムキットとヒットバー.ヒットアニメ開始( ドラムチッププロパティ.表示レーン種別 );
+
+                                return; // ここで終了。
+                            }
+                            else
+                            {
+                                // 通過。
+                            }
+                            //----------------
+                            #endregion
+                        }
+
+                    } );
+                    //----------------
+                    #endregion
+
+                    Global.App.ドラム入力.すべての入力デバイスをポーリングする( 入力履歴を記録する: false );
+
+                    #region " 手動ヒット処理。"
+                    //----------------
+                    {
+                        var ヒット処理済み入力 = new List<ドラム入力イベント>(); // ヒット処理が終わった入力は、二重処理しないよう、この中に追加しておく。
+
+                        this._描画範囲内のすべてのチップに対して( 現在の演奏時刻sec, ( chip, index, ヒット判定バーと描画との時間sec, ヒット判定バーと発声との時間sec, ヒット判定バーとの距離 ) => {
+
+                            var ドラムチッププロパティ = userConfig.ドラムチッププロパティリスト[ chip.チップ種別 ];
+
+                            #region " チップがヒット対象外であれば無視する。"
+                            //----------------
+                            bool チップはAutoPlayONである = userConfig.AutoPlay[ ドラムチッププロパティ.AutoPlay種別 ];
+                            bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec > userConfig.最大ヒット距離sec[ 判定種別.OK ] );
+                            bool チップはOKエリアに達していない = ヒット判定バーと描画との時間sec < -( userConfig.最大ヒット距離sec[ 判定種別.OK ] );
+                            bool チップはすでにヒット済みである = this._チップの演奏状態[ chip ].ヒット済みである;
+                            bool チップはAutoPlayOFFのときゆユーザヒットの対象にならない = !( ドラムチッププロパティ.AutoPlayOFF_ユーザヒット );
+
+                            if( チップはAutoPlayONである ||
+                                チップはすでにヒット済みである ||
+                                チップはAutoPlayOFFのときゆユーザヒットの対象にならない ||
+                                チップはMISSエリアに達している ||
+                                チップはOKエリアに達していない )
+                                return;
+                            //----------------
+                            #endregion
+
+                            ドラム入力イベント? チップのヒットエリア内にある入力 = null;
+
+                            #region " チップのヒットエリア内にある入力を探す。"
+                            //----------------
+                            チップのヒットエリア内にある入力 = Global.App.ドラム入力.ポーリング結果.FirstOrDefault( ( 入力 ) => {
+
+                                if( !入力.InputEvent.押された ||                   // 押下入力じゃないなら無視。
+                                    ヒット処理済み入力.Contains( 入力 ) ||         // すでに今回のターンで処理済み（＝処理済み入力リストに追加済み）なら無視。
+                                    入力.Type == ドラム入力種別.HiHat_Control )    // HiHat_Control 入力はここでは無視。
+                                    return false;
+
+                                var チップの入力グループ = ドラムチッププロパティ.入力グループ種別;
+                                if( チップの入力グループ == 入力グループ種別.Unknown )
                                 {
-                                    #region " 自動ヒット判定（再生）"
-                                    //----------------
-                                    if( ( AutoPlayである && ドラムチッププロパティ.AutoPlayON_自動ヒット_再生 ) ||
-                                        ( !AutoPlayである && ドラムチッププロパティ.AutoPlayOFF_自動ヒット_再生 ) )
-                                    {
-                                        // チップの発声がまだなら発声を行う。
-                                        if( !( this._チップの演奏状態[ chip ].発声済みである ) )
-                                        {
-                                            this._チップの発声を行う( chip, userConfig.ドラムの音を発声する );
-                                            this._チップの演奏状態[ chip ].発声済みである = true;
-                                        }
-                                    }
-                                    //----------------
-                                    #endregion
+                                    // (A) 入力グループ種別 が Unknown の場合 → ドラム入力種別で比較
+                                    return ( ドラムチッププロパティ.ドラム入力種別 == 入力.Type );          // 一致すればヒット
                                 }
-
-                                // ヒット処理(2) 描画時刻
-                                if( チップはまだヒットされていない && チップは描画についてヒット判定バーを通過した )
+                                else
                                 {
-                                    #region " 自動ヒット判定（判定）"
-                                    //----------------
-                                    if( AutoPlayである && ドラムチッププロパティ.AutoPlayON_自動ヒット )
-                                    {
-                                        // 自動演奏時
-                                        this._チップのヒット処理を行う(
-                                            chip,
-                                            判定種別.PERFECT,   // AutoPlay 時は Perfect 扱い。
-                                            ドラムチッププロパティ.AutoPlayON_自動ヒット_再生,
-                                            ドラムチッププロパティ.AutoPlayON_自動ヒット_判定,
-                                            ドラムチッププロパティ.AutoPlayON_自動ヒット_非表示,
-                                            ヒット判定バーと発声との時間sec,
-                                            ヒット判定バーと描画との時間sec );
+                                    // (B) 入力グループ種別が Unknown ではない場合　→　入力グループ種別で比較
+                                    var 入力の入力グループ種別リスト =
+                                        from kvp in userConfig.ドラムチッププロパティリスト.チップtoプロパティ
+                                        where ( kvp.Value.ドラム入力種別 == 入力.Type )
+                                        select kvp.Value.入力グループ種別;
 
-                                        //this.成績.エキサイトゲージを加算する( 判定種別.PERFECT ); -> エキサイトゲージには反映しない。
-                                        this._ドラムキットとヒットバー.ヒットアニメ開始( ドラムチッププロパティ.表示レーン種別 );
-
-                                        return; // ここで終了。
-                                    }
-                                    else if( !AutoPlayである && ドラムチッププロパティ.AutoPlayOFF_自動ヒット )
-                                    {
-                                        // 手動演奏時
-                                        this._チップのヒット処理を行う(
-                                            chip,
-                                            判定種別.PERFECT,   // AutoPlay OFF でも自動ヒットする場合は Perfect 扱い。
-                                            ドラムチッププロパティ.AutoPlayOFF_自動ヒット_再生,
-                                            ドラムチッププロパティ.AutoPlayOFF_自動ヒット_判定,
-                                            ドラムチッププロパティ.AutoPlayOFF_自動ヒット_非表示,
-                                            ヒット判定バーと発声との時間sec,
-                                            ヒット判定バーと描画との時間sec );
-
-                                        //this.成績.エキサイトゲージを加算する( 判定種別.PERFECT ); -> エキサイトゲージには反映しない。
-                                        this._ドラムキットとヒットバー.ヒットアニメ開始( ドラムチッププロパティ.表示レーン種別 );
-
-                                        return; // ここで終了。
-                                    }
-                                    else
-                                    {
-                                        // 通過。
-                                    }
-                                    //----------------
-                                    #endregion
+                                    return 入力の入力グループ種別リスト.Any( ( groupType ) => ( groupType == チップの入力グループ ) );  // どれかが一致すればヒット
                                 }
 
                             } );
                             //----------------
                             #endregion
 
-                            Global.App.ドラム入力.すべての入力デバイスをポーリングする( 入力履歴を記録する: false );
-
-                            #region " 手動ヒット処理。"
-                            //----------------
+                            if( null != チップのヒットエリア内にある入力 ) // チップにヒットした入力があった場合
                             {
-                                var ヒット処理済み入力 = new List<ドラム入力イベント>(); // ヒット処理が終わった入力は、二重処理しないよう、この中に追加しておく。
+                                #region " チップの手動ヒット処理。"
+                                //----------------
+                                // この入力はこのチップでヒット処理した。
+                                ヒット処理済み入力.Add( チップのヒットエリア内にある入力 );
 
-                                this._描画範囲内のすべてのチップに対して( 現在の演奏時刻sec, ( chip, index, ヒット判定バーと描画との時間sec, ヒット判定バーと発声との時間sec, ヒット判定バーとの距離 ) => {
+                                // 入力とチップの時間差を算出する。
+                                double 入力とチップの時間差sec = 0.0;  // チップより入力が早ければ負数、遅ければ正数。
 
-                                    var ドラムチッププロパティ = userConfig.ドラムチッププロパティリスト[ chip.チップ種別 ];
+                                #region " 入力とチップとの時間差を算出。"
+                                //----------------
+                                {
+                                    // 入力時刻とはヒット判定バーの位置における時刻であり、理想値は 0 である。
+                                    // しかし実際には、入力遅延（MIDI入力のポーリング時刻と現在時刻のズレなど）が発生することがあるので、0 または正数となる。
+                                    double 入力時刻sec = QPCTimer.生カウント相対値を秒へ変換して返す( 現在の演奏時刻qpc - チップのヒットエリア内にある入力.InputEvent.TimeStamp );
 
-                                    #region " チップがヒット対象外であれば無視する。"
-                                    //----------------
-                                    bool チップはAutoPlayONである = userConfig.AutoPlay[ ドラムチッププロパティ.AutoPlay種別 ];
-                                    bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec > userConfig.最大ヒット距離sec[ 判定種別.OK ] );
-                                    bool チップはOKエリアに達していない = ヒット判定バーと描画との時間sec < -( userConfig.最大ヒット距離sec[ 判定種別.OK ] );
-                                    bool チップはすでにヒット済みである = this._チップの演奏状態[ chip ].ヒット済みである;
-                                    bool チップはAutoPlayOFFのときゆユーザヒットの対象にならない = !( ドラムチッププロパティ.AutoPlayOFF_ユーザヒット );
+                                    // そこで、システム設定の「判定位置調整」量を加えることで、この入力遅延を相殺する。
+                                    // 具体的には、ヒット判定バーの位置、すなわち入力時刻を、判定位置調整の値で調整する。
+                                    // 例えば、判定位置調整が -50ms である場合、各入力はそれぞれ 50ms 早く発生したものとみなされる。
+                                    // 注意：この機能を、タイミングが常に早い方向か遅い方向にずれまくる人のための「人為的な入力遅延」として使うことは推奨されない。
+                                    入力時刻sec += Global.App.システム設定.判定位置調整ms * 0.001;
 
-                                    if( チップはAutoPlayONである ||
-                                        チップはすでにヒット済みである ||
-                                        チップはAutoPlayOFFのときゆユーザヒットの対象にならない ||
-                                        チップはMISSエリアに達している ||
-                                        チップはOKエリアに達していない )
-                                        return;
-                                    //----------------
-                                    #endregion
+                                    入力とチップの時間差sec = 入力時刻sec - ヒット判定バーと描画との時間sec;
+                                }
+                                //----------------
+                                #endregion
 
-                                    ドラム入力イベント? チップのヒットエリア内にある入力 = null;
+                                // 時刻差から判定を算出。
+                                double 入力とチップの時間差の絶対値sec = Math.Abs( 入力とチップの時間差sec );
+                                var 判定 =
+                                    ( 入力とチップの時間差の絶対値sec <= userConfig.最大ヒット距離sec[ 判定種別.PERFECT ] ) ? 判定種別.PERFECT :
+                                    ( 入力とチップの時間差の絶対値sec <= userConfig.最大ヒット距離sec[ 判定種別.GREAT ] ) ? 判定種別.GREAT :
+                                    ( 入力とチップの時間差の絶対値sec <= userConfig.最大ヒット距離sec[ 判定種別.GOOD ] ) ? 判定種別.GOOD : 判定種別.OK;
 
-                                    #region " チップのヒットエリア内にある入力を探す。"
-                                    //----------------
-                                    チップのヒットエリア内にある入力 = Global.App.ドラム入力.ポーリング結果.FirstOrDefault( ( 入力 ) => {
+                                // ヒット処理。
+                                this._チップのヒット処理を行う(
+                                    chip,
+                                    判定,
+                                    userConfig.ドラムの音を発声する ? ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_再生 : false,   // ヒットすれば再生する？
+                                    ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_判定,                                             // ヒットすれば判定する？
+                                    ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_非表示,                                           // ヒットすれば非表示にする？
+                                    ヒット判定バーと発声との時間sec,
+                                    入力とチップの時間差sec );
 
-                                        if( !入力.InputEvent.押された ||                   // 押下入力じゃないなら無視。
-                                            ヒット処理済み入力.Contains( 入力 ) ||         // すでに今回のターンで処理済み（＝処理済み入力リストに追加済み）なら無視。
-                                            入力.Type == ドラム入力種別.HiHat_Control )    // HiHat_Control 入力はここでは無視。
-                                            return false;
+                                // エキサイトゲージに反映する。
+                                this.成績.エキサイトゲージを更新する( 判定 );
+                                //----------------
+                                #endregion
+                            }
 
-                                        var チップの入力グループ = ドラムチッププロパティ.入力グループ種別;
-                                        if( チップの入力グループ == 入力グループ種別.Unknown )
-                                        {
-                                            // (A) 入力グループ種別 が Unknown の場合 → ドラム入力種別で比較
-                                            return ( ドラムチッププロパティ.ドラム入力種別 == 入力.Type );          // 一致すればヒット
-                                        }
+                        } );
+
+                        #region " ヒットしてようがしてまいが起こすアクションを実行。"
+                        //----------------
+                        foreach( var 入力 in Global.App.ドラム入力.ポーリング結果 )
+                        {
+                            // 押下入力じゃないなら無視。
+                            if( 入力.InputEvent.離された )
+                                continue;
+
+                            var プロパティs = userConfig.ドラムチッププロパティリスト.チップtoプロパティ.Where( ( kvp ) => ( kvp.Value.ドラム入力種別 == 入力.Type ) );
+
+                            if( 0 < プロパティs.Count() )    // 1つだけのはずだが念のため。
+                            {
+                                var laneType = プロパティs.First().Value.表示レーン種別;
+
+                                // ヒットしてようがしてまいが起こすアクション。
+                                this._ドラムキットとヒットバー.ヒットアニメ開始( laneType );
+                                this._レーンフラッシュ.開始する( laneType );
+                            }
+                        }
+                        //----------------
+                        #endregion
+
+                        #region " どのチップにもヒットしなかった入力は空打ちとみなし、空打ち音を再生する。"
+                        //----------------
+                        if( userConfig.ドラムの音を発声する )
+                        {
+                            foreach( var 入力 in Global.App.ドラム入力.ポーリング結果 )
+                            {
+                                if( ヒット処理済み入力.Contains( 入力 ) ||  // ヒット済みなら無視。
+                                    入力.InputEvent.離された )              // 押下じゃないなら無視。
+                                    continue;
+
+                                var プロパティs = userConfig.ドラムチッププロパティリスト.チップtoプロパティ.Where( ( kvp ) => ( kvp.Value.ドラム入力種別 == 入力.Type ) );
+
+                                for( int i = 0; i < プロパティs.Count(); i++ )
+                                {
+                                    var prop = プロパティs.ElementAt( i ).Value;
+
+                                    if( 0 < Global.App.演奏スコア.空打ちチップマップ.Count )
+                                    {
+                                        #region " DTX他の場合（空うちチップマップ使用）"
+                                        //----------------
+                                        int zz = Global.App.演奏スコア.空打ちチップマップ[ prop.レーン種別 ];
+
+                                        // (A) 空打ちチップの指定があるなら、それを発声する。
+                                        if( 0 != zz )
+                                            Global.App.WAV管理?.発声する( zz, prop.チップ種別, prop.発声前消音, prop.消音グループ種別, true );
+
+                                        // (B) 空打ちチップの指定がないなら、一番近いチップを検索し、それを発声する。
                                         else
                                         {
-                                            // (B) 入力グループ種別が Unknown ではない場合　→　入力グループ種別で比較
-                                            var 入力の入力グループ種別リスト =
-                                                from kvp in userConfig.ドラムチッププロパティリスト.チップtoプロパティ
-                                                where ( kvp.Value.ドラム入力種別 == 入力.Type )
-                                                select kvp.Value.入力グループ種別;
+                                            var chip = this._指定された時刻に一番近いチップを返す( 現在の演奏時刻sec, 入力.Type );
 
-                                            return 入力の入力グループ種別リスト.Any( ( groupType ) => ( groupType == チップの入力グループ ) );  // どれかが一致すればヒット
-                                        }
-
-                                    } );
-                                    //----------------
-                                    #endregion
-
-
-                                    if( null != チップのヒットエリア内にある入力 ) // チップにヒットした入力があった場合
-                                    {
-                                        #region " チップの手動ヒット処理。"
-                                        //----------------
-                                        // この入力はこのチップでヒット処理した。
-                                        ヒット処理済み入力.Add( チップのヒットエリア内にある入力 );
-
-                                        // 入力とチップの時間差を算出する。
-                                        double 入力とチップの時間差sec = 0.0;  // チップより入力が早ければ負数、遅ければ正数。
-
-                                        #region " 入力とチップとの時間差を算出。"
-                                        //----------------
-                                        {
-                                            // 入力時刻とはヒット判定バーの位置における時刻であり、理想値は 0 である。
-                                            // しかし実際には、入力遅延（MIDI入力のポーリング時刻と現在時刻のズレなど）が発生することがあるので、0 または正数となる。
-                                            double 入力時刻sec = QPCTimer.生カウント相対値を秒へ変換して返す( 現在の演奏時刻qpc - チップのヒットエリア内にある入力.InputEvent.TimeStamp );
-
-                                            // そこで、システム設定の「判定位置調整」量を加えることで、この入力遅延を相殺する。
-                                            // 具体的には、ヒット判定バーの位置、すなわち入力時刻を、判定位置調整の値で調整する。
-                                            // 例えば、判定位置調整が -50ms である場合、各入力はそれぞれ 50ms 早く発生したものとみなされる。
-                                            // 注意：この機能を、タイミングが常に早い方向か遅い方向にずれまくる人のための「人為的な入力遅延」として使うことは推奨されない。
-                                            入力時刻sec += Global.App.システム設定.判定位置調整ms * 0.001;
-
-                                            入力とチップの時間差sec = 入力時刻sec - ヒット判定バーと描画との時間sec;
-                                        }
-                                        //----------------
-                                        #endregion
-
-                                        // 時刻差から判定を算出。
-                                        double 入力とチップの時間差の絶対値sec = Math.Abs( 入力とチップの時間差sec );
-                                        var 判定 =
-                                            ( 入力とチップの時間差の絶対値sec <= userConfig.最大ヒット距離sec[ 判定種別.PERFECT ] ) ? 判定種別.PERFECT :
-                                            ( 入力とチップの時間差の絶対値sec <= userConfig.最大ヒット距離sec[ 判定種別.GREAT ] ) ? 判定種別.GREAT :
-                                            ( 入力とチップの時間差の絶対値sec <= userConfig.最大ヒット距離sec[ 判定種別.GOOD ] ) ? 判定種別.GOOD : 判定種別.OK;
-
-                                        // ヒット処理。
-                                        this._チップのヒット処理を行う(
-                                            chip,
-                                            判定,
-                                            userConfig.ドラムの音を発声する ? ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_再生 : false,   // ヒットすれば再生する？
-                                            ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_判定,                                             // ヒットすれば判定する？
-                                            ドラムチッププロパティ.AutoPlayOFF_ユーザヒット_非表示,                                           // ヒットすれば非表示にする？
-                                            ヒット判定バーと発声との時間sec,
-                                            入力とチップの時間差sec );
-
-                                        // エキサイトゲージに反映する。
-                                        this.成績.エキサイトゲージを更新する( 判定 );
-                                        //----------------
-                                        #endregion
-                                    }
-
-                                } );
-
-                                #region " ヒットしてようがしてまいが起こすアクションを実行。"
-                                //----------------
-                                foreach( var 入力 in Global.App.ドラム入力.ポーリング結果 )
-                                {
-                                    // 押下入力じゃないなら無視。
-                                    if( 入力.InputEvent.離された )
-                                        continue;
-
-                                    var プロパティs = userConfig.ドラムチッププロパティリスト.チップtoプロパティ.Where( ( kvp ) => ( kvp.Value.ドラム入力種別 == 入力.Type ) );
-                                    
-                                    if( 0 < プロパティs.Count() )    // 1つだけのはずだが念のため。
-                                    {
-                                        var laneType = プロパティs.First().Value.表示レーン種別;
-
-                                        // ヒットしてようがしてまいが起こすアクション。
-                                        this._ドラムキットとヒットバー.ヒットアニメ開始( laneType );
-                                        this._レーンフラッシュ.開始する( laneType );
-                                    }
-                                }
-                                //----------------
-                                #endregion
-
-                                #region " どのチップにもヒットしなかった入力は空打ちとみなし、空打ち音を再生する。"
-                                //----------------
-                                if( userConfig.ドラムの音を発声する )
-                                {
-                                    foreach( var 入力 in Global.App.ドラム入力.ポーリング結果 )
-                                    {
-                                        if( ヒット処理済み入力.Contains( 入力 ) ||  // ヒット済みなら無視。
-                                            入力.InputEvent.離された )              // 押下じゃないなら無視。
-                                            continue;
-
-                                        var プロパティs = userConfig.ドラムチッププロパティリスト.チップtoプロパティ.Where( ( kvp ) => ( kvp.Value.ドラム入力種別 == 入力.Type ) );
-
-                                        for( int i = 0; i < プロパティs.Count(); i++ )
-                                        {
-                                            var prop = プロパティs.ElementAt( i ).Value;
-
-                                            if( 0 < Global.App.演奏スコア.空打ちチップマップ.Count )
+                                            if( null != chip )
                                             {
-                                                #region " DTX他の場合（空うちチップマップ使用）"
-                                                //----------------
-                                                int zz = Global.App.演奏スコア.空打ちチップマップ[ prop.レーン種別 ];
-
-                                                // (A) 空打ちチップの指定があるなら、それを発声する。
-                                                if( 0 != zz )
-                                                    Global.App.WAV管理.発声する( zz, prop.チップ種別, prop.発声前消音, prop.消音グループ種別, true );
-
-                                                // (B) 空打ちチップの指定がないなら、一番近いチップを検索し、それを発声する。
-                                                else
-                                                {
-                                                    var chip = this._指定された時刻に一番近いチップを返す( 現在の演奏時刻sec, 入力.Type );
-
-                                                    if( null != chip )
-                                                    {
-                                                        this._チップの発声を行う( chip, true );
-                                                        break;  // 複数のチップが該当する場合でも、最初のチップの発声のみ行う。
-                                                    }
-                                                }
-                                                //----------------
-                                                #endregion
-                                            }
-                                            else
-                                            {
-                                                #region " SSTFの場合（空うちチップマップ未使用）"
-                                                //----------------
-                                                Global.App.ドラムサウンド.再生する( prop.チップ種別, 0, prop.発声前消音, prop.消音グループ種別 );
-                                                //----------------
-                                                #endregion
+                                                this._チップの発声を行う( chip, true );
+                                                break;  // 複数のチップが該当する場合でも、最初のチップの発声のみ行う。
                                             }
                                         }
-                                    }
-                                }
-                                //----------------
-                                #endregion
-                            }
-                            //----------------
-                            #endregion
-
-                            #region " その他の手動入力の処理。"
-                            //----------------
-                            if( Global.App.ドラム入力.Keybaord.TryGetTarget( out var keyboard ) )
-                            {
-                                if( !Global.Options.ビュアーモードである && keyboard.キーが押された( 0, Keys.Escape ) )
-                                {
-                                    #region " ESC → 演奏中断（ビュアーモード時は無効）"
-                                    //----------------
-                                    Log.Info( "ESC キーが押されました。演奏を中断します。" );
-
-                                    Global.App.WAV管理.すべての発声を停止する();    // DTXでのBGMサウンドはこっちに含まれる。
-
-                                    // 後の処理は描画処理で。
-                                    this.現在のフェーズ = フェーズ.キャンセル通知;
-                                    //----------------
-                                    #endregion
-                                }
-                                if( keyboard.キーが押された( 0, Keys.Up ) )
-                                {
-                                    if( keyboard.キーが押されている( 0, Keys.ShiftKey ) )
-                                    {
-                                        #region " Shift+上 → BGMAdjust 増加 "
-                                        //----------------
-                                        Global.App.演奏譜面.譜面.BGMAdjust += 10; // ms
-                                        Global.App.WAV管理.すべてのBGMの再生位置を移動する( +10.0 / 1000.0 );  // sec
-                                        this._BGMAdjustをデータベースに保存する( Global.App.演奏譜面.譜面 );
                                         //----------------
                                         #endregion
                                     }
                                     else
                                     {
-                                        #region " 上 → 譜面スクロールを加速 "
+                                        #region " SSTFの場合（空うちチップマップ未使用）"
                                         //----------------
-                                        const double 最大倍率 = 8.0;
-                                        userConfig.譜面スクロール速度 = Math.Min( userConfig.譜面スクロール速度 + 0.5, 最大倍率 );
-                                        //----------------
-                                        #endregion
-                                    }
-                                }
-                                if( keyboard.キーが押された( 0, Keys.Down ) )
-                                {
-                                    if( keyboard.キーが押されている( 0, Keys.ShiftKey ) )
-                                    {
-                                        #region " Shift+下 → BGMAdjust 減少 "
-                                        //----------------
-                                        Global.App.演奏譜面.譜面.BGMAdjust -= 10; // ms
-                                        Global.App.WAV管理.すべてのBGMの再生位置を移動する( -10.0 / 1000.0 );  // sec
-                                        this._BGMAdjustをデータベースに保存する( Global.App.演奏譜面.譜面 );
-                                        //----------------
-                                        #endregion
-                                    }
-                                    else
-                                    {
-                                        #region " 下 → 譜面スクロールを減速 "
-                                        //----------------
-                                        const double 最小倍率 = 0.5;
-                                        userConfig.譜面スクロール速度 = Math.Max( userConfig.譜面スクロール速度 - 0.5, 最小倍率 );
+                                        Global.App.ドラムサウンド.再生する( prop.チップ種別, 0, prop.発声前消音, prop.消音グループ種別 );
                                         //----------------
                                         #endregion
                                     }
                                 }
                             }
+                        }
+                        //----------------
+                        #endregion
+                    }
+                    //----------------
+                    #endregion
 
-                            #region " ハイハットの開閉 "
+                    #region " その他の手動入力（キーボード操作）の処理。"
+                    //----------------
+                    if( Global.App.ドラム入力.Keybaord.TryGetTarget( out var keyboard ) )
+                    {
+                        if( !Global.Options.ビュアーモードである && keyboard.キーが押された( 0, Keys.Escape ) )
+                        {
+                            #region " ESC → キャンセル通知フェーズへ（ビュアーモード時は無効）"
                             //----------------
-                            if( Global.App.ドラム入力.MidiIn.TryGetTarget( out var midiIns ) )
-                            {
-                                foreach( var ev in midiIns.入力イベントリスト.Where( ( ie ) => ( 255 == ie.Key ) ) )
-                                {
-                                    this._ドラムキットとヒットバー.ハイハットの開度を設定する( ev.Velocity );
-                                }
-                            }
-                            //----------------
-                            #endregion
+                            Log.Info( "ESC キーが押されました。演奏を中断します。" );
 
-                            if( Global.App.ドラム入力.ドラムが入力された( ドラム入力種別.Pause_Resume ) )
-                            {
-                                #region " Pause/Resumu パッド → 演奏の一時停止または再開 "
-                                //----------------
-                                this._演奏を一時停止または再開する();
-                                //----------------
-                                #endregion
-                            }
+                            Global.App.WAV管理?.すべての発声を停止する();    // DTXでのBGMサウンドはこっちに含まれる。
+
+                            this.現在のフェーズ = フェーズ.キャンセル通知;
                             //----------------
                             #endregion
                         }
-                        break;
+                        if( keyboard.キーが押された( 0, Keys.Up ) )
+                        {
+                            if( keyboard.キーが押されている( 0, Keys.ShiftKey ) )
+                            {
+                                #region " Shift+上 → BGMAdjust 増加 "
+                                //----------------
+                                Global.App.演奏譜面.譜面.BGMAdjust += 10; // ms
+                                Global.App.WAV管理?.すべてのBGMの再生位置を移動する( +10.0 / 1000.0 );  // sec
+                                this._BGMAdjustをデータベースに保存する( Global.App.演奏譜面.譜面 );
+                                //----------------
+                                #endregion
+                            }
+                            else
+                            {
+                                #region " 上 → 譜面スクロールを加速 "
+                                //----------------
+                                const double 最大倍率 = 8.0;
+                                userConfig.譜面スクロール速度 = Math.Min( userConfig.譜面スクロール速度 + 0.5, 最大倍率 );
+                                //----------------
+                                #endregion
+                            }
+                        }
+                        if( keyboard.キーが押された( 0, Keys.Down ) )
+                        {
+                            if( keyboard.キーが押されている( 0, Keys.ShiftKey ) )
+                            {
+                                #region " Shift+下 → BGMAdjust 減少 "
+                                //----------------
+                                Global.App.演奏譜面.譜面.BGMAdjust -= 10; // ms
+                                Global.App.WAV管理?.すべてのBGMの再生位置を移動する( -10.0 / 1000.0 );  // sec
+                                this._BGMAdjustをデータベースに保存する( Global.App.演奏譜面.譜面 );
+                                //----------------
+                                #endregion
+                            }
+                            else
+                            {
+                                #region " 下 → 譜面スクロールを減速 "
+                                //----------------
+                                const double 最小倍率 = 0.5;
+                                userConfig.譜面スクロール速度 = Math.Max( userConfig.譜面スクロール速度 - 0.5, 最小倍率 );
+                                //----------------
+                                #endregion
+                            }
+                        }
+                    }
+
+                    #region " ハイハットの開閉 "
+                    //----------------
+                    if( Global.App.ドラム入力.MidiIn.TryGetTarget( out var midiIns ) )
+                    {
+                        foreach( var ev in midiIns.入力イベントリスト.Where( ( ie ) => ( 255 == ie.Key ) ) )
+                        {
+                            this._ドラムキットとヒットバー.ハイハットの開度を設定する( ev.Velocity );
+                        }
+                    }
+                    //----------------
+                    #endregion
+
+                    if( Global.App.ドラム入力.ドラムが入力された( ドラム入力種別.Pause_Resume ) )
+                    {
+                        #region " Pause/Resumu パッド → 演奏の一時停止または再開 "
+                        //----------------
+                        this._演奏を一時停止または再開する();
+                        //----------------
+                        #endregion
+                    }
+                    //----------------
+                    #endregion
+
+                    break;
+                    //----------------
+                    #endregion
                 }
-            }
-            catch( Exception e )
-            {
-                Log.ERROR( $"!!! 進行スレッドで例外が発生しました !!! [{Folder.絶対パスをフォルダ変数付き絶対パスに変換して返す( e.Message )}]" );
+                case フェーズ.キャンセル通知:
+                {
+                    #region " フェーズが完了すればフェードアウトフェーズへ。 "
+                    //----------------
+                    if( this._フェーズ完了 )
+                    {
+                        this.現在のフェーズ = フェーズ.キャンセル時フェードアウト;
+                        this._フェーズ完了 = false;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.キャンセル時フェードアウト:
+                {
+                    #region " フェードアウトが完了したらキャンセル完了フェーズへ。"
+                    //----------------
+                    if( this._フェーズ完了 )
+                    {
+                        this.現在のフェーズ = フェーズ.キャンセル完了;
+                        this._フェーズ完了 = false;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.クリア:
+                case フェーズ.失敗:
+                case フェーズ.キャンセル完了:
+                {
+                    #region " 遷移終了。Appによるステージ遷移待ち。"
+                    //----------------
+                    break;
+                    //----------------
+                    #endregion
+                }
+
+                // 以下、ビュアーモード用。
+
+                case フェーズ.指示待機:
+                {
+                    #region " オプションが届いていれば、取り出して処理する。 "
+                    //----------------
+                    if( options?.再生開始 ?? false )
+                    {
+                        if( File.Exists( options.Filename ) )
+                        {
+                            Global.App.演奏譜面 = new 曲.Score() {   // 読み込みに必要な最低減の譜面情報で生成。
+                                譜面 = new ScoreDBRecord() {
+                                    ScorePath = options.Filename,
+                                },
+                            };
+                            演奏ステージ.演奏開始小節番号 = options.再生開始小節番号;
+                            演奏ステージ.ビュアーモードでドラム音を再生する = options.ドラム音を発声する;
+
+                            // 次のフェーズへ。
+                            this.現在のフェーズ = フェーズ.曲読み込み開始;
+                        }
+                        else
+                        {
+                            Log.ERROR( $"ファイルが存在しません。[{Folder.絶対パスをフォルダ変数付き絶対パスに変換して返す( options.Filename )}]" );
+                        }
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.曲読み込み開始:
+                {
+                    #region " 曲読み込みタスクを起動し、曲読み込み完了待ちフェーズへ。"
+                    //----------------
+                    this._曲読み込みタスク = Task.Run( () => {
+                        曲読み込み.曲読み込みステージ.スコアを読み込む();
+                    } );
+
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.曲読み込み完了待ち;
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.曲読み込み完了待ち:
+                {
+                    #region " 曲読み込みタスクが完了すれば演奏状態初期化フェーズへ。 "
+                    //----------------
+                    if( this._曲読み込みタスク.IsCompleted )
+                        this.現在のフェーズ = フェーズ.演奏状態初期化;
+                    break;
+                    //----------------
+                    #endregion
+                }
             }
         }
 
@@ -687,415 +772,455 @@ namespace DTXMania2.演奏
 
             switch( this.現在のフェーズ )
             {
-                case フェーズ.フェードイン:
-                case フェーズ.キャンセル完了:
-                    #region " *** "
+                case フェーズ.演奏状態初期化:
+                {
+                    #region " 最後の画面を維持。"
                     //----------------
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.フェードイン:
+                case フェーズ.演奏開始:
+                case フェーズ.キャンセル完了:
+                {
+                    #region " 演奏パーツなし画面＆フェードイン "
+                    //----------------
+                    Global.App.画面をクリアする();
+
+                    #region " スコア指定の壁紙 "
+                    //----------------
+                    if( userConfig.スコア指定の背景画像を表示する )
                     {
-                        #region " スコア指定の壁紙 "
-                        //----------------
-                        if( userConfig.スコア指定の背景画像を表示する )
-                        {
-                            this._スコア指定の背景画像?.描画する( 0f, 0f,
-                                X方向拡大率: Global.設計画面サイズ.Width / this._スコア指定の背景画像.サイズ.Width,
-                                Y方向拡大率: Global.設計画面サイズ.Height / this._スコア指定の背景画像.サイズ.Height );
-                        }
-                        //----------------
-                        #endregion
+                        this._スコア指定の背景画像?.描画する( 0f, 0f,
+                            X方向拡大率: Global.設計画面サイズ.Width / this._スコア指定の背景画像.サイズ.Width,
+                            Y方向拡大率: Global.設計画面サイズ.Height / this._スコア指定の背景画像.サイズ.Height );
+                    }
+                    //----------------
+                    #endregion
 
-                        #region " 左サイドパネルへの描画と、左サイドパネルの表示 "
-                        //----------------
-                        this._左サイドクリアパネル.クリアする();
-                        this._左サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
+                    #region " 左サイドパネルへの描画と、左サイドパネルの表示 "
+                    //----------------
+                    this._左サイドクリアパネル.クリアする();
+                    this._左サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
 
-                            // プレイヤー名
-                            this._プレイヤー名表示.進行描画する( dcp );
+                        // プレイヤー名
+                        this._プレイヤー名表示.進行描画する( dcp );
 
-                            // スコア
-                            if( userConfig.ダーク == ダーク種別.OFF )
-                                this._スコア表示.進行描画する( dcp, Global.Animation, new Vector2( +280f, +120f ), this.成績 );
-
-                            // 達成率
-                            this._達成率表示.描画する( dcp, (float) this.成績.Achievement );
-
-                            // 判定パラメータ
-                            this._判定パラメータ表示.描画する( dcp, +118f, +372f, this.成績 );
-
-                            // スキル
-                            this._曲別SKILL.進行描画する( dcp, 0f );
-
-                        } );
-                        this._左サイドクリアパネル.描画する();
-                        //----------------
-                        #endregion
-
-                        #region " 右サイドパネルへの描画と、右サイトパネルの表示 "
-                        //----------------
-                        this._右サイドクリアパネル.クリアする();
-                        this._右サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
-                            // 特になし
-                        } );
-                        this._右サイドクリアパネル.描画する();
-                        //----------------
-                        #endregion
-
-                        #region " レーンフレーム "
-                        //----------------
-                        this._レーンフレーム.描画する( dc, userConfig.レーンの透明度, レーンラインを描画する: ( userConfig.ダーク == ダーク種別.OFF ) ? true : false );
-                        //----------------
-                        #endregion
-
-                        #region " 背景画像 "
-                        //----------------
+                        // スコア
                         if( userConfig.ダーク == ダーク種別.OFF )
-                            this._背景画像.描画する( 0f, 0f );
-                        //----------------
-                        #endregion
+                            this._スコア表示.進行描画する( dcp, Global.Animation, new Vector2( +280f, +120f ), this.成績 );
 
-                        #region " 譜面スクロール速度 "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._譜面スクロール速度.描画する( dc, userConfig.譜面スクロール速度 );
-                        //----------------
-                        #endregion
+                        // 達成率
+                        this._達成率表示.描画する( dcp, (float) this.成績.Achievement );
 
-                        #region " エキサイトゲージ "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._エキサイトゲージ.進行描画する( dc, this.成績.エキサイトゲージ量 );
-                        //----------------
-                        #endregion
+                        // 判定パラメータ
+                        this._判定パラメータ表示.描画する( dcp, +118f, +372f, this.成績 );
 
-                        #region " クリアメーター "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._クリアメーター.進行描画する( dc );
-                        //----------------
-                        #endregion
+                        // スキル
+                        this._曲別SKILL.進行描画する( dcp, 0f );
 
-                        #region " フェーズパネル "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._フェーズパネル.進行描画する();
-                        //----------------
-                        #endregion
+                    } );
+                    this._左サイドクリアパネル.描画する();
+                    //----------------
+                    #endregion
 
-                        #region " 曲目パネル "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._曲名パネル.描画する( dc );
-                        //----------------
-                        #endregion
+                    #region " 右サイドパネルへの描画と、右サイトパネルの表示 "
+                    //----------------
+                    this._右サイドクリアパネル.クリアする();
+                    this._右サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
+                        // 特になし
+                    } );
+                    this._右サイドクリアパネル.描画する();
+                    //----------------
+                    #endregion
 
-                        #region " ヒットバー "
-                        //----------------
-                        if( userConfig.ダーク != ダーク種別.FULL )
-                            this._ドラムキットとヒットバー.ヒットバーを進行描画する();
-                        //----------------
-                        #endregion
+                    #region " レーンフレーム "
+                    //----------------
+                    this._レーンフレーム.描画する( dc, userConfig.レーンの透明度, レーンラインを描画する: ( userConfig.ダーク == ダーク種別.OFF ) ? true : false );
+                    //----------------
+                    #endregion
 
-                        #region " ドラムキット "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._ドラムキットとヒットバー.ドラムキットを進行描画する();
-                        //----------------
-                        #endregion
+                    #region " 背景画像 "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._背景画像.描画する( 0f, 0f );
+                    //----------------
+                    #endregion
 
+                    #region " 譜面スクロール速度 "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._譜面スクロール速度.描画する( dc, userConfig.譜面スクロール速度 );
+                    //----------------
+                    #endregion
+
+                    #region " エキサイトゲージ "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._エキサイトゲージ.進行描画する( dc, this.成績.エキサイトゲージ量 );
+                    //----------------
+                    #endregion
+
+                    #region " クリアメーター "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._クリアメーター.進行描画する( dc );
+                    //----------------
+                    #endregion
+
+                    #region " フェーズパネル "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._フェーズパネル.進行描画する();
+                    //----------------
+                    #endregion
+
+                    #region " 曲目パネル "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._曲名パネル.描画する( dc );
+                    //----------------
+                    #endregion
+
+                    #region " ヒットバー "
+                    //----------------
+                    if( userConfig.ダーク != ダーク種別.FULL )
+                        this._ドラムキットとヒットバー.ヒットバーを進行描画する();
+                    //----------------
+                    #endregion
+
+                    #region " ドラムキット "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._ドラムキットとヒットバー.ドラムキットを進行描画する();
+                    //----------------
+                    #endregion
+
+                    if( this.現在のフェーズ == フェーズ.フェードイン )
+                    {
                         #region " キャプチャ画像 "
                         //----------------
                         this._キャプチャ画面を描画する( dc, ( 1.0f - this._フェードインカウンタ.現在値の割合 ) );
                         //----------------
                         #endregion
                     }
+                    break;
                     //----------------
                     #endregion
-                    break;
-
+                }
                 case フェーズ.表示:
                 case フェーズ.キャンセル時フェードアウト:
-                    #region " *** "
+                {
+                    #region " 演奏パーツあり画面＆フェードアウト "
                     //----------------
+                    double 演奏時刻sec = this._演奏開始からの経過時間secを返す() + Global.次のDComp表示までの残り時間sec;
+
+                    Global.App.画面をクリアする();
+
+                    #region " 譜面スクロールの進行 "
+                    //----------------
+                    // チップの表示より前に進行だけ行う。
+                    this._譜面スクロール速度.進行する( userConfig.譜面スクロール速度 );
+                    //----------------
+                    #endregion
+
+                    #region " スコア指定の壁紙 "
+                    //----------------
+                    if( userConfig.スコア指定の背景画像を表示する )
                     {
-                        double 演奏時刻sec = this._演奏開始からの経過時間secを返す() + Global.次のDComp表示までの残り時間sec;
+                        this._スコア指定の背景画像?.描画する( 0f, 0f,
+                            X方向拡大率: Global.設計画面サイズ.Width / this._スコア指定の背景画像.サイズ.Width,
+                            Y方向拡大率: Global.設計画面サイズ.Height / this._スコア指定の背景画像.サイズ.Height );
+                    }
+                    //----------------
+                    #endregion
 
-                        #region " 譜面スクロールの進行 "
-                        //----------------
-                        // チップの表示より前に進行だけ行う。
-                        this._譜面スクロール速度.進行する( userConfig.譜面スクロール速度 );
-                        //----------------
-                        #endregion
-
-                        #region " スコア指定の壁紙 "
-                        //----------------
-                        if( userConfig.スコア指定の背景画像を表示する )
+                    #region " 動画 "
+                    //----------------
+                    if( userConfig.演奏中に動画を表示する )
+                    {
+                        foreach( var kvp in Global.App.AVI管理.動画リスト )
                         {
-                            this._スコア指定の背景画像?.描画する( 0f, 0f,
-                                X方向拡大率: Global.設計画面サイズ.Width / this._スコア指定の背景画像.サイズ.Width,
-                                Y方向拡大率: Global.設計画面サイズ.Height / this._スコア指定の背景画像.サイズ.Height );
-                        }
-                        //----------------
-                        #endregion
+                            int zz = kvp.Key;       // zz 番号
+                            var video = kvp.Value;  // Video インスタンス
 
-                        #region " 動画 "
-                        //----------------
-                        if( userConfig.演奏中に動画を表示する )
-                        {
-                            foreach( var kvp in Global.App.AVI管理.動画リスト )
+                            if( video.再生中 )
                             {
-                                int zz = kvp.Key;       // zz 番号
-                                var video = kvp.Value;  // Video インスタンス
-
-                                if( video.再生中 )
+                                switch( userConfig.動画の表示サイズ )
                                 {
-                                    switch( userConfig.動画の表示サイズ )
+                                    case 動画の表示サイズ.全画面:
                                     {
-                                        case 動画の表示サイズ.全画面:
-                                            #region " *** "
-                                            //----------------
-                                            {
-                                                // 100%全体表示
-                                                float w = Global.設計画面サイズ.Width;
-                                                float h = Global.設計画面サイズ.Height;
-                                                video.描画する( dc, new RectangleF( 0f, 0f, w, h ) );
-                                            }
-                                            //----------------
-                                            #endregion
-                                            break;
+                                        #region " 100%全体表示 "
+                                        //----------------
+                                        float w = Global.設計画面サイズ.Width;
+                                        float h = Global.設計画面サイズ.Height;
+                                        video.描画する( dc, new RectangleF( 0f, 0f, w, h ) );
+                                        break;
+                                        //----------------
+                                        #endregion
+                                    }
 
-                                        case 動画の表示サイズ.中央寄せ:
-                                            #region " *** "
-                                            //----------------
-                                            {
-                                                // 75%縮小表示
-                                                float w = Global.設計画面サイズ.Width;
-                                                float h = Global.設計画面サイズ.Height;
+                                    case 動画の表示サイズ.中央寄せ:
+                                    {
+                                        #region " 75%縮小表示 "
+                                        //----------------
+                                        float w = Global.設計画面サイズ.Width;
+                                        float h = Global.設計画面サイズ.Height;
 
-                                                // (1) 画面いっぱいに描画。
-                                                video.描画する( dc, new RectangleF( 0f, 0f, w, h ), 0.2f );    // 不透明度は 0.2 で暗くする。
+                                        // (1) 画面いっぱいに描画。
+                                        video.描画する( dc, new RectangleF( 0f, 0f, w, h ), 0.2f );    // 不透明度は 0.2 で暗くする。
 
-                                                // (2) ちょっと縮小して描画。
-                                                float 拡大縮小率 = 0.75f;
-                                                float 上移動 = 100.0f;
-                                                video.最後のフレームを再描画する( dc, new RectangleF(   // 直前に取得したフレームをそのまま描画。
-                                                    w * ( 1f - 拡大縮小率 ) / 2f,
-                                                    h * ( 1f - 拡大縮小率 ) / 2f - 上移動,
-                                                    w * 拡大縮小率,
-                                                    h * 拡大縮小率 ) );
-                                            }
-                                            //----------------
-                                            #endregion
-                                            break;
+                                        // (2) ちょっと縮小して描画。
+                                        float 拡大縮小率 = 0.75f;
+                                        float 上移動 = 100.0f;
+                                        video.最後のフレームを再描画する( dc, new RectangleF(   // 直前に取得したフレームをそのまま描画。
+                                            w * ( 1f - 拡大縮小率 ) / 2f,
+                                            h * ( 1f - 拡大縮小率 ) / 2f - 上移動,
+                                            w * 拡大縮小率,
+                                            h * 拡大縮小率 ) );
+
+                                        break;
+                                        //----------------
+                                        #endregion
                                     }
                                 }
                             }
                         }
-                        //----------------
-                        #endregion
+                    }
+                    //----------------
+                    #endregion
 
-                        #region " 左サイドパネルへの描画と、左サイドパネルの表示 "
-                        //----------------
-                        this._左サイドクリアパネル.クリアする();
-                        this._左サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
+                    #region " 左サイドパネルへの描画と、左サイドパネルの表示 "
+                    //----------------
+                    this._左サイドクリアパネル.クリアする();
+                    this._左サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
 
-                            // プレイヤー名
-                            this._プレイヤー名表示.進行描画する( dcp );
+                        // プレイヤー名
+                        this._プレイヤー名表示.進行描画する( dcp );
 
-                            // スコア
-                            if( userConfig.ダーク == ダーク種別.OFF )
-                                this._スコア表示.進行描画する( dcp, Global.Animation, new Vector2( +280f, +120f ), this.成績 );
-
-                            // 達成率
-                            this._達成率表示.描画する( dcp, (float) this.成績.Achievement );
-
-                            // 判定パラメータ
-                            this._判定パラメータ表示.描画する( dcp, +118f, +372f, this.成績 );
-
-                            // スキル
-                            this._曲別SKILL.進行描画する( dcp, this.成績.スキル );
-
-                        } );
-                        this._左サイドクリアパネル.描画する();
-                        //----------------
-                        #endregion
-
-                        #region " 右サイドパネルへの描画と、右サイドパネルの表示 "
-                        //----------------
-                        this._右サイドクリアパネル.クリアする();
-                        this._右サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
-
-                            // コンボ
-                            this._コンボ表示.進行描画する( dcp, new Vector2( +228f + 264f / 2f, +234f ), this.成績 );
-
-                        } );
-                        this._右サイドクリアパネル.描画する();
-                        //----------------
-                        #endregion
-
-                        #region " レーンフレーム "
-                        //----------------
-                        this._レーンフレーム.描画する( dc, userConfig.レーンの透明度, レーンラインを描画する: ( userConfig.ダーク == ダーク種別.OFF ) ? true : false );
-                        //----------------
-                        #endregion
-
-                        #region " レーンフラッシュ  "
-                        //----------------
-                        this._レーンフラッシュ.進行描画する();
-                        //----------------
-                        #endregion
-
-                        #region " 小節線拍線 "
-                        //----------------
-                        if( userConfig.ダーク != ダーク種別.FULL )
-                            this._小節線拍線を描画する( dc, 演奏時刻sec );
-                        //----------------
-                        #endregion
-
-                        #region " 背景画像 "
-                        //----------------
+                        // スコア
                         if( userConfig.ダーク == ダーク種別.OFF )
-                            this._背景画像.描画する( 0f, 0f );
-                        //----------------
-                        #endregion
+                            this._スコア表示.進行描画する( dcp, Global.Animation, new Vector2( +280f, +120f ), this.成績 );
 
-                        #region " 譜面スクロール速度 "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._譜面スクロール速度.描画する( dc, userConfig.譜面スクロール速度 );
-                        //----------------
-                        #endregion
+                        // 達成率
+                        this._達成率表示.描画する( dcp, (float) this.成績.Achievement );
 
-                        #region " エキサイトゲージ "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._エキサイトゲージ.進行描画する( dc, this.成績.エキサイトゲージ量 );
-                        //----------------
-                        #endregion
+                        // 判定パラメータ
+                        this._判定パラメータ表示.描画する( dcp, +118f, +372f, this.成績 );
 
-                        #region " クリアメーター, フェーズパネル "
-                        //----------------
-                        double 曲の長さsec = Global.App.演奏スコア.チップリスト[ Global.App.演奏スコア.チップリスト.Count - 1 ].描画時刻sec;
-                        float 現在位置 = (float) ( 1.0 - ( 曲の長さsec - 演奏時刻sec ) / 曲の長さsec );
+                        // スキル
+                        this._曲別SKILL.進行描画する( dcp, this.成績.スキル );
 
-                        // クリアメーター
-                        this.成績.CountMap = this._クリアメーター.カウント値を設定する( 現在位置, this.成績.判定別ヒット数 );
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._クリアメーター.進行描画する( dc );
+                    } );
+                    this._左サイドクリアパネル.描画する();
+                    //----------------
+                    #endregion
 
-                        // フェーズパネル
-                        this._フェーズパネル.現在位置 = 現在位置;
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._フェーズパネル.進行描画する();
-                        //----------------
-                        #endregion
+                    #region " 右サイドパネルへの描画と、右サイドパネルの表示 "
+                    //----------------
+                    this._右サイドクリアパネル.クリアする();
+                    this._右サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
 
-                        #region " 曲名パネル "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._曲名パネル.描画する( dc );
-                        //----------------
-                        #endregion
+                        // コンボ
+                        this._コンボ表示.進行描画する( dcp, new Vector2( +228f + 264f / 2f, +234f ), this.成績 );
 
-                        #region " ヒットバー "
-                        //----------------
-                        // ヒットバー
-                        if( userConfig.ダーク != ダーク種別.FULL )
-                            this._ドラムキットとヒットバー.ヒットバーを進行描画する();
-                        //----------------
-                        #endregion
+                    } );
+                    this._右サイドクリアパネル.描画する();
+                    //----------------
+                    #endregion
 
-                        #region " ドラムキット "
-                        //----------------
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._ドラムキットとヒットバー.ドラムキットを進行描画する();
-                        //----------------
-                        #endregion
+                    #region " レーンフレーム "
+                    //----------------
+                    this._レーンフレーム.描画する( dc, userConfig.レーンの透明度, レーンラインを描画する: ( userConfig.ダーク == ダーク種別.OFF ) ? true : false );
+                    //----------------
+                    #endregion
 
-                        #region " ドラムチップ "
-                        //----------------
-                        this._描画範囲内のすべてのチップに対して( 演奏時刻sec, ( チップ chip, int index, double ヒット判定バーと描画との時間sec, double ヒット判定バーと発声との時間sec, double ヒット判定バーとの距離dpx ) => {
+                    #region " レーンフラッシュ  "
+                    //----------------
+                    this._レーンフラッシュ.進行描画する();
+                    //----------------
+                    #endregion
 
-                            // クリア判定はこの中。
-                            if( this._ドラムチップ.進行描画する( ref this._描画開始チップ番号, this._チップの演奏状態[ chip ], chip, index, ヒット判定バーとの距離dpx ) )
-                            {
-                                this.現在のフェーズ = フェーズ.クリア;
-                            }
+                    #region " 小節線拍線 "
+                    //----------------
+                    if( userConfig.ダーク != ダーク種別.FULL )
+                        this._小節線拍線を描画する( dc, 演奏時刻sec );
+                    //----------------
+                    #endregion
 
-                        } );
-                        //----------------
-                        #endregion
+                    #region " 背景画像 "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._背景画像.描画する( 0f, 0f );
+                    //----------------
+                    #endregion
 
-                        #region " チップ光 "
-                        //----------------
-                        this._チップ光.進行描画する( dc );
-                        //----------------
-                        #endregion
+                    #region " 譜面スクロール速度 "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._譜面スクロール速度.描画する( dc, userConfig.譜面スクロール速度 );
+                    //----------------
+                    #endregion
 
-                        #region " 判定文字列 "
-                        //----------------
-                        this._判定文字列.進行描画する();
-                        //----------------
-                        #endregion
+                    #region " エキサイトゲージ "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._エキサイトゲージ.進行描画する( dc, this.成績.エキサイトゲージ量 );
+                    //----------------
+                    #endregion
 
-                        #region " システム情報 "
-                        //----------------
-                        this._システム情報.VPSをカウントする();
+                    #region " クリアメーター, フェーズパネル "
+                    //----------------
+                    double 曲の長さsec = Global.App.演奏スコア.チップリスト[ Global.App.演奏スコア.チップリスト.Count - 1 ].描画時刻sec;
+                    float 現在位置 = (float) ( 1.0 - ( 曲の長さsec - 演奏時刻sec ) / 曲の長さsec );
 
-                        if( userConfig.ダーク == ダーク種別.OFF )
-                            this._システム情報.描画する( dc, $"BGMAdjust: {Global.App.演奏譜面.譜面.BGMAdjust}" );
-                        //----------------
-                        #endregion
+                    // クリアメーター
+                    this.成績.CountMap = this._クリアメーター.カウント値を設定する( 現在位置, this.成績.判定別ヒット数 );
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._クリアメーター.進行描画する( dc );
 
+                    // フェーズパネル
+                    this._フェーズパネル.現在位置 = 現在位置;
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._フェーズパネル.進行描画する();
+                    //----------------
+                    #endregion
+
+                    #region " 曲名パネル "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._曲名パネル.描画する( dc );
+                    //----------------
+                    #endregion
+
+                    #region " ヒットバー "
+                    //----------------
+                    // ヒットバー
+                    if( userConfig.ダーク != ダーク種別.FULL )
+                        this._ドラムキットとヒットバー.ヒットバーを進行描画する();
+                    //----------------
+                    #endregion
+
+                    #region " ドラムキット "
+                    //----------------
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._ドラムキットとヒットバー.ドラムキットを進行描画する();
+                    //----------------
+                    #endregion
+
+                    #region " ドラムチップ; クリア判定はこの中。 "
+                    //----------------
+                    this._描画範囲内のすべてのチップに対して( 演奏時刻sec, ( チップ chip, int index, double ヒット判定バーと描画との時間sec, double ヒット判定バーと発声との時間sec, double ヒット判定バーとの距離dpx ) => {
+
+                        if( this._ドラムチップ.進行描画する( ref this._描画開始チップ番号, this._チップの演奏状態[ chip ], chip, index, ヒット判定バーとの距離dpx ) )
+                        {
+                            // true が返されたら演奏終了（クリア）
+                            this._フェーズ完了 = true;
+                        }
+
+                    } );
+                    //----------------
+                    #endregion
+
+                    #region " チップ光 "
+                    //----------------
+                    this._チップ光.進行描画する( dc );
+                    //----------------
+                    #endregion
+
+                    #region " 判定文字列 "
+                    //----------------
+                    this._判定文字列.進行描画する();
+                    //----------------
+                    #endregion
+
+                    #region " システム情報 "
+                    //----------------
+                    this._システム情報.VPSをカウントする();
+
+                    if( userConfig.ダーク == ダーク種別.OFF )
+                        this._システム情報.描画する( dc, $"BGMAdjust: {Global.App.演奏譜面.譜面.BGMAdjust}" );
+                    //----------------
+                    #endregion
+
+                    if( this.現在のフェーズ == フェーズ.キャンセル時フェードアウト )
+                    {
                         #region " アイキャッチ "
                         //----------------
-                        if( this.現在のフェーズ == フェーズ.キャンセル時フェードアウト )
-                        {
-                            Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
-
-                            if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.クローズ完了 )
-                            {
-                                this.現在のフェーズ = フェーズ.キャンセル完了;
-                            }
-                        }
+                        if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
+                            this._フェーズ完了 = true;    // 完了
                         //----------------
                         #endregion
                     }
+
+                    break;
                     //----------------
                     #endregion
-                    break;
-
+                }
                 case フェーズ.クリア:
-                    #region " *** "
+                {
+                    #region " 背景画像のみ "
                     //----------------
-                    {
-                        #region " 背景画像 "
-                        //----------------
-                        this._背景画像.描画する( 0f, 0f );
-                        //----------------
-                        #endregion
-                    }
+                    Global.App.画面をクリアする();
+                    this._背景画像.描画する( 0f, 0f );
+                    break;
                     //----------------
                     #endregion
-                    break;
-
+                }
+                case フェーズ.失敗:
+                {
+                    #region " 未実装 "
+                    //----------------
+                    // todo: 演奏失敗処理の実装
+                    throw new NotImplementedException();
+                    //----------------
+                    #endregion
+                }
                 case フェーズ.キャンセル通知:
-                    #region " *** "
+                {
+                    #region " フェードアウト開始。"
                     //----------------
+                    if( !this._フェーズ完了 )
                     {
-                        #region " フェードアウト開始 "
-                        //----------------
                         Global.App.アイキャッチ管理.アイキャッチを選択しクローズする( nameof( 半回転黒フェード ) );
-                        this.現在のフェーズ = フェーズ.キャンセル時フェードアウト;
-                        //----------------
-                        #endregion
+                        this._フェーズ完了 = true;    // 完了
                     }
+                    break;
                     //----------------
                     #endregion
+                }
+                case フェーズ.指示待機:
+                case フェーズ.曲読み込み開始:
+                {
+                    #region " 待機画面 "
+                    //----------------
+                    Global.App.画面をクリアする();
+                    this._ビュアーモードの待機時背景を描画する( dc, userConfig );
                     break;
-
-                case フェーズ.即時終了:
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.曲読み込み完了待ち:
+                {
+                    #region " 待機画面＆ローディング画像 "
+                    //----------------
+                    Global.App.画面をクリアする();
+                    this._ビュアーモードの待機時背景を描画する( dc, userConfig );
+                    this._LoadingSpinner.描画する();
                     break;
+                    //----------------
+                    #endregion
+                }
             }
         }
+
+
+
+        // ローカル
+
+
+        private bool _フェーズ完了;
 
 
 
@@ -1104,7 +1229,7 @@ namespace DTXMania2.演奏
 
         private readonly 画像 _背景画像;
 
-        private readonly 画像 _スコア指定の背景画像;
+        private 画像 _スコア指定の背景画像;
 
         private readonly 曲名パネル _曲名パネル;
 
@@ -1244,7 +1369,7 @@ namespace DTXMania2.演奏
         /// </remarks>
         private int _描画開始チップ番号 = -1;
 
-        private readonly Dictionary<チップ, チップの演奏状態> _チップの演奏状態;
+        private Dictionary<チップ, チップの演奏状態> _チップの演奏状態;
 
         private double _演奏開始からの経過時間secを返す()
             => Global.App.サウンドタイマ.現在時刻sec;
@@ -1386,15 +1511,31 @@ namespace DTXMania2.演奏
             return 演奏開始時刻sec;
         }
 
+        private void _演奏状態を初期化する()
+        {
+            this._描画開始チップ番号 = -1;
 
-        // フェードイン（キャプチャ画像とステージ画像とのA-B変換）
-        // → 既定のアイキャッチを使わないので独自管理する。
+            // スコアに依存するデータを初期化する。
+
+            this.成績 = new 成績();
+
+            this._チップの演奏状態 = new Dictionary<チップ, チップの演奏状態>();
+            foreach( var chip in Global.App.演奏スコア.チップリスト )
+                this._チップの演奏状態.Add( chip, new チップの演奏状態( chip ) );
+
+            this._スコア指定の背景画像 = string.IsNullOrEmpty( Global.App.演奏スコア.背景画像ファイル名 ) ?
+                null! :
+                new 画像( Path.Combine( Global.App.演奏スコア.PATH_WAV, Global.App.演奏スコア.背景画像ファイル名 ) );    // PATH_WAV は絶対パス
+        }
+
+
+        // フェードイン（キャプチャ画像とステージ画像とのA-B変換）→ 既定のアイキャッチを使わないので独自管理する。
 
 
         /// <summary>
         ///		読み込み画面: 0 ～ 1: 演奏画面
         /// </summary>
-        private readonly Counter _フェードインカウンタ;
+        private Counter _フェードインカウンタ;
 
 
 
@@ -1600,6 +1741,116 @@ namespace DTXMania2.演奏
             }
 
             return 一番近いチップ;
+        }
+
+
+
+        // ビュアーモード
+
+
+        private readonly LoadingSpinner _LoadingSpinner;
+
+        private Task _曲読み込みタスク = null!;
+
+        private void _ビュアーモードの待機時背景を描画する( DeviceContext dc, ユーザ設定 userConfig )
+        {
+            #region " 左サイドパネルへの描画と、左サイドパネルの表示 "
+            //----------------
+            this._左サイドクリアパネル.クリアする();
+            this._左サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
+
+                // プレイヤー名
+                this._プレイヤー名表示.進行描画する( dcp );
+
+                // スコア
+                if( userConfig.ダーク == ダーク種別.OFF )
+                    this._スコア表示.進行描画する( dcp, Global.Animation, new Vector2( +280f, +120f ), this.成績 );
+
+                // 達成率
+                this._達成率表示.描画する( dcp, (float) this.成績.Achievement );
+
+                // 判定パラメータ
+                this._判定パラメータ表示.描画する( dcp, +118f, +372f, this.成績 );
+
+                // スキル
+                this._曲別SKILL.進行描画する( dcp, 0f );
+
+            } );
+            this._左サイドクリアパネル.描画する();
+            //----------------
+            #endregion
+
+            #region " 右サイドパネルへの描画と、右サイトパネルの表示 "
+            //----------------
+            this._右サイドクリアパネル.クリアする();
+            this._右サイドクリアパネル.クリアパネル.画像へ描画する( ( dcp ) => {
+                // 特になし
+            } );
+            this._右サイドクリアパネル.描画する();
+            //----------------
+            #endregion
+
+            #region " レーンフレーム "
+            //----------------
+            this._レーンフレーム.描画する( dc, userConfig.レーンの透明度, レーンラインを描画する: ( userConfig.ダーク == ダーク種別.OFF ) ? true : false );
+            //----------------
+            #endregion
+
+            #region " 背景画像 "
+            //----------------
+            if( userConfig.ダーク == ダーク種別.OFF )
+                this._背景画像.描画する( 0f, 0f );
+            //----------------
+            #endregion
+
+            #region " 譜面スクロール速度 "
+            //----------------
+            if( userConfig.ダーク == ダーク種別.OFF )
+                this._譜面スクロール速度.描画する( dc, userConfig.譜面スクロール速度 );
+            //----------------
+            #endregion
+
+            #region " エキサイトゲージ "
+            //----------------
+            if( userConfig.ダーク == ダーク種別.OFF )
+                this._エキサイトゲージ.進行描画する( dc, this.成績.エキサイトゲージ量 );
+            //----------------
+            #endregion
+
+            #region " クリアメーター "
+            //----------------
+            if( userConfig.ダーク == ダーク種別.OFF )
+                this._クリアメーター.進行描画する( dc );
+            //----------------
+            #endregion
+
+            #region " フェーズパネル "
+            //----------------
+            if( userConfig.ダーク == ダーク種別.OFF )
+                this._フェーズパネル.進行描画する();
+            //----------------
+            #endregion
+
+            #region " 曲目パネル "
+            //----------------
+            if( userConfig.ダーク == ダーク種別.OFF )
+                this._曲名パネル.描画する( dc );
+            //----------------
+            #endregion
+
+            #region " ヒットバー "
+            //----------------
+            if( userConfig.ダーク != ダーク種別.FULL )
+                this._ドラムキットとヒットバー.ヒットバーを進行描画する();
+            //----------------
+            #endregion
+
+            #region " ドラムキット "
+            //----------------
+            if( userConfig.ダーク == ダーク種別.OFF )
+                this._ドラムキットとヒットバー.ドラムキットを進行描画する();
+            //----------------
+            #endregion
         }
     }
 }

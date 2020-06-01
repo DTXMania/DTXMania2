@@ -73,7 +73,11 @@ namespace DTXMania2.曲
         ///     レコードが存在していない場合は、新規に追加される。
         ///     譜面ファイルに更新があれば、ScoreDB の対応レコードが更新される。
         /// </remarks>
-        public bool 譜面と画像を現行化済み { get; set; }
+        public bool 譜面と画像を現行化済み
+        {
+            get { lock( this._排他 ) return this._譜面と画像を現行化済み; }
+            set { lock( this._排他 ) this._譜面と画像を現行化済み = value; }
+        }
 
         /// <summary>
         ///     <see cref="Score.譜面の属性"/>が現行化済みであれば true。
@@ -82,7 +86,11 @@ namespace DTXMania2.曲
         ///     現行化とは、ScorePropertiesDB から曲属性を検索し、該当レコードがあればそれを<see cref="Score.譜面の属性"/>に上書きする作業を表す。
         ///     結果、レコードがあろうがなかろうが、このメンバは true になる。
         /// </remarks>
-        public bool 譜面の属性を現行化済み { get; set; }
+        public bool 譜面の属性を現行化済み
+        {
+            get { lock( this._排他 ) return this._譜面の属性を現行化済み; }
+            set { lock( this._排他 ) this._譜面の属性を現行化済み = value; }
+        }
 
         /// <summary>
         ///     <see cref="Score.最高記録"/>が現行化済みであれば true。
@@ -91,7 +99,11 @@ namespace DTXMania2.曲
         ///     現行化とは、RecordDB から最高記録を検索し、該当レコードがあればそれを<see cref="Score.最高記録"/>に上書きする作業を表す。
         ///     結果、レコードがあろうがなかろうが、このメンバは true になる。
         /// </remarks>
-        public bool 最高記録を現行化済み { get; set; }
+        public bool 最高記録を現行化済み
+        {
+            get { lock( this._排他 ) return this._最高記録を現行化済み; }
+            set { lock( this._排他 ) this._最高記録を現行化済み = value; }
+        }
 
         /// <summary>
         ///     これまでの最高ランク。
@@ -197,6 +209,12 @@ namespace DTXMania2.曲
         private ScorePropertiesDBRecord? _譜面の属性 = null;
 
         private RecordDBRecord? _最高記録 = null;
+
+        private bool _譜面と画像を現行化済み = false;
+
+        private bool _譜面の属性を現行化済み = false;
+
+        private bool _最高記録を現行化済み = false;
 
         private Dictionary<表示レーン種別, int> _レーン別ノート数 = null!;
 

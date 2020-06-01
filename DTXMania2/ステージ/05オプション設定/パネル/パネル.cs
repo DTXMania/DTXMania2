@@ -223,7 +223,7 @@ namespace DTXMania2.オプション設定
 
         /// <summary>
         ///		項目部分のサイズ。
-        ///		left と top は、パネルほ left,top からの相対値。
+        ///		left と top は、パネルの left,top からの相対値。
         /// </summary>
         protected RectangleF 項目領域 = new RectangleF( +322f, +0f, 342f, サイズ.Height );
 

@@ -5,10 +5,17 @@ using System.Threading;
 
 namespace DTXMania2
 {
+    /// <summary>
+    ///     タスク間で送受信されるメッセージ。
+    /// </summary>
+    /// <remarks>
+    ///     DTXMania2 では、主に「GUIフォーム」タスクと「進行描画」タスクが並列に動作している。
+    ///     これらの間でのメッセージを送受信するための仕組みを提供する。
+    /// </remarks>
     class TaskMessage
     {
         /// <summary>
-        ///     タスクメッセージ名。
+        ///     メッセージの宛先となるタスク。
         /// </summary>
         public enum タスク名    // 必要に応じて付け足すこと。
         {

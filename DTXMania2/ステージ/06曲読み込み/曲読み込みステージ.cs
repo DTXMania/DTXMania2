@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
@@ -23,7 +24,6 @@ namespace DTXMania2.曲読み込み
             フェードイン,
             表示,
             完了,
-            キャンセル,
         }
 
         public フェーズ 現在のフェーズ { get; protected set; } = フェーズ.完了;
@@ -70,7 +70,9 @@ namespace DTXMania2.曲読み込み
             this._舞台画像.ぼかしと縮小を適用する( 0.0 );
             Global.App.アイキャッチ管理.現在のアイキャッチ.オープンする();
 
+            // 最初のフェーズへ。
             this.現在のフェーズ = フェーズ.フェードイン;
+            this._フェーズ完了 = false;
         }
 
         public void Dispose()
@@ -95,6 +97,42 @@ namespace DTXMania2.曲読み込み
 
         public void 進行する()
         {
+            switch( this.現在のフェーズ )
+            {
+                case フェーズ.フェードイン:
+                {
+                    #region " フェードインが完了したら次のフェーズへ。"
+                    //----------------
+                    if( this._フェーズ完了 )
+                    {
+                        this.現在のフェーズ = フェーズ.表示;
+                        this._フェーズ完了 = false;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.表示:
+                {
+                    #region " スコアを読み込んで完了フェーズへ。"
+                    //----------------
+                    スコアを読み込む();
+
+                    Global.App.ドラム入力.すべての入力デバイスをポーリングする();  // 先行入力があったらここでキャンセル
+                    this.現在のフェーズ = フェーズ.完了;
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.完了:
+                {
+                    #region " 遷移終了。Appによるステージ遷移待ち。"
+                    //----------------
+                    break;
+                    //----------------
+                    #endregion
+                }
+            }
         }
 
         public void 描画する()
@@ -102,27 +140,40 @@ namespace DTXMania2.曲読み込み
             var dc = Global.既定のD2D1DeviceContext;
             dc.Transform = Global.拡大行列DPXtoPX;
 
-            this._舞台画像.進行描画する( dc );
-            this._注意文.描画する( 0f, 760f );
-            this._プレビュー画像.描画する();
-            this._難易度.描画する( dc );
-
-            this._曲名を描画する( dc );
-            this._サブタイトルを描画する( dc );
-
             switch( this.現在のフェーズ )
             {
                 case フェーズ.フェードイン:
-                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.オープン完了 )
-                        this.現在のフェーズ = フェーズ.表示;
-                    break;
+                {
+                    #region " 背景画面＆アイキャッチフェードイン "
+                    //----------------
+                    this._舞台画像.進行描画する( dc );
+                    this._注意文.描画する( 0f, 760f );
+                    this._プレビュー画像.描画する();
+                    this._難易度.描画する( dc );
+                    this._曲名を描画する( dc );
+                    this._サブタイトルを描画する( dc );
 
-                case フェーズ.表示:
-                    スコアを読み込む();
-                    Global.App.ドラム入力.すべての入力デバイスをポーリングする();  // 先行入力があったらここでキャンセル
-                    this.現在のフェーズ = フェーズ.完了;
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
+                        this._フェーズ完了 = true;    // 完了
                     break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.表示:
+                case フェーズ.完了:
+                {
+                    #region " 背景画面 "
+                    //----------------
+                    this._舞台画像.進行描画する( dc );
+                    this._注意文.描画する( 0f, 760f );
+                    this._プレビュー画像.描画する();
+                    this._難易度.描画する( dc );
+                    this._曲名を描画する( dc );
+                    this._サブタイトルを描画する( dc );
+                    break;
+                    //----------------
+                    #endregion
+                }
             }
         }
 
@@ -153,6 +204,38 @@ namespace DTXMania2.曲読み込み
                 chip.発声時刻sec -= Global.App.サウンドデバイス.再生遅延sec;
             }
 
+
+            // WAVを生成する。
+
+            Global.App.WAVキャッシュ.世代を進める();
+
+            Global.App.WAV管理?.Dispose();
+            Global.App.WAV管理 = new WAV管理();
+
+            foreach( var kvp in Global.App.演奏スコア.WAVリスト )
+            {
+                var wavInfo = kvp.Value;
+
+                var path = Path.Combine( Global.App.演奏スコア.PATH_WAV, wavInfo.ファイルパス );
+                Global.App.WAV管理.登録する( kvp.Key, path, wavInfo.多重再生する, wavInfo.BGMである );
+            }
+
+
+            // AVIを生成する。
+
+            Global.App.AVI管理?.Dispose();
+            Global.App.AVI管理 = new AVI管理();
+
+            if( Global.App.ログオン中のユーザ.演奏中に動画を表示する )
+            {
+                foreach( var kvp in Global.App.演奏スコア.AVIリスト )
+                {
+                    var path = Path.Combine( Global.App.演奏スコア.PATH_WAV, kvp.Value );
+                    Global.App.AVI管理.登録する( kvp.Key, path, Global.App.ログオン中のユーザ.再生速度 );
+                }
+            }
+
+
             // 完了。
 
             Log.Info( $"曲ファイルを読み込みました。[{Folder.絶対パスをフォルダ変数付き絶対パスに変換して返す( 選択曲ファイルの絶対パス )}]" );
@@ -174,6 +257,8 @@ namespace DTXMania2.曲読み込み
         private readonly プレビュー画像 _プレビュー画像;
 
         private readonly 難易度 _難易度;
+
+        private bool _フェーズ完了;
 
         private void _曲名を描画する( DeviceContext dc )
         {

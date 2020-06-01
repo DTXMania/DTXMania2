@@ -3,20 +3,32 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using FDK;
 
 namespace DTXMania2.曲
 {
-    class 標準の曲ツリー : 曲ツリー
+    class 曲ツリー_全曲 : 曲ツリー
     {
+
+        // プロパティ
+
+
+        public long 進捗カウンタ
+            => Interlocked.Read( ref this._進捗カウンタ );
+
+
 
         // 生成と終了
 
 
-        public 標準の曲ツリー()
+        public 曲ツリー_全曲()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            this._進捗カウンタ = 0;
         }
 
         public override void Dispose()
@@ -38,56 +50,87 @@ namespace DTXMania2.曲
         ///     曲ツリーは、曲検索フォルダを検索した結果に、現状の（現行前の）ScoreDB の内容を反映したものとなる。
         ///     曲ツリーを構築すると同時に、全曲リスト/全譜面リストも構築する。
         /// </remarks>
-        public void 構築する( IEnumerable<VariablePath> 曲検索フォルダパスリスト )
+        public async Task 構築するAsync( IEnumerable<VariablePath> 曲検索フォルダパスリスト )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
+            await Task.Run( () => {
 
-            // (1) 曲検索フォルダパスをスキャンして、曲ツリー（と全譜面リスト）を構築する。
+                // 曲検索フォルダパスをスキャンして、曲ツリー（と全譜面リスト）を構築する。
 
-            // ルートノードの子ノードリストの先頭に「ランダムセレクト」を追加する。
-            this.ルートノード.子ノードリスト.Add( new RandomSelectNode() { 親ノード = this.ルートノード } );
+                // ルートノードの子ノードリストの先頭に「ランダムセレクト」を追加する。
+                this.ルートノード.子ノードリスト.Add( new RandomSelectNode() { 親ノード = this.ルートノード } );
 
-            // 曲検索パスに従って、ルートノード以降を構築する。
-            // 同時に、この中で、全曲リストと全譜面リストも構築する。
-            foreach( var path in 曲検索フォルダパスリスト )
-                this._構築する( path, this.ルートノード );
+                // 曲検索パスに従って、ルートノード以降を構築する。
+                // 同時に、この中で、全曲リストと全譜面リストも構築する。
+                foreach( var path in 曲検索フォルダパスリスト )
+                    this._構築する( path, this.ルートノード );
 
-
-            // (2) 現状の ScoreDB（現行化前）を読み込んで反映する。
-
-            using var scoredb = new ScoreDB();
-            using var query = new SqliteCommand( "SELECT * FROM Scores", scoredb.Connection );  // 全レコード抽出
-            var result = query.ExecuteReader();
-            while( result.Read() )
-            {
-                var record = new ScoreDBRecord( result );
-
-                // レコードに該当する譜面が存在していれば、レコードの内容で更新する。
-                if( Global.App.全譜面リスト.ContainsKey( record.ScorePath ) )
-                {
-                    Global.App.全譜面リスト[ record.ScorePath ].譜面.UpdateFrom( record );
-                }
-                else
-                {
-                    // 存在していない場合は何もしない。（レコードはScoreDBに残ったまま）
-                }
-            }
-
-
-            // (3) 文字列画像のみ生成する。（現行化待ち中に表示されるため）
-
-            foreach( var score in Global.App.全譜面リスト.Values )
-            {
-                score.タイトル文字列画像 = 現行化.タイトル文字列画像を生成する( score.譜面.Title );
-                score.サブタイトル文字列画像 = 現行化.サブタイトル文字列画像を生成する( score.譜面.Artist );
-            }
-
-
-            // (4) 最初の子ノードをフォーカスする。
-
-            this.フォーカスリスト.SelectFirst();
+                //  最初の子ノードをフォーカスする。
+                this.フォーカスリスト.SelectFirst();
+            
+            } );
         }
+
+        /// <summary>
+        ///     現状の ScoreDB と ScorePropertiesDB（ともに現行化前）を読み込んで反映する。
+        /// </summary>
+        public async Task ノードにDBを反映するAsync()
+        {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            this._進捗カウンタ = 0;
+
+            await Task.Run( () => {
+
+                using var scoredb = new ScoreDB();
+                using var scorePropertiesdb = new ScorePropertiesDB();
+                using var query = new SqliteCommand( "SELECT * FROM Scores", scoredb.Connection );  // 全レコード抽出
+                var result = query.ExecuteReader();
+                while( result.Read() )
+                {
+                    Interlocked.Increment( ref this._進捗カウンタ );
+
+                    var record = new ScoreDBRecord( result );
+
+                    // レコードに記載されているパスが全譜面リストに存在していれば、レコードの内容で更新する。
+                    var scores = Global.App.全譜面リスト.Where( ( s ) => s.譜面.ScorePath == record.ScorePath );
+                    foreach( var score in scores )
+                        score.譜面.UpdateFrom( record );
+                }
+
+            } );
+        }
+
+        /// <summary>
+        ///     文字列画像のみ生成する。（現行化待ち中に表示されるため）
+        /// </summary>
+        public async Task 文字列画像を生成するAsync()
+        {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            this._進捗カウンタ = 0;
+
+            await Task.Run( () => {
+
+                foreach( var score in Global.App.全譜面リスト )
+                {
+                    Interlocked.Increment( ref this._進捗カウンタ );
+
+                    score.タイトル文字列画像 = 現行化.タイトル文字列画像を生成する( score.譜面.Title );
+                    score.サブタイトル文字列画像 = 現行化.サブタイトル文字列画像を生成する( score.譜面.Artist );
+                }
+
+            } );
+        }
+
+
+
+        // ローカル
+
+
+        private long _進捗カウンタ;   // Interlocked でアクセスすること
+
 
         /// <summary>
         ///     1つのフォルダに対して検索と構築を行う。
@@ -153,6 +196,8 @@ namespace DTXMania2.曲
             {
                 #region " (B) このフォルダに set.def がある → その内容で任意個のノードを作成する。"
                 //----------------
+                Interlocked.Increment( ref this._進捗カウンタ );
+
                 // set.def を読み込む。
                 var setDef = new SetDef( setDefPath );
 
@@ -189,6 +234,8 @@ namespace DTXMania2.曲
                 // 列挙されたすべての譜面ファイルについて……
                 foreach( var fileInfo in fileInfos )
                 {
+                    Interlocked.Increment( ref this._進捗カウンタ );
+
                     var path = new VariablePath( fileInfo.FullName );
                     try
                     {
@@ -225,7 +272,7 @@ namespace DTXMania2.曲
                     for( int i = 0; i < 5; i++ )
                     {
                         if( null != snode.曲.譜面リスト[ i ] )
-                            Global.App.全譜面リスト[ snode.曲.譜面リスト[ i ]!.譜面.ScorePath ] = snode.曲.譜面リスト[ i ]!;
+                            Global.App.全譜面リスト.Add( snode.曲.譜面リスト[ i ]! );
                     }
                 }
             }

@@ -11,19 +11,6 @@ namespace DTXMania2.選曲
     class 表示方法選択パネル : IDisposable
     {
 
-        // プロパティ
-
-
-        public enum 表示方法
-        {
-            全曲,
-            評価順,
-        }
-
-        public 表示方法 現在の表示方法 { get; protected set; }
-
-
-
         // 生成と終了
 
 
@@ -31,25 +18,17 @@ namespace DTXMania2.選曲
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this.現在の表示方法 = 表示方法.全曲;
-            this._表示開始位置 = this._指定した表示方法が選択位置に来る場合の表示開始位置を返す( this.現在の表示方法 );
-
-            this._横方向差分割合 = new Variable( Global.Animation.Manager, initialValue: 0.0 );
-            this._横方向差分移動ストーリーボード = new Storyboard( Global.Animation.Manager );
-            using( var 維持 = Global.Animation.TrasitionLibrary.Constant( 0.0 ) )
-                this._横方向差分移動ストーリーボード.AddTransition( this._横方向差分割合, 維持 );
-            this._横方向差分移動ストーリーボード.Schedule( Global.Animation.Timer.Time );
+            this._論理パネル番号 = new TraceValue( Global.Animation, 初期値: 0.0, 切替時間sec: 0.1 );
         }
 
         public virtual void Dispose()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
+            this._論理パネル番号.Dispose();
+
             foreach( var p in this._パネルs )
                 p.Dispose();
-
-            this._横方向差分移動ストーリーボード.Dispose();
-            this._横方向差分割合.Dispose();
         }
 
 
@@ -57,21 +36,23 @@ namespace DTXMania2.選曲
         // 進行と描画
 
 
-        public void 進行描画する( DeviceContext dc )
+        public void 進行描画する()
         {
             // パネルを合計８枚表示する。（左隠れ１枚 ＋ 表示６枚 ＋ 右隠れ１枚）
 
-            int 表示元の位置 = this._表示開始位置;
+            int 論理パネル番号 = (int) Math.Truncate( this._論理パネル番号.現在値 );
+            double 差分 = this._論理パネル番号.現在値 - (double) 論理パネル番号;   // -1.0 < 差分 < 1.0
 
             for( int i = 0; i < 8; i++ )
             {
-                var 画像 = this._パネルs[ 表示元の位置 ].画像;
+                int 実パネル番号 = this._論理パネル番号を実パネル番号に変換して返す( 論理パネル番号 + i - 3 );    // 現在のパネルの3つ前から表示開始。
+                var 画像 = this._パネルs[ 実パネル番号 ].画像;
 
+                const float パネル幅 = 144f;
                 画像.描画する(
-                    (float) ( ( 768f + this._横方向差分割合.Value * 144f ) + 144f * i ),
-                    ( 3 == i ) ? 100f : 54f ); // i==3 が現在の選択パネル
-
-                表示元の位置 = ( 表示元の位置 + 1 ) % this._パネルs.Count;
+                    左位置: (float) ( 768f + パネル幅 * ( i - 差分 ) ),
+                    上位置: ( 3 == i ) ? 90f : 54f,            // i==3 が現在の選択パネル。他より下に描画。
+                    不透明度0to1: ( 3 == i ) ? 1f : 0.5f );    //          〃　　　　　　　他より明るく描画。
             }
         }
 
@@ -82,12 +63,16 @@ namespace DTXMania2.選曲
 
         public void 次のパネルを選択する()
         {
-            // todo: 次のパネルを選択する() の実装
+            this._論理パネル番号.目標値++;
+
+            Global.App.曲ツリーリスト.SelectNext( Loop: true );
         }
 
         public void 前のパネルを選択する()
         {
-            // todo: 前のパネルを選択する() の実装
+            this._論理パネル番号.目標値--;
+
+            Global.App.曲ツリーリスト.SelectPrev( Loop: true );
         }
 
 
@@ -97,13 +82,11 @@ namespace DTXMania2.選曲
 
         private class Panel : IDisposable
         {
-            public 表示方法 表示方法;
             public VariablePath 画像の絶対パス;
             public 画像 画像;
 
-            public Panel( 表示方法 type, VariablePath path )
+            public Panel( VariablePath path )
             {
-                this.表示方法 = type;
                 this.画像の絶対パス = path;
                 this.画像 = new 画像( path );
 
@@ -114,30 +97,25 @@ namespace DTXMania2.選曲
             }
         };
 
+        /// <summary>
+        ///     <see cref="App.曲ツリーリスト"/> と同じ並びであること。
+        /// </summary>
         private List<Panel> _パネルs = new List<Panel>() {
-            new Panel( 表示方法.全曲, @"$(Images)\SelectStage\Sorting_All.png" ),
-            new Panel( 表示方法.評価順, @"$(Images)\SelectStage\Sorting_Evaluation.png" ),
+            new Panel( @"$(Images)\SelectStage\Sorting_All.png" ),
+            new Panel( @"$(Images)\SelectStage\Sorting_Evaluation.png" ),
         };
 
-        /// <summary>
-        ///     表示パネルの横方向差分の割合。
-        ///     左:-1.0 ～ 中央:0.0 ～ +1.0:右。
-        /// </summary>
-        private Variable _横方向差分割合;
+        private TraceValue _論理パネル番号;
 
-        private Storyboard _横方向差分移動ストーリーボード;
-
-        /// <summary>
-        ///     左隠れパネルの <see cref="_パネルs"/>[] インデックス番号。
-        ///     0 ～ <see cref="_パネルs"/>.Count-1。
-        /// </summary>
-        private int _表示開始位置 = 0;
-
-
-        private int _指定した表示方法が選択位置に来る場合の表示開始位置を返す( 表示方法 表示方法 )
+        private int _論理パネル番号を実パネル番号に変換して返す( int 論理パネル番号 )
         {
-            int n = this._パネルs.FindIndex( ( p ) => ( p.表示方法 == 表示方法 ) );
-            return ( ( n - 3 ) % this._パネルs.Count + this._パネルs.Count );
+            return ( 0 <= 論理パネル番号 ) ?
+
+                // 例:パネル数 3 で論理パネル番号が正の時: 0,1,2,3,4,5,... → 実パネル番号 = 0,1,2,0,1,2,...
+                論理パネル番号 % this._パネルs.Count :
+
+                // 例:パネル数 3 で論理パネル番号が負の時: -1,-2,-3,-4,-5,... → 実パネル番号 = 2,1,0,2,1,0,...
+                ( this._パネルs.Count - ( ( -論理パネル番号 ) % this._パネルs.Count )) % this._パネルs.Count;
         }
     }
 }

@@ -95,6 +95,10 @@ namespace DTXMania2
                     b.Dispose();
             }
 
+            this._画面D_アイキャッチ遷移画面2_逆回転中.Dispose();
+            this._画面BC_アイキャッチ遷移画面1_回転中.Dispose();
+            this._ロゴ.Dispose();
+
             base.Dispose();
         }
 

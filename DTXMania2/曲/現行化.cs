@@ -13,6 +13,15 @@ using FDK;
 
 namespace DTXMania2.曲
 {
+    /// <summary>
+    ///     <see cref="SongNode"/> を現行化する。
+    /// </summary>
+    /// <remarks>
+    ///     現行化とは、仮の初期状態から、最新の完全な状態に更新する処理である。
+    ///     具体的には、DB から作成された <see cref="SongNode"/> の情報を実際のファイルが持つ
+    ///     最新の情報と比較して DB を更新したり、他の DB からデータを読み込んだり、
+    ///     <see cref="SongNode"/> が持つ画像を生成したりする。
+    /// </remarks>
     class 現行化
     {
 
@@ -32,41 +41,18 @@ namespace DTXMania2.曲
         /// <summary>
         ///     指定された曲ツリーの現行化を開始する。
         /// </summary>
-        /// <param name="root">曲ツリーのルートノード。</param>
-        public void 開始する( RootNode root, ユーザ設定 userConfig )
+        /// <param name="root">曲ツリーのルートノードのリスト。</param>
+        public void 開始する( IEnumerable<RootNode> roots, ユーザ設定 userConfig )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            Task.Run( () => {
-
-                this.終了する();
-
-                // 全譜面のユーザ依存の現行化フラグをリセットする（現在のユーザに合わせて現行化しなおすため）。
-                foreach( var node in root.Traverse() )
-                {
-                    if( node is SongNode snode )
-                    {
-                        snode.現行化済み = false;
-                        foreach( var score in snode.曲.譜面リスト )
-                        {
-                            if( score is null )
-                                continue;
-                            score.最高記録 = null;
-                            score.最高記録を現行化済み = false;
-                            score.譜面の属性 = null;
-                            score.譜面の属性を現行化済み = false;
-                        }
-                    }
-                }
-
-                // 全ノードをスタックに投入。
-                this._現行化待ちスタック.Clear();
+            // 全ノードをスタックに投入。
+            this._現行化待ちスタック.Clear();
+            foreach( var root in roots )
                 foreach( var node in root.Traverse() )
                     this._現行化待ちスタック.Push( node );
 
-                this._現行化を開始する( userConfig );
-
-            } );
+            this._現行化を開始する( userConfig );
         }
 
         /// <summary>
@@ -82,11 +68,17 @@ namespace DTXMania2.曲
             
             await Task.Run( () => {
 
-                var node_array = new Node[ nodeList.Count ];
-                nodeList.CopyTo( node_array, 0 );
+                if( nodeList is Node[] nodeArray )
+                {
+                    this._現行化待ちスタック.PushRange( nodeArray );
+                }
+                else
+                {
+                    var _nodeArray = new Node[ nodeList.Count ];
+                    nodeList.CopyTo( _nodeArray, 0 );
 
-                this._現行化待ちスタック.PushRange( node_array );
-
+                    this._現行化待ちスタック.PushRange( _nodeArray );
+                }
             } );
         }
 
@@ -139,6 +131,58 @@ namespace DTXMania2.曲
             this._現行化タスク = null;
         }
 
+        /// <summary>
+        ///     指定されたツリーの全譜面のユーザ依存の現行化フラグをリセットする。
+        /// </summary>
+        public void リセットする( IEnumerable<RootNode> roots, ユーザ設定 userConfig )
+        {
+            foreach( var root in roots )
+            {
+                foreach( var node in root.Traverse() )
+                {
+                    if( node is SongNode snode )
+                    {
+                        snode.現行化済み = false;
+
+                        foreach( var score in snode.曲.譜面リスト )
+                        {
+                            if( score is null )
+                                continue;
+                            //score.譜面と画像を現行化済み = false;    --> ユーザに依存しないので現状維持
+                            score.最高記録 = null;
+                            score.最高記録を現行化済み = false;
+                            score.譜面の属性 = null;
+                            score.譜面の属性を現行化済み = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void すべての譜面について属性を現行化する( string userID )
+        {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            int 属性取得数 = 0;
+            using var scorepropdb = new ScorePropertiesDB();
+            using var cmd = new SqliteCommand( "SELECT * FROM ScoreProperties WHERE UserId = @UserId", scorepropdb.Connection );
+            cmd.Parameters.AddRange( new[] {
+                new SqliteParameter( "@UserId", userID ),
+            } );
+            var result = cmd.ExecuteReader();
+            while( result.Read() )
+            {
+                var prop = new ScorePropertiesDBRecord( result );
+                var scores = Global.App.全譜面リスト.Where( ( s ) => s.譜面.ScorePath == prop.ScorePath );
+                foreach( var score in scores )
+                {
+                    score.譜面の属性 = prop;
+                    score.譜面の属性を現行化済み = true;
+                    属性取得数++;
+                }
+            }
+            Log.Info( $"{属性取得数} 件の属性を更新しました。" );
+        }
 
 
         // 生成(static)
@@ -241,7 +285,7 @@ namespace DTXMania2.曲
 
             this._現行化タスク = Task.Run( async () => {
 
-                Log.現在のスレッドに名前をつける( "現行化" );
+                //Log.現在のスレッドに名前をつける( "現行化" );  --> await 後にワーカスレッドが変わることがある
                 Log.Info( "現行化タスクを開始しました。" );
 
                 while( !this._タスク終了通知.IsSet )
@@ -258,7 +302,7 @@ namespace DTXMania2.曲
                     {
                         // スタックが空だったら少し待機。
                         this._現行化中.Reset();
-                        await Task.Delay( 1000 );
+                        await Task.Delay( 100 );
                     }
                 }
 
@@ -269,7 +313,7 @@ namespace DTXMania2.曲
 
         private void _ノードを現行化する( Node node, ユーザ設定 userConfig )
         {
-            #region " 1. 曲の現行化 "
+            #region " 1. ノードが持つ譜面の現行化 "
             //----------------
             if( node is SongNode snode )
             {
@@ -279,6 +323,7 @@ namespace DTXMania2.曲
                     cmd.ExecuteNonQuery();
 
                 // すべての譜面について……
+
                 for( int i = 0; i < 5; i++ )
                 {
                     var score = snode.曲.譜面リスト[ i ];
@@ -293,7 +338,8 @@ namespace DTXMania2.曲
                         continue;
                     }
 
-                    // 1.1. 譜面と画像
+                    // 1.1. 譜面と画像 の現行化
+
                     if( !score.譜面と画像を現行化済み )
                     {
                         #region " ファイルの更新を確認し、ScoreDB と score を現行化する。"
@@ -395,7 +441,8 @@ namespace DTXMania2.曲
                         score.譜面と画像を現行化済み = true;
                     }
 
-                    // 1.2. 属性
+                    // 1.2. 属性 の現行化
+
                     if( !score.譜面の属性を現行化済み )
                     {
                         #region " 譜面の属性を現行化する。"
@@ -428,7 +475,8 @@ namespace DTXMania2.曲
                         #endregion
                     }
 
-                    // 1.3. 最高記録
+                    // 1.3. 最高記録 の現行化
+
                     if( !score.最高記録を現行化済み )
                     {
                         #region " 最高記録を現行化する。"
@@ -475,6 +523,7 @@ namespace DTXMania2.曲
                 if( node is SongNode )
                 {
                     // SongNode は生成不要。
+                    // → App.全譜面リスト の構築時に、タイトル文字列画像とサブタイトル文字列画像だけ先に生成済み。
                 }
                 else
                 {

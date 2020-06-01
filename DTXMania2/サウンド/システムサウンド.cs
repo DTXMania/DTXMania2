@@ -62,7 +62,7 @@ namespace DTXMania2
             // ファイルがないなら無視。
             if( !File.Exists( path.変数なしパス ) )
             {
-                Log.ERROR( $"システムサウンドファイルが見つかりません。スキップします。[{path.変数付きパス}]" );
+                Log.WARNING( $"システムサウンドファイルが見つかりません。スキップします。[{path.変数付きパス}]" );
                 return;
             }
 
@@ -73,7 +73,7 @@ namespace DTXMania2
                     throw new Exception( $"システムサウンドの読み込みに失敗しました。[{path.変数付きパス}]" );
 
                 // サウンドを生成してマップに登録。
-                var sound = new PolySound( device, sampleSource, 2 );
+                var sound = new PolySound( device, sampleSource, 多重度: 2 );
                 this._種別toサウンドマップ[ type ] = (sampleSource, sound);
             }
 

@@ -15,13 +15,13 @@ namespace DTXMania2
 
 
         /// <summary>
-        ///     <see cref="AppForm"/> インスタンスへの参照。
+        ///     <see cref="DTXMania2.AppForm"/> インスタンスへの参照。
         ///     <see cref="Global.生成する()"/> の前に設定しておくこと。
         /// </summary>
         public static AppForm AppForm { get; set; } = null!;
 
         /// <summary>
-        ///     <see cref="App"/> インスタンスへの参照。
+        ///     <see cref="DTXMania2.App"/> インスタンスへの参照。
         ///     <see cref="Global.生成する()"/> の前に設定しておくこと。
         /// </summary>
         public static App App { get; set; } = null!;
@@ -32,13 +32,13 @@ namespace DTXMania2
         public static CommandLineOptions Options { get; set; } = null!;
 
         /// <summary>
-        ///     <see cref="AppForm"/> インスタンスのウィンドウハンドル。
+        ///     <see cref="DTXMania2.AppForm"/> インスタンスのウィンドウハンドル。
         ///     <see cref="Global.生成する()"/> の前に設定しておくこと。
         /// </summary>
         /// <remarks>
-        ///     <see cref="AppForm.Handle"/> と同じ値であるが、
-        ///     <see cref="AppForm"/> のメンバは必ずGUIスレッドから参照されなれければならないので、
-        ///     GUIスレッド以外のスレッドから参照する場合は、代わりにこのメンバを参照すること。
+        ///     <see cref="AppForm.Handle"/> と同じ値であるが、GUIスレッド 以 外 のスレッドから参照する場合は、
+        ///     <see cref="AppForm.Handle"/> ではなくこのメンバを参照すること。
+        ///     （<see cref="DTXMania2.AppForm"/> のメンバは必ずGUIスレッドから参照されなれければならない。）
         /// </remarks>
         public static IntPtr Handle { get; set; } = IntPtr.Zero;
 
@@ -82,7 +82,7 @@ namespace DTXMania2
         ///     等倍3D平面での画面左上の3D座標。
         /// </summary>
         /// <remarks>
-        ///     等倍3D平面については <see cref="等倍3D平面描画用の変換行列を取得する()"/> を参照。
+        ///     等倍3D平面については <see cref="等倍3D平面描画用の変換行列を取得する"/> を参照。
         /// </remarks>
         public static SharpDX.Vector3 画面左上dpx => new SharpDX.Vector3( -設計画面サイズ.Width / 2f, +設計画面サイズ.Height / 2f, 0f );
 
@@ -209,11 +209,13 @@ namespace DTXMania2
 
                 SharpDX.Direct2D1.FactoryType.MultiThreaded,
 #if DEBUG
-                        SharpDX.Direct2D1.DebugLevel.Information
+                // D2D Debugメッセージは、Visual Studio のプロジェクトプロパティで「ネイティブコードのデバッグを有効にする」を ON にしないと表示されない。
+                // なお、「ネイティブコードのデバッグを有効にする」を有効にしてアプリケーションを実行すると、速度が恐ろしく低下する。
+                SharpDX.Direct2D1.DebugLevel.Information
 #else
-                        SharpDX.Direct2D1.DebugLevel.None
+                SharpDX.Direct2D1.DebugLevel.None
 #endif
-                    );
+            );
             //----------------
             #endregion
 
@@ -437,7 +439,8 @@ namespace DTXMania2
         #region " スワップチェーンに依存するグラフィックリソース "
         //----------------
         /// <summary>
-        ///     スワップチェーンのバックバッファとメモリを共有するレンダービットマップ。
+        ///     スワップチェーンのバックバッファとメモリを共有するD2Dレンダービットマップ。
+        ///     これにD2Dで描画を行うことは、すなわちD3Dスワップチェーンのバックバッファに描画することを意味する。
         /// </summary>
         public static SharpDX.Direct2D1.Bitmap1 既定のD2D1RenderBitmap1 { get; private set; } = null!;
 
@@ -518,21 +521,21 @@ namespace DTXMania2
                     D3D11Device1,
                     new SharpDX.Direct3D11.DepthStencilStateDescription {
                         IsDepthEnabled = false,                                         // 深度無効
-                        IsStencilEnabled = false,                                   // ステンシルテスト無効
-                        DepthWriteMask = SharpDX.Direct3D11.DepthWriteMask.All,     // 書き込む
-                        DepthComparison = SharpDX.Direct3D11.Comparison.Less,       // 手前の物体を描画
+                        IsStencilEnabled = false,                                       // ステンシルテスト無効
+                        DepthWriteMask = SharpDX.Direct3D11.DepthWriteMask.All,         // 書き込む
+                        DepthComparison = SharpDX.Direct3D11.Comparison.Less,           // 手前の物体を描画
                         StencilReadMask = 0,
                         StencilWriteMask = 0,
                     // 面が表を向いている場合のステンシル・テストの設定
                     FrontFace = new SharpDX.Direct3D11.DepthStencilOperationDescription() {
-                            FailOperation = SharpDX.Direct3D11.StencilOperation.Keep,           // 維持
+                            FailOperation = SharpDX.Direct3D11.StencilOperation.Keep,       // 維持
                             DepthFailOperation = SharpDX.Direct3D11.StencilOperation.Keep,  // 維持
                             PassOperation = SharpDX.Direct3D11.StencilOperation.Keep,       // 維持
                             Comparison = SharpDX.Direct3D11.Comparison.Never,               // 常に失敗
                         },
                     // 面が裏を向いている場合のステンシル・テストの設定
                     BackFace = new SharpDX.Direct3D11.DepthStencilOperationDescription() {
-                            FailOperation = SharpDX.Direct3D11.StencilOperation.Keep,           // 維持
+                            FailOperation = SharpDX.Direct3D11.StencilOperation.Keep,       // 維持
                             DepthFailOperation = SharpDX.Direct3D11.StencilOperation.Keep,  // 維持
                             PassOperation = SharpDX.Direct3D11.StencilOperation.Keep,       // 維持
                             Comparison = SharpDX.Direct3D11.Comparison.Always,              // 常に成功
@@ -544,15 +547,15 @@ namespace DTXMania2
                 #region " バックバッファに対する既定のビューポートを作成する。"
                 //----------------
                 既定のD3D11ViewPort = new SharpDX.Mathematics.Interop.RawViewportF[] {
-                new SharpDX.Mathematics.Interop.RawViewportF() {
-                    X = 0.0f,                                                   // バックバッファと同じサイズ
-                    Y = 0.0f,                                                   //
-                    Width = (float) backbufferTexture2D.Description.Width,      //
-                    Height = (float) backbufferTexture2D.Description.Height,    //
-                    MinDepth = 0.0f,                                            // 近面Z: 0.0（最も近い）
-                    MaxDepth = 1.0f,                                            // 遠面Z: 1.0（最も遠い）
-                },
-            };
+                    new SharpDX.Mathematics.Interop.RawViewportF() {
+                        X = 0.0f,                                                   // バックバッファと同じサイズ
+                        Y = 0.0f,                                                   //
+                        Width = (float) backbufferTexture2D.Description.Width,      //
+                        Height = (float) backbufferTexture2D.Description.Height,    //
+                        MinDepth = 0.0f,                                            // 近面Z: 0.0（最も近い）
+                        MaxDepth = 1.0f,                                            // 遠面Z: 1.0（最も遠い）
+                    },
+                };
                 //----------------
                 #endregion
             }
@@ -565,7 +568,7 @@ namespace DTXMania2
                 //----------------
                 既定のD2D1RenderBitmap1 = new SharpDX.Direct2D1.Bitmap1(   // このビットマップは、
                     既定のD2D1DeviceContext,
-                    backbufferSurface,                                          // このDXGIサーフェス（スワップチェーンのバックバッファ）とメモリを共有する。
+                    backbufferSurface,                                     // このDXGIサーフェス（スワップチェーンのバックバッファ）とメモリを共有する。
                     new SharpDX.Direct2D1.BitmapProperties1() {
                         PixelFormat = new SharpDX.Direct2D1.PixelFormat( backbufferSurface.Description.Format, SharpDX.Direct2D1.AlphaMode.Premultiplied ),
                         BitmapOptions = SharpDX.Direct2D1.BitmapOptions.Target | SharpDX.Direct2D1.BitmapOptions.CannotDraw,
@@ -622,7 +625,7 @@ namespace DTXMania2
             #region " Dispose 済みなら例外発出。"
             //----------------
             if( !_Dispose済み )
-                throw new InvalidOperationException();
+                throw new ObjectDisposedException( "Global" );
 
             _Dispose済み = false;
             //----------------

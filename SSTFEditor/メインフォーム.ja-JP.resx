@@ -639,7 +639,7 @@
     <value>チップ音量を下げる</value>
   </data>
   <data name="toolStripLabel音量.ToolTipText" xml:space="preserve">
-    <value>現在のチップの音量（小:1～4:大)</value>
+    <value>現在のチップの音量</value>
   </data>
   <data name="toolStripButton音量UP.ToolTipText" xml:space="preserve">
     <value>チップ音量を上げる</value>

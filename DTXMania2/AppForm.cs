@@ -37,7 +37,7 @@ namespace DTXMania2
         ///     HIDキーボード入力。
         /// </summary>
         /// <remarks>
-        ///     接続されているHIDキーボードのうち、既定の1デバイスだけを管理する。
+        ///     接続されているHIDキーボードを管理する。
         ///     RawInputを使うので、フォームのスレッドで管理する。（RawInputはUIスレッドでのみ動作する）
         /// </remarks>
         public KeyboardHID KeyboardHID { get; protected set; }
@@ -85,7 +85,7 @@ namespace DTXMania2
             Log.Header( "アプリケーション起動" );
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this.Text = $"DTXMania2 Release {int.Parse( Application.ProductVersion.Split( '.' ).ElementAt( 0 ) ):000} {( ( Environment.Is64BitProcess ) ? "" : "(x86)" )}";
+            this.Text = $"DTXMania2 Release {int.Parse( Application.ProductVersion.Split( '.' ).ElementAt( 0 ) ):000}";
             this.ClientSize = new Size( 1024, 576 );
 
             // App を生成して進行描画タスクを起動する。
@@ -221,8 +221,10 @@ namespace DTXMania2
         /// </remarks>
         public void 例外を通知する( Exception e )
         {
+            var ie = new Exception( e.Message + $"\nStackTrace:\n{e.StackTrace}", e );
+
             this.BeginInvoke( new Action( () => {   // UIスレッドで実行する
-                throw e;
+                throw ie;
             } ) );
         }
 

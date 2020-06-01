@@ -41,11 +41,13 @@ namespace DTXMania2.選曲
             this._現行化前のノード画像 = new 画像( @"$(Images)\PreviewImageWaitForActivation.png" );
             this._成績アイコン = new 画像( @"$(Images)\SelectStage\RecordIcon.png" );
             this._成績アイコンの矩形リスト = new 矩形リスト( @"$(Images)\SelectStage\RecordIcon.yaml" );
+            this._評価アイコン = new 画像( @"$(Images)\SelectStage\RatingIcon.png" );
+            this._評価アイコンの矩形リスト = new 矩形リスト( @"$(Images)\SelectStage\RatingIcon.yaml" );
             this._達成率ゲージアイコン = new 画像( @"$(Images)\AchivementIcon.png" );
             this._達成率数字画像 = new フォント画像( @"$(Images)\ParameterFont_LargeBoldItalic.png", @"$(Images)\ParameterFont_LargeBoldItalic.yaml", 文字幅補正dpx: -2f, 不透明度: 0.5f );
             this._プレビュー音声 = new プレビュー音声();
 
-            this._フォーカスリストを優先して現行化する();
+            this.フォーカスリストを優先して現行化する();
         }
 
         public virtual void Dispose()
@@ -58,6 +60,7 @@ namespace DTXMania2.選曲
             this._プレビュー音声.Dispose();
             this._達成率数字画像.Dispose();
             this._達成率ゲージアイコン.Dispose();
+            this._評価アイコン.Dispose();
             this._成績アイコン.Dispose();
             this._現行化前のノード画像.Dispose();
             this._既定のノード画像.Dispose();
@@ -237,7 +240,7 @@ namespace DTXMania2.選曲
 
             Global.App.曲ツリーリスト.SelectedItem!.前のノードをフォーカスする();
             this._選択ノードのオフセットアニメをリセットする();
-            this._フォーカスノードを優先して現行化する();
+            this.フォーカスノードを優先して現行化する();
         }
 
         public void 次のノードを選択する()
@@ -246,7 +249,7 @@ namespace DTXMania2.選曲
 
             Global.App.曲ツリーリスト.SelectedItem!.次のノードをフォーカスする();
             this._選択ノードのオフセットアニメをリセットする();
-            this._フォーカスノードを優先して現行化する();
+            this.フォーカスノードを優先して現行化する();
         }
 
         public void BOXに入る()
@@ -260,7 +263,7 @@ namespace DTXMania2.選曲
 
             Global.App.曲ツリーリスト.SelectedItem!.フォーカスする( boxNode.子ノードリスト[ 0 ] );
 
-            this._フォーカスリストを優先して現行化する();
+            this.フォーカスリストを優先して現行化する();
         }
 
         public void BOXから出る()
@@ -274,9 +277,40 @@ namespace DTXMania2.選曲
 
             Global.App.曲ツリーリスト.SelectedItem!.フォーカスする( node.親ノード );
 
-            this._フォーカスリストを優先して現行化する();
+            this.フォーカスリストを優先して現行化する();
         }
 
+        public async void フォーカスリストを優先して現行化する()
+        {
+            if( Global.App.曲ツリーリスト.SelectedItem!.フォーカスリスト.Any( ( node ) => !node.現行化済み ) )
+            {
+                // 現行化スタックは FIFO なので、このスタックに Push するだけで他より優先して現行化されるようになる。
+                // このスタックには、すでに Push 済みのノードを重ねて Push しても構わない。（現行化済みのノードは単に無視されるため。）
+                await Global.App.現行化.追加するAsync( Global.App.曲ツリーリスト.SelectedItem!.フォーカスリスト );
+
+                // さらに、SongNode 以外（BOX名や「戻る」など）を優先する。
+                var nodes = new List<Node>();
+                foreach( var node in Global.App.曲ツリーリスト.SelectedItem!.フォーカスリスト )
+                {
+                    if( !( node is SongNode ) )
+                        nodes.Add( node );
+                }
+                await Global.App.現行化.追加するAsync( nodes );
+            }
+        }
+
+        public void フォーカスノードを優先して現行化する()
+        {
+            this.指定したノードを優先して現行化する( Global.App.曲ツリーリスト.SelectedItem!.フォーカスノード );
+        }
+
+        public async void 指定したノードを優先して現行化する( Node? node )
+        {
+            if( null != node && node is SongNode && !node.現行化済み )
+            {
+                await Global.App.現行化.追加するAsync( new Node[] { node } );
+            }
+        }
 
 
         // ローカル
@@ -298,6 +332,10 @@ namespace DTXMania2.選曲
         private readonly 画像 _成績アイコン;
 
         private readonly 矩形リスト _成績アイコンの矩形リスト;
+
+        private readonly 画像 _評価アイコン;
+
+        private readonly 矩形リスト _評価アイコンの矩形リスト;
 
         private readonly 画像 _達成率ゲージアイコン;
 
@@ -475,7 +513,7 @@ namespace DTXMania2.選曲
             //----------------
             #endregion
 
-            #region " 成績 "
+            #region " 成績・評価 "
             //----------------
             if( node is SongNode snode )
             {
@@ -564,6 +602,23 @@ namespace DTXMania2.選曲
                         //----------------
                         #endregion
                     }
+
+                    #region " 評価アイコン "
+                    //----------------
+                    if( score.譜面の属性を現行化済み )
+                    {
+                        var 評価 = score.譜面の属性?.Rating ?? 0;    // 0～4; nullは0扱い
+
+                        if( 0 < 評価 )
+                        {
+                            this._評価アイコン.描画する(
+                                ノード左上dpx.X + 6f,
+                                ノード左上dpx.Y + 0f,
+                                転送元矩形: this._評価アイコンの矩形リスト[ 評価.ToString() ] );
+                        }
+                    }
+                    //----------------
+                    #endregion
                 }
             }
             //----------------
@@ -628,35 +683,6 @@ namespace DTXMania2.選曲
             }
 
             this._選択ノードの表示オフセットのストーリーボード.Schedule( Global.Animation.Timer.Time );
-        }
-
-        private async void _フォーカスリストを優先して現行化する()
-        {
-            if( Global.App.曲ツリーリスト.SelectedItem!.フォーカスリスト.Any( ( node ) => !node.現行化済み ) )
-            {
-                // 現行化スタックは FIFO なので、このスタックに Push するだけで他より優先して現行化されるようになる。
-                // このスタックには、すでに Push 済みのノードを重ねて Push しても構わない。（現行化済みのノードは単に無視されるため。）
-                await Global.App.現行化.追加するAsync( Global.App.曲ツリーリスト.SelectedItem!.フォーカスリスト );
-
-                // さらに、SongNode 以外（BOX名や「戻る」など）を優先する。
-                var nodes = new List<Node>();
-                foreach( var node in Global.App.曲ツリーリスト.SelectedItem!.フォーカスリスト )
-                {
-                    if( !( node is SongNode ) )
-                        nodes.Add( node );
-                }
-                await Global.App.現行化.追加するAsync( nodes );
-            }
-        }
-
-        private async void _フォーカスノードを優先して現行化する()
-        {
-            var focusNode = Global.App.曲ツリーリスト.SelectedItem!.フォーカスノード;
-
-            if( null != focusNode && focusNode is SongNode && !focusNode.現行化済み )
-            {
-                await Global.App.現行化.追加するAsync( new Node[] { focusNode } );
-            }
         }
     }
 }

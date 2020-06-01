@@ -54,6 +54,8 @@ namespace DTXMania2
         /// </summary>
         public void 登録する( int AVI番号, VariablePath 動画ファイルの絶対パス, double 再生速度 = 1.0 )
         {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
             if( 0 > AVI番号 || 36 * 36 <= AVI番号 )
                 throw new ArgumentOutOfRangeException( $"AVI番号が範囲(0～1295)を超えています。[{AVI番号}]" );
 

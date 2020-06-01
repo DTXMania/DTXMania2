@@ -7,6 +7,7 @@ using SharpDX.Animation;
 using FDK;
 using SSTFormat.v004;
 using DTXMania2.曲;
+using System.Threading.Tasks;
 
 namespace DTXMania2.選曲
 {
@@ -20,6 +21,7 @@ namespace DTXMania2.選曲
         {
             フェードイン,
             表示,
+            QuickConfig,
             フェードアウト,
             確定_選曲,
             確定_設定,
@@ -57,19 +59,23 @@ namespace DTXMania2.選曲
                     "Song not found...\n" +
                     "Hit BDx2 (in default SPACEx2) to select song folders.",
             };
+            this._QuickConfig画面 = null!; // 使用時に生成
             this._フェートアウト後のフェーズ = フェーズ.確定_選曲;
 
             Global.App.システムサウンド.再生する( システムサウンド種別.選曲ステージ_開始音 );
             Global.App.アイキャッチ管理.現在のアイキャッチ.オープンする();
             this._導線アニメをリセットする();
 
+            // 最初のフェーズへ。
             this.現在のフェーズ = フェーズ.フェードイン;
+            this._フェーズ完了 = false;
         }
 
         public void Dispose()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
+            //this._QuickConfig画面.Dispose(); 使用時に破棄。
             this._SongNotFound.Dispose();
             this._現行化前のノード画像.Dispose();
             this._既定のノード画像.Dispose();
@@ -104,72 +110,129 @@ namespace DTXMania2.選曲
 
             switch( this.現在のフェーズ )
             {
+                case フェーズ.フェードイン:
+                {
+                    #region " フェードイン描画が完了したら次のフェーズへ。"
+                    //----------------
+                    if( this._フェーズ完了 )
+                    {
+                        this.現在のフェーズ = フェーズ.表示;
+                        this._フェーズ完了 = false;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
                 case フェーズ.表示:
+                {
+                    #region " 入力処理。"
+                    //----------------
                     if( 入力.確定キーが入力された() && 1 < フォーカスリスト.Count )   // ノードが2つ以上ある（1つはランダムセレクト）
                     {
-                        #region " 確定 "
-                        //----------------
+                        // 確定
+
                         if( フォーカスノード is BoxNode )
                         {
+                            #region " BOX の場合 → BOX に入る。"
+                            //----------------
                             Global.App.システムサウンド.再生する( システムサウンド種別.決定音 );
                             this._選曲リスト.BOXに入る();
+                            //----------------
+                            #endregion
                         }
                         else if( フォーカスノード is BackNode )
                         {
+                            #region " Back の場合 → BOX から出る。"
+                            //----------------
                             Global.App.システムサウンド.再生する( システムサウンド種別.決定音 );
                             this._選曲リスト.BOXから出る();
+                            //----------------
+                            #endregion
                         }
                         else if( フォーカスノード is RandomSelectNode randomNode )
                         {
-                            // 曲ツリーの現行化タスクが動いていれば、一時停止する。
-                            Global.App.現行化.一時停止する();
+                            #region " RANDOM SELECT の場合 → ランダムに選曲してフェードアウトへ。"
+                            //----------------
+                            // ランダムに選曲する。
+                            var sn = randomNode.譜面をランダムに選んで返す();
+                            if( sn.HasValue )
+                            {
+                                // 選択曲の現行化がまだであれば完了を待つ。
+                                if( !sn.Value.曲.現行化済み )
+                                {
+                                    this._選曲リスト.指定したノードを優先して現行化する( sn.Value.曲 );
+                                    while( !sn.Value.曲.現行化済み )
+                                        Task.Delay( 100 );
+                                }
 
-                            // ランダムに選曲する
+                                // 曲ツリーの現行化タスクが動いていれば、一時停止する。
+                                Global.App.現行化.一時停止する();
 
-                            Global.App.演奏譜面 = randomNode.譜面をランダムに選んで返す();
+                                // 選曲する。
+                                Global.App.演奏譜面 = sn.Value.譜面;
 
-                            Global.App.システムサウンド.再生する( システムサウンド種別.選曲ステージ_曲決定音 );
-                            Global.App.アイキャッチ管理.アイキャッチを選択しクローズする( nameof( GO ) );
+                                Global.App.システムサウンド.再生する( システムサウンド種別.選曲ステージ_曲決定音 );
+                                Global.App.アイキャッチ管理.アイキャッチを選択しクローズする( nameof( GO ) );
 
-                            this._フェートアウト後のフェーズ = フェーズ.確定_選曲;
-                            this.現在のフェーズ = フェーズ.フェードアウト;
+                                // 次のフェーズへ。
+                                this._フェートアウト後のフェーズ = フェーズ.確定_選曲;
+                                this.現在のフェーズ = フェーズ.フェードアウト;
+                            }
+                            //----------------
+                            #endregion
                         }
                         else if( フォーカスノード is SongNode snode && null != snode.曲.フォーカス譜面 )
                         {
+                            #region " 曲の場合 → 選曲してフェードアウトへ。"
+                            //----------------
+                            // 選択曲の現行化がまだであれば完了を待つ。
+                            if( !snode.現行化済み )
+                            {
+                                this._選曲リスト.フォーカスノードを優先して現行化する();
+                                while( !snode.現行化済み )
+                                    Task.Delay( 100 );
+                            }
+
                             // 曲ツリーの現行化タスクが動いていれば、一時停止する。
                             Global.App.現行化.一時停止する();
 
-                            // 選曲する
-
+                            // 選曲する。
                             Global.App.演奏譜面 = snode.曲.フォーカス譜面;
 
                             this._選曲リスト.プレビュー音声を停止する();
                             Global.App.システムサウンド.再生する( システムサウンド種別.選曲ステージ_曲決定音 );
                             Global.App.アイキャッチ管理.アイキャッチを選択しクローズする( nameof( GO ) );
 
+                            // 次のフェーズへ。
                             this._フェートアウト後のフェーズ = フェーズ.確定_選曲;
                             this.現在のフェーズ = フェーズ.フェードアウト;
+                            //----------------
+                            #endregion
                         }
-                        //----------------
-                        #endregion
                     }
                     else if( 入力.キャンセルキーが入力された() )
                     {
-                        #region " キャンセル "
-                        //----------------
+                        // キャンセル
+
                         this._選曲リスト.プレビュー音声を停止する();
                         Global.App.システムサウンド.再生する( システムサウンド種別.取消音 );
 
-                        if( フォーカスノード.親ノード!.親ノード is null )
+                        if( null != フォーカスノード.親ノード!.親ノード )
                         {
-                            this.現在のフェーズ = フェーズ.キャンセル;
+                            #region " BOX 内にいる場合 → BOX から出る。"
+                            //----------------
+                            this._選曲リスト.BOXから出る();
+                            //----------------
+                            #endregion
                         }
                         else
                         {
-                            this._選曲リスト.BOXから出る();
+                            #region " 曲階層のルートにいる場合 → キャンセルフェーズへ。"
+                            //----------------
+                            this.現在のフェーズ = フェーズ.キャンセル;
+                            //----------------
+                            #endregion
                         }
-                        //----------------
-                        #endregion
                     }
                     else if( 入力.上移動キーが入力された() )
                     {
@@ -220,15 +283,68 @@ namespace DTXMania2.選曲
                     }
                     else if( 入力.シーケンスが入力された( new[] { レーン種別.Bass, レーン種別.Bass }, Global.App.ログオン中のユーザ.ドラムチッププロパティリスト ) )
                     {
-                        #region " BD×2 → オプション設定 "
+                        #region " BD×2 → QuickConfig画面を生成し、QuickConfig フェーズへ "
                         //----------------
-                        this._選曲リスト.プレビュー音声を停止する();
                         Global.App.システムサウンド.再生する( システムサウンド種別.決定音 );
-                        this.現在のフェーズ = フェーズ.確定_設定;
+
+                        this._選曲リスト.フォーカスノードを優先して現行化する();
+
+                        this._QuickConfig画面 = new QuickConfig.QuickConfigパネル(
+                            song: ( フォーカスノード is SongNode snode ) ? snode.曲 : null,
+                            userId: Global.App.ログオン中のユーザ.ID! );
+
+                        this.現在のフェーズ = フェーズ.QuickConfig;
                         //----------------
                         #endregion
                     }
                     break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.QuickConfig:
+                {
+                    #region " QuickConfig画面を進行する。完了したら次のフェーズへ。"
+                    //----------------
+                    this._QuickConfig画面.進行する();
+
+                    if( this._QuickConfig画面.現在のフェーズ == QuickConfig.QuickConfigパネル.フェーズ.完了_戻る )
+                    {
+                        this._QuickConfig画面.Dispose();
+                        this.現在のフェーズ = フェーズ.表示;
+                    }
+                    else if( this._QuickConfig画面.現在のフェーズ == QuickConfig.QuickConfigパネル.フェーズ.完了_オプション設定 )
+                    {
+                        this._選曲リスト.プレビュー音声を停止する();
+                        this._QuickConfig画面.Dispose();
+                        this.現在のフェーズ = フェーズ.確定_設定;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.フェードアウト:
+                {
+                    #region " フェードアウト描画が完了したら次のフェーズへ。"
+                    //----------------
+                    if( this._フェーズ完了 )
+                    {
+                        this.現在のフェーズ = this._フェートアウト後のフェーズ; // 描画側で設定済み
+                        this._フェーズ完了 = false;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.確定_選曲:
+                case フェーズ.確定_設定:
+                case フェーズ.キャンセル:
+                {
+                    #region " 遷移終了。Appによるステージ遷移を待つ。"
+                    //----------------
+                    break;
+                    //----------------
+                    #endregion
+                }
             }
         }
 
@@ -239,59 +355,73 @@ namespace DTXMania2.選曲
             var dc = Global.既定のD2D1DeviceContext;
             dc.Transform = Global.拡大行列DPXtoPX;
 
-            var 曲ツリー = Global.App.曲ツリーリスト.SelectedItem!;
-
-            if( 1 >= Global.App.曲ツリーリスト.SelectedItem!.フォーカスリスト.Count )  // どのリストにも、最低減ランダムセレクトノードがある。
-            {
-                // (A) ノードがない場合 → SongNotFound 画面
-
-                this._舞台画像.進行描画する( dc );
-                this._表示方法選択パネル.進行描画する( dc );
-                this._ステージタイマー.描画する( 1689f, 37f );
-                this._SongNotFound.描画する( dc, 1150f, 400f );
-            }
-            else
-            {
-                // (B) ノードがある場合 → 通常の画面
-
-                this._舞台画像.進行描画する( dc );
-                this._選曲リスト.進行描画する( dc );
-                this._その他パネルを描画する( dc );
-                this._表示方法選択パネル.進行描画する( dc );
-                this._難易度と成績.描画する( dc, 曲ツリー.フォーカス難易度レベル, 曲ツリー.フォーカスノード! );
-                this._曲ステータスパネル.描画する( dc, 曲ツリー.フォーカスノード! );
-                this._プレビュー画像を描画する( 曲ツリー.フォーカスノード! );
-                this._BPMパネル.描画する( dc, 曲ツリー.フォーカスノード! );
-                this._曲別スキルと達成率.進行描画する( dc, 曲ツリー.フォーカスノード! );
-                this._選択曲を囲む枠を描画する( dc );
-                this._選択曲枠ランナー.進行描画する();
-                this._導線を描画する( dc );
-                this._ステージタイマー.描画する( 1689f, 37f );
-                this._スクロールバーを描画する( dc, 曲ツリー.フォーカスリスト );
-                this._UpdatingSoglistパネル.進行描画する( 40f, 740f );
-            }
-
             switch( this.現在のフェーズ )
             {
                 case フェーズ.フェードイン:
-                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.オープン完了 )
+                {
+                    #region " 背景画面＆フェードイン "
+                    //----------------
+                    this._背景画面を描画する( dc );
+
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
                     {
-                        // 曲ツリーの現行化タスクが一時停止していれば、再開する。
-                        Global.App.現行化.再開する();
+                        if( !this._フェーズ完了 )             // まだ再開されてなければ、
+                            Global.App.現行化.再開する();     // 曲ツリーの現行化タスクが一時停止していれば、再開する。
 
-                        this.現在のフェーズ = フェーズ.表示;
+                        this._フェーズ完了 = true;            // 完了。
                     }
-                    break;
 
+                    this._システム情報.描画する( dc );
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.表示:
+                {
+                    #region " 背景画面 "
+                    //----------------
+                    this._背景画面を描画する( dc );
+                    this._システム情報.描画する( dc );
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.QuickConfig:
+                {
+                    #region " 背景画面＆QuickConfig "
+                    //----------------
+                    this._背景画面を描画する( dc );
+                    this._システム情報.描画する( dc );
+                    this._QuickConfig画面.描画する( 568f, 68f );
+                    break;
+                    //----------------
+                    #endregion
+                }
                 case フェーズ.フェードアウト:
-                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.クローズ完了 )
-                        this.現在のフェーズ = this._フェートアウト後のフェーズ;
-                    break;
-            }
+                {
+                    #region " 背景画面＆フェードアウト "
+                    //----------------
+                    this._背景画面を描画する( dc );
 
-            this._システム情報.描画する( dc );
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
+                        this._フェーズ完了 = true;    // 完了
+
+                    this._システム情報.描画する( dc );
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.確定_選曲:
+                case フェーズ.確定_設定:
+                case フェーズ.キャンセル:
+                {
+                    #region " 最後の画面を維持。"
+                    //----------------
+                    break;
+                    //----------------
+                    #endregion
+                }
+            }
         }
 
 
@@ -325,7 +455,12 @@ namespace DTXMania2.選曲
 
         private readonly 画像 _ステージタイマー;
 
+        private QuickConfig.QuickConfigパネル _QuickConfig画面;
+
         private フェーズ _フェートアウト後のフェーズ;
+
+        private bool _フェーズ完了;
+
 
         private void _その他パネルを描画する( DeviceContext dc )
         {
@@ -362,6 +497,40 @@ namespace DTXMania2.選曲
             } );
         }
 
+        private void _背景画面を描画する( DeviceContext dc )
+        {
+            var 曲ツリー = Global.App.曲ツリーリスト.SelectedItem!;
+
+            if( 1 >= 曲ツリー.フォーカスリスト.Count )  // どのリストにも、最低減ランダムセレクトノードがある。
+            {
+                // (A) ノードがない場合 → SongNotFound 画面
+
+                this._舞台画像.進行描画する( dc );
+                this._表示方法選択パネル.進行描画する();
+                this._ステージタイマー.描画する( 1689f, 37f );
+                this._SongNotFound.描画する( dc, 1150f, 400f );
+            }
+            else
+            {
+                // (B) ノードがある場合 → 通常の画面
+
+                this._舞台画像.進行描画する( dc );
+                this._選曲リスト.進行描画する( dc );
+                this._その他パネルを描画する( dc );
+                this._表示方法選択パネル.進行描画する();
+                this._難易度と成績.描画する( dc, 曲ツリー.フォーカス難易度レベル, 曲ツリー.フォーカスノード! );
+                this._曲ステータスパネル.描画する( dc, 曲ツリー.フォーカスノード! );
+                this._プレビュー画像を描画する( 曲ツリー.フォーカスノード! );
+                this._BPMパネル.描画する( dc, 曲ツリー.フォーカスノード! );
+                this._曲別スキルと達成率.進行描画する( dc, 曲ツリー.フォーカスノード! );
+                this._選択曲を囲む枠を描画する( dc );
+                this._選択曲枠ランナー.進行描画する();
+                this._導線を描画する( dc );
+                this._ステージタイマー.描画する( 1689f, 37f );
+                this._スクロールバーを描画する( dc, 曲ツリー.フォーカスリスト );
+                this._UpdatingSoglistパネル.進行描画する( 40f, 740f );
+            }
+        }
         private void _選択曲を囲む枠を描画する( DeviceContext dc )
         {
             var 矩形 = new RectangleF( 1015f, 485f, 905f, 113f );

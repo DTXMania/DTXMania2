@@ -64,6 +64,8 @@ namespace DTXMania2
         /// <param name="サウンドファイル">登録するサウンドファイルのパス。</param>
         public void 登録する( int wav番号, VariablePath サウンドファイル, bool 多重再生する, bool BGMである )
         {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
             if( ( 0 > wav番号 ) || ( 36 * 36 <= wav番号 ) )
                 throw new ArgumentOutOfRangeException( $"WAV番号が範囲(0～1295)を超えています。[{wav番号}]" );
 

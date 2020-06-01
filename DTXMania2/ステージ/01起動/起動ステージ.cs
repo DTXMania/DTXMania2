@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using FDK;
 
@@ -18,8 +19,15 @@ namespace DTXMania2.起動
         {
             開始,
             グローバルリソース生成中,
-            システムサウンド構築中,
-            曲ツリー構築中,
+            システムサウンド構築開始,
+            システムサウンド構築完了待ち,
+            曲ツリー構築開始,
+            曲ツリー構築完了待ち,
+            曲ツリーDB反映開始,
+            曲ツリーDB反映完了待ち,
+            曲ツリー文字列画像生成開始,
+            曲ツリー文字列画像生成完了待ち,
+            開始音終了待ち開始,
             開始音終了待ち,
             完了,
         }
@@ -85,31 +93,44 @@ namespace DTXMania2.起動
             switch( this.現在のフェーズ )
             {
                 case フェーズ.開始:
+                {
                     #region " 一度描画処理を通してから（画面を表示させてから）次のフェーズへ。"
                     //----------------
-                    // 次のフェーズへ。
-                    this._コンソール表示内容[ this._コンソール表示内容.Count - 1 ] += " done.";
+                    this._コンソール表示内容[ ^1 ] += " done.";
                     this._コンソール表示内容.Add( "Creating global resources..." );
                     this.現在のフェーズ = フェーズ.グローバルリソース生成中;
+                    break;
                     //----------------
                     #endregion
-                    break;
-
+                }
                 case フェーズ.グローバルリソース生成中:
-                    #region " *** "
+                {
+                    #region " グローバルリソースを生成して次のフェーズへ。"
                     //----------------
                     Global.App.グローバルリソースを作成する();
+                    this._コンソール表示内容[ ^1 ] += " done.";
 
                     // 次のフェーズへ。
-                    this._コンソール表示内容[ this._コンソール表示内容.Count - 1 ] += " done.";
-                    this._コンソール表示内容.Add( "Creating system sounds..." );
-                    this.現在のフェーズ = フェーズ.システムサウンド構築中;
+                    this.現在のフェーズ = フェーズ.システムサウンド構築開始;
+                    break;
                     //----------------
                     #endregion
-                    break;
+                }
+                case フェーズ.システムサウンド構築開始:
+                {
+                    #region " システムサウンドの構築を開始して次のフェーズへ。"
+                    //----------------
+                    this._コンソール表示内容.Add( "Creating system sounds..." );
 
-                case フェーズ.システムサウンド構築中:
-                    #region " *** "
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.システムサウンド構築完了待ち;
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.システムサウンド構築完了待ち:
+                {
+                    #region " システムサウンドを構築して次のフェーズへ。"
                     //----------------
                     Global.App.システムサウンド.すべて生成する();
                     Log.Info( "システムサウンドの読み込みが完了しました。" );
@@ -117,67 +138,186 @@ namespace DTXMania2.起動
                     Global.App.ドラムサウンド.すべて生成する();
                     Log.Info( "ドラムサウンドの読み込みが完了しました。" );
 
+                    this._コンソール表示内容[ ^1 ] += " done.";
+
                     // 次のフェーズへ。
-                    this._コンソール表示内容[ this._コンソール表示内容.Count - 1 ] += " done.";
-                    this._コンソール表示内容.Add( "Enumeration songs..." );
-                    this.現在のフェーズ = フェーズ.曲ツリー構築中;
+                    this.現在のフェーズ = ( Global.Options.ビュアーモードである ) ? フェーズ.開始音終了待ち開始 : フェーズ.曲ツリー構築開始;
+                    break;
                     //----------------
                     #endregion
-                    break;
-
-                case フェーズ.曲ツリー構築中:
-                    #region " *** "
+                }
+                case フェーズ.曲ツリー構築開始:
+                {
+                    #region " 曲ツリーの構築を開始して次のフェーズへ。"
                     //----------------
-                    if( Global.Options.ビュアーモードである )
+                    this._コンソール表示内容.Add( "Enumeration songs..." );
+
+                    var allTree = new 曲.曲ツリー_全曲();
+                    var ratingTree = new 曲.曲ツリー_評価順();
+                    Global.App.曲ツリーリスト.Add( allTree );
+                    Global.App.曲ツリーリスト.Add( ratingTree );
+                    Global.App.曲ツリーリスト.SelectFirst();
+
+                    // 全曲ツリーの構築を開始する。（現行化はまだ）
+                    this._曲ツリー構築タスク = allTree.構築するAsync( Global.App.システム設定.曲検索フォルダ );
+                    // 評価順ツリーの構築は、ユーザのログオン時に行う。
+
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.曲ツリー構築完了待ち;
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.曲ツリー構築完了待ち:
+                {
+                    #region " 曲ツリーの構築の完了を待って、次のフェーズへ。"
+                    //----------------
+                    if( !this._曲ツリー構築タスク.IsCompleted )
                     {
-                        // (A) ビュアーモードでは曲ツリーを使わないので、構築しない。
-                        this._コンソール表示内容[ this._コンソール表示内容.Count - 1 ] += " skipped.";
+                        // 進捗カウンタを表示。
+                        var allTree = (曲.曲ツリー_全曲) Global.App.曲ツリーリスト[ 0 ];
+                        this._コンソール表示内容[ ^1 ] = $"Enumeration songs... {allTree.進捗カウンタ}";
                     }
                     else
                     {
-                        // (B) 通常モードでは曲ツリーの構築を開始する。
-                        var tree = new 曲.標準の曲ツリー();
+                        this._コンソール表示内容[ ^1 ] += ", done.";
 
-                        // 標準の曲ツリーは、全曲/全譜面リストも一緒に構築する。
-                        tree.構築する( Global.App.システム設定.曲検索フォルダ );
-
-                        Global.App.曲ツリーリスト.Add( tree );
-                        Global.App.曲ツリーリスト.SelectFirst();
-
-                        this._コンソール表示内容[ this._コンソール表示内容.Count - 1 ] += " done.";
+                        // 次のフェーズへ。
+                        this.現在のフェーズ = フェーズ.曲ツリーDB反映開始;
                     }
-
-                    // 次のフェーズへ。
-                    this.現在のフェーズ = フェーズ.開始音終了待ち;
+                    break;
                     //----------------
                     #endregion
-                    break;
-
-                case フェーズ.開始音終了待ち:
-                    #region " 開始音がまだ鳴っていれば、終了するまで待つ。"
+                }
+                case フェーズ.曲ツリーDB反映開始:
+                {
+                    #region " 曲ツリーへのDB反映を開始して次のフェーズへ。"
                     //----------------
+                    this._コンソール表示内容.Add( "Update songs..." );
+
+                    var allTree = (曲.曲ツリー_全曲) Global.App.曲ツリーリスト[ 0 ];
+                    this._曲ツリーDB反映タスク = allTree.ノードにDBを反映するAsync();
+
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.曲ツリーDB反映完了待ち;
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.曲ツリーDB反映完了待ち:
+                {
+                    #region " 曲ツリーのDB反映の完了を待って、次のフェーズへ。"
+                    //----------------
+                    if( !this._曲ツリーDB反映タスク.IsCompleted )
+                    {
+                        // 進捗カウンタを表示。
+                        var allTree = (曲.曲ツリー_全曲) Global.App.曲ツリーリスト[ 0 ];
+                        this._コンソール表示内容[ ^1 ] = $"Update songs... {allTree.進捗カウンタ}";
+                    }
+                    else
+                    {
+                        this._コンソール表示内容[ ^1 ] += ", done.";
+
+                        // 次のフェーズへ。
+                        this.現在のフェーズ = フェーズ.曲ツリー文字列画像生成開始;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.曲ツリー文字列画像生成開始:
+                {
+                    #region " 曲ツリーの文字列画像の生成を開始して次のフェーズへ。"
+                    //----------------
+                    this._コンソール表示内容.Add( "Building label images..." );
+
+                    var allTree = (曲.曲ツリー_全曲) Global.App.曲ツリーリスト[ 0 ];
+                    this._曲ツリー文字列画像生成タスク = allTree.文字列画像を生成するAsync();
+
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.曲ツリー文字列画像生成完了待ち;
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.曲ツリー文字列画像生成完了待ち:
+                {
+                    #region " 曲ツリーの文字列画像生成の完了を待って、次のフェーズへ。"
+                    //----------------
+                    if( !this._曲ツリー文字列画像生成タスク.IsCompleted )
+                    {
+                        // 進捗カウンタを表示。
+                        var allTree = (曲.曲ツリー_全曲) Global.App.曲ツリーリスト[ 0 ];
+                        this._コンソール表示内容[ ^1 ] = $"Building label images... {allTree.進捗カウンタ}";
+                    }
+                    else
+                    {
+                        this._コンソール表示内容[ ^1 ] += ", done.";
+
+                        // 次のフェーズへ。
+                        this.現在のフェーズ = フェーズ.開始音終了待ち開始;
+                    }
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.開始音終了待ち開始:
+                {
+                    #region " 開始音の終了待ちを開始して次のフェーズへ。"
+                    //----------------
+                    this._コンソール表示内容.Add( "All setup done." );
+                    
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.開始音終了待ち;
+                    break;
+                    //----------------
+                    #endregion
+                }
+                case フェーズ.開始音終了待ち:
+                {
+                    #region " 開始音が鳴り止むのを待って、次のフェーズへ。"
+                    //----------------
+                    // 開始音がまだ鳴っていれば、終了するまで待つ。
                     if( !Global.App.システムサウンド.再生中( システムサウンド種別.起動ステージ_開始音 ) )
                     {
                         // 再生が終わったので次のフェーズへ。
                         this.現在のフェーズ = フェーズ.完了;
                     }
+                    break;
                     //----------------
                     #endregion
-                    break;
-
+                }
                 case フェーズ.完了:
+                {
+                    #region " 遷移終了。Appによるステージ遷移を待つ。"
+                    //----------------
                     break;
+                    //----------------
+                    #endregion
+                }
             }
         }
 
         public void 描画する()
         {
+            Global.App.画面をクリアする();
+
             var dc = Global.既定のD2D1DeviceContext;
             dc.Transform = Global.拡大行列DPXtoPX;
 
             // 文字列表示
-            for( int i = 0; i < this._コンソール表示内容.Count; i++ )
-                this._コンソールフォント.描画する( dc, 0f, i * 32f, this._コンソール表示内容[ i ] );
+            switch( this.現在のフェーズ )
+            {
+                case フェーズ.曲ツリー構築完了待ち:
+                    for( int i = 0; i < this._コンソール表示内容.Count; i++ )
+                        this._コンソールフォント.描画する( dc, 0f, i * 32f, this._コンソール表示内容[ i ] );
+                    break;
+
+                default:
+                    for( int i = 0; i < this._コンソール表示内容.Count; i++ )
+                        this._コンソールフォント.描画する( dc, 0f, i * 32f, this._コンソール表示内容[ i ] );
+                    break;
+            }
         }
 
 
@@ -187,5 +327,11 @@ namespace DTXMania2.起動
         private readonly フォント画像D2D _コンソールフォント;
 
         private readonly List<string> _コンソール表示内容 = new List<string>();
+
+        private Task _曲ツリー構築タスク = null!;
+
+        private Task _曲ツリーDB反映タスク = null!;
+
+        private Task _曲ツリー文字列画像生成タスク = null!;
     }
 }

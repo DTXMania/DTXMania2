@@ -9,10 +9,7 @@ namespace DTXMania2
 {
     partial class RecordDB
     {
-        /// <summary>
-        ///     成績DBを最新版にアップデートする。
-        /// </summary>
-        public static void Update()
+        public static void 最新版にバージョンアップする()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
@@ -32,71 +29,67 @@ namespace DTXMania2
                     switch( version )
                     {
                         case 0: // 念のため（あったら無限ループになるため）
+                        {
                             #region " 0 → 最新版 "
                             //----------------
-                            {
-                                // テーブルを新規に作る。
-
-                                foreach( var query in new[] {
+                            // テーブルを新規に作る。
+                            foreach( var query in new[] {
                                     "PRAGMA foreign_keys = OFF",
                                     RecordDBRecord.GetCreateTableSQL(),
                                     "PRAGMA foreign_keys = ON" } )
-                                {
-                                    using var cmd = new SqliteCommand( query, recorddb.Connection );
-                                    cmd.ExecuteNonQuery();
-                                }
-                                version = RecordDBRecord.VERSION;
-                                recorddb.UserVersion = version;
-                                Log.Info( $"RecordDB をバージョン {version} を作成しました。" );
+                            {
+                                using var cmd = new SqliteCommand( query, recorddb.Connection );
+                                cmd.ExecuteNonQuery();
                             }
+                            version = RecordDBRecord.VERSION;
+                            recorddb.UserVersion = version;
+                            Log.Info( $"RecordDB をバージョン {version} を作成しました。" );
+                            break;
                             //----------------
                             #endregion
-                            break;
-
+                        }
                         case 7:
+                        {
                             #region " 7 → 8 "
                             //----------------
+                            // テーブルを作り直す。REAL値が既にずれてるので、データ移行はしない。
+                            foreach( var query in new[] {
+                                "PRAGMA foreign_keys = OFF",
+                                "DROP TABLE Records",
+                                $"CREATE TABLE Records {old.RecordDBRecord.v008_RecordDBRecord.ColumnList}",
+                                "PRAGMA foreign_keys = ON" } )
                             {
-                                // テーブルを作り直す。REAL値が既にずれてるので、データ移行はしない。
-                                foreach( var query in new[] {
-                                    "PRAGMA foreign_keys = OFF",
-                                    "DROP TABLE Records",
-                                    $"CREATE TABLE Records {old.RecordDBRecord.v008_RecordDBRecord.ColumnList}",
-                                    "PRAGMA foreign_keys = ON" } )
-                                {
-                                    using var cmd = new SqliteCommand( query, recorddb.Connection );
-                                    cmd.ExecuteNonQuery();
-                                }
-                                version = old.RecordDBRecord.v008_RecordDBRecord.VERSION;
-                                recorddb.UserVersion = version;
-                                Log.Info( $"RecordDB をバージョン {version} に更新しました。データ移行はしません。" );
+                                using var cmd = new SqliteCommand( query, recorddb.Connection );
+                                cmd.ExecuteNonQuery();
                             }
+                            version = old.RecordDBRecord.v008_RecordDBRecord.VERSION;
+                            recorddb.UserVersion = version;
+                            Log.Info( $"RecordDB をバージョン {version} に更新しました。データ移行はしません。" );
+                            break;
                             //----------------
                             #endregion
-                            break;
-
+                        }
                         case 8:
+                        {
                             #region " 8 → 最新版 "
                             //----------------
+                            // テーブルを作り直す。今までの成績は消失する。
+                            foreach( var query in new[] {
+                                "PRAGMA foreign_keys = OFF",
+                                "DROP TABLE Records",
+                                RecordDBRecord.GetCreateTableSQL(),
+                                "PRAGMA foreign_keys = ON" } )
                             {
-                                // テーブルを作り直す。今までの成績は消失する。
-
-                                foreach( var query in new[] {
-                                    "PRAGMA foreign_keys = OFF",
-                                    "DROP TABLE Records",
-                                    RecordDBRecord.GetCreateTableSQL(),
-                                    "PRAGMA foreign_keys = ON" } )
-                                {
-                                    using var cmd = new SqliteCommand( query, recorddb.Connection );
-                                    cmd.ExecuteNonQuery();
-                                }
-                                version = RecordDBRecord.VERSION;
-                                recorddb.UserVersion = version;
-                                Log.Info( $"RecordDB をバージョン {version} に更新しました。データ移行はしません。" );
+                                using var cmd = new SqliteCommand( query, recorddb.Connection );
+                                cmd.ExecuteNonQuery();
                             }
+                            version = RecordDBRecord.VERSION;
+                            recorddb.UserVersion = version;
+                            Log.Info( $"RecordDB をバージョン {version} に更新しました。データ移行はしません。" );
+                            break;
                             //----------------
                             #endregion
-                            break;
+                        }
                     }
                 }
                 //----------------

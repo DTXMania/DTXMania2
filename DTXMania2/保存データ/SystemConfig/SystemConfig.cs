@@ -121,6 +121,9 @@ namespace DTXMania2
                 var yamlText = File.ReadAllText( path.変数なしパス );
                 var deserializer = new Deserializer();
                 config = deserializer.Deserialize<SystemConfig>( yamlText );
+
+                if( VERSION != config.Version )
+                    throw new Exception( "バージョンが違います。" );
             }
             else
             {
@@ -128,8 +131,6 @@ namespace DTXMania2
                 config = new SystemConfig();
             }
 
-            if( VERSION != config.Version )
-                throw new Exception( "バージョンが違います。" );
 
             // (2) 読み込み後の処理
 

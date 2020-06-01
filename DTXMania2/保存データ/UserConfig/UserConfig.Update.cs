@@ -18,12 +18,15 @@ namespace DTXMania2
         /// <remarks>
         ///     v012 移行にバージョンアップする場合は、RecordDB.sqlite3 の生成も行う。
         /// </remarks>
-        public static void Update()
+        public static void 最新版にバージョンアップする()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            var userYamls = Directory.EnumerateFiles( Folder.フォルダ変数の内容を返す( "AppData" ), @"User_*.yaml", SearchOption.TopDirectoryOnly );
             var userdbPath = new VariablePath( @"$(AppData)\UserDB.sqlite3" );
+            var userYamls = Directory.EnumerateFiles(
+                path: Folder.フォルダ変数の内容を返す( "AppData" ),
+                searchPattern: @"User_*.yaml", 
+                searchOption: SearchOption.TopDirectoryOnly );
 
             if( 0 < userYamls.Count() )
             {
@@ -83,19 +86,17 @@ namespace DTXMania2
                 {
                     #region " UserDB.Rcords テーブルを読み込み、RecordDB.Records テーブルへ出力する。"
                     //----------------
-                    using( var userdb = new SQLiteDB( userdbPath.変数なしパス ) )
-                    using( var recorddb = new RecordDB() )
+                    using var userdb = new SQLiteDB( userdbPath.変数なしパス );
+                    using var recorddb = new RecordDB();
+                    foreach( var user in Users )
                     {
-                        foreach( var user in Users )
+                        using var recordsQuery = new SqliteCommand( $"SELECT * FROM Records WHERE Id = @UserId", userdb.Connection );
+                        recordsQuery.Parameters.Add( new SqliteParameter( "@UserId", user.Id ) );
+                        var records = recordsQuery.ExecuteReader();
+                        while( records.Read() )
                         {
-                            using var recordsQuery = new SqliteCommand( $"SELECT * FROM Records WHERE Id = @UserId", userdb.Connection );
-                            recordsQuery.Parameters.Add( new SqliteParameter( "@UserId", user.Id ) );
-                            var records = recordsQuery.ExecuteReader();
-                            while( records.Read() )
-                            {
-                                var record = new old.RecordDBRecord.v007_RecordDBRecord( records );    // 読み込んで
-                                record.InsertTo( recorddb );                                           // 書き込む
-                            }
+                            var record = new old.RecordDBRecord.v007_RecordDBRecord( records );    // 読み込んで
+                            record.InsertTo( recorddb );                                           // 書き込む
                         }
                     }
                     //----------------
@@ -140,13 +141,15 @@ namespace DTXMania2
                 //----------------
                 var recorddbPath = new VariablePath( @"$(AppData)\RecordDB.sqlite3" );
 
+                // 念のため
                 if( File.Exists( recorddbPath.変数なしパス ) )
-                    File.Delete( recorddbPath.変数なしパス ); // 念のため
+                    File.Delete( recorddbPath.変数なしパス );
 
                 using var recorddb = new SQLiteDB( recorddbPath.変数なしパス ); // ファイルがなければ新規生成される。
                 using var cmd = new SqliteCommand( RecordDBRecord.GetCreateTableSQL(), recorddb.Connection );
                 cmd.ExecuteNonQuery();
                 recorddb.UserVersion = RecordDBRecord.VERSION;
+                
                 Log.Info( $"RecordDB を生成しました。" );
                 //----------------
                 #endregion
@@ -189,29 +192,29 @@ namespace DTXMania2
                 switch( version )
                 {
                     case 14:
+                    {
                         #region " 14 → 最新版 "
                         //----------------
-                        {
-                            // 変更がないので、全メンバを代入でコピーするよりも、v14をシリアライズ → v15でデシリアライズ するほうを選ぶ。
-                            var v14yamlText = File.ReadAllText( path.変数なしパス );
-                            var v14deserializer = new Deserializer();
-                            var v14config = v14deserializer.Deserialize<old.UserConfig.v014_UserConfig>( v14yamlText );
-                            var v14serializer = new SerializerBuilder()
-                                .WithTypeInspector( inner => new CommentGatheringTypeInspector( inner ) )
-                                .WithEmissionPhaseObjectGraphVisitor( args => new CommentsObjectGraphVisitor( args.InnerVisitor ) )
-                                .Build();
-                            var v14yaml = v14serializer.Serialize( v14config );
+                        // 変更がないので、全メンバを代入でコピーするよりも、v14をシリアライズ → v15でデシリアライズ するほうを選ぶ。
+                        var v14yamlText = File.ReadAllText( path.変数なしパス );
+                        var v14deserializer = new Deserializer();
+                        var v14config = v14deserializer.Deserialize<old.UserConfig.v014_UserConfig>( v14yamlText );
+                        var v14serializer = new SerializerBuilder()
+                            .WithTypeInspector( inner => new CommentGatheringTypeInspector( inner ) )
+                            .WithEmissionPhaseObjectGraphVisitor( args => new CommentsObjectGraphVisitor( args.InnerVisitor ) )
+                            .Build();
+                        var v14yaml = v14serializer.Serialize( v14config );
 
-                            var v15deserializer = new Deserializer();
-                            var v15config = v15deserializer.Deserialize<UserConfig>( v14yamlText ); // 変更なし
-                            v15config.Version = UserConfig.VERSION;
-                            v15config.保存する();
+                        var v15deserializer = new Deserializer();
+                        var v15config = v15deserializer.Deserialize<UserConfig>( v14yamlText ); // 変更なし
+                        v15config.Version = UserConfig.VERSION;
+                        v15config.保存する();
 
-                            version = v15config.Version;
-                        }
+                        version = v15config.Version;
+                        break;
                         //----------------
                         #endregion
-                        break;
+                    }
                 }
             }
         }

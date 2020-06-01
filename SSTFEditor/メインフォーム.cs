@@ -900,11 +900,10 @@ namespace SSTFEditor
             {
                 // ビュアーに接続を試みる。
                 pipeStream = this._Viewerに接続する();
-
                 if( pipeStream is null )
                 {
-                    // 接続に失敗したのでビュアーを起動する。
-
+                    #region " 接続に失敗したのでビュアーを起動する。"
+                    //----------------
                     if( this.Config.ViewerPath.Nullまたは空である() || !File.Exists( this.Config.ViewerPath ) )
                         return; // ビュアーの設定がないか、ビュアーファイルが存在していない。
 
@@ -926,6 +925,8 @@ namespace SSTFEditor
                         this._Viewer再生関連GUIのEnabledを設定する();
                         return;
                     }
+                    //----------------
+                    #endregion
                 }
 
                 // 演奏開始を指示する。

@@ -9,10 +9,7 @@ namespace DTXMania2
 {
     partial class ScorePropertiesDB
     {
-        /// <summary>
-        ///     DBを最新版にアップデートする。
-        /// </summary>
-		public static void Update()
+		public static void 最新版にバージョンアップする()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
@@ -26,20 +23,20 @@ namespace DTXMania2
                 {
                     case 0:
                     case 1:
+                    {
                         #region " 0, 1 → 最新版 "
                         //----------------
-                        {
-                            // 最新バージョンのテーブルを作成する。内容は空。
-                            using var cmdCreate = new SqliteCommand( ScorePropertiesDBRecord.GetCreateTableSQL(), db.Connection );
-                            cmdCreate.ExecuteNonQuery();
+                        // 最新バージョンのテーブルを作成する。内容は空。
+                        using var cmdCreate = new SqliteCommand( ScorePropertiesDBRecord.GetCreateTableSQL(), db.Connection );
+                        cmdCreate.ExecuteNonQuery();
 
-                            version = ScorePropertiesDBRecord.VERSION;
-                            db.UserVersion = version;
-                            Log.Info( $"ScorePropertiesDB バージョン {version} を生成しました。" );
-                        }
+                        version = ScorePropertiesDBRecord.VERSION;
+                        db.UserVersion = version;
+                        Log.Info( $"ScorePropertiesDB バージョン {version} を生成しました。" );
+                        break;
                         //----------------
                         #endregion
-                        break;
+                    }
                 }
             }
         }

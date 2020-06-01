@@ -113,15 +113,14 @@ namespace DTXMania2
             this._ユーザ設定 = Global.App.ログオン中のユーザ;
 
             this._Record = new RecordDBRecord() {
-                ScorePath = Global.App.演奏譜面.譜面.ScorePath,
+                ScorePath = Global.App.演奏譜面?.譜面.ScorePath ?? "",
                 UserId = this._ユーザ設定.ID!,
                 Score = 0,
                 Achievement = 0.0f,
             };
             this.MaxCombo = 0;
             this.エキサイトゲージ量 = 0.75f;
-            this.総ノーツ数 = this._総ノーツ数を算出して返す( Global.App.演奏スコア, this._ユーザ設定 );
-
+            this.総ノーツ数 = ( Global.App.演奏スコア != null ) ? this._総ノーツ数を算出して返す( Global.App.演奏スコア, this._ユーザ設定 ) : 0;
             this._難易度 = Global.App.演奏スコア?.難易度 ?? 5.0;
             this._判定別ヒット数 = new Dictionary<判定種別, int>();
             foreach( 判定種別? judge in Enum.GetValues( typeof( 判定種別 ) ) )
@@ -149,9 +148,9 @@ namespace DTXMania2
 
             #region " コンボを加算する。"
             //----------------
-            if( 判定 == 判定種別.OK || 判定 == 判定種別.MISS ) // コンボ切れ？
+            if( 判定 == 判定種別.OK || 判定 == 判定種別.MISS )
             {
-                this.Combo = 0;
+                this.Combo = 0; // コンボ切れ
             }
             else
             {
@@ -183,14 +182,15 @@ namespace DTXMania2
 
             #region " オプション補正を算出する。"
             //----------------
+            // (1) AutoPlay を反映。
             if( this._ユーザ設定.AutoPlayがすべてONである )
             {
-                // (A) すべて ON → 補正なし(x1.0), ただしDBには保存されない。
+                // (A) AutoPlay がすべて ON → 補正なし(x1.0), ただしDBには保存されない。
                 オプション補正0to1 = 1.0;
             }
             else
             {
-                // (B) 一部だけ ON → AutoPlay が ON になっている個所に応じて補正する。
+                // (B) AutoPlay が一部だけ ON → ON になっている個所に応じて補正する。
                 foreach( var kvp in this._ユーザ設定.AutoPlay )
                 {
                     if( kvp.Value && this._Auto時の補正.ContainsKey( kvp.Key ) )
@@ -200,7 +200,8 @@ namespace DTXMania2
                 }
             }
             
-            // 再生速度が等倍じゃなければ常に達成率ゼロ
+            // (2) 再生速度を反映。
+            // 等倍じゃなければ常に達成率ゼロ
             オプション補正0to1 *= ( this._ユーザ設定.再生速度 == 1.0 ) ? 1.0 : 0.0;
             //----------------
             #endregion
@@ -228,14 +229,14 @@ namespace DTXMania2
         /// </summary>
         public void エキサイトゲージを更新する( 判定種別 judge )
         {
-            switch( judge )
+            this.エキサイトゲージ量 += judge switch
             {
-                case 判定種別.PERFECT: this.エキサイトゲージ量 += 0.025f; break;
-                case 判定種別.GREAT: this.エキサイトゲージ量 += 0.01f; break;
-                case 判定種別.GOOD: this.エキサイトゲージ量 += 0.005f; break;
-                case 判定種別.OK: this.エキサイトゲージ量 += 0f; break;
-                case 判定種別.MISS: this.エキサイトゲージ量 -= 0.08f; break;
-            }
+                判定種別.PERFECT => 0.025f,
+                判定種別.GREAT => 0.01f,
+                判定種別.GOOD => 0.005f,
+                判定種別.OK => 0f,
+                _ => -0.08f,
+            };
 
             this.エキサイトゲージ量 = Math.Clamp( this.エキサイトゲージ量, min: 0f, max: 1f );
         }
@@ -330,7 +331,7 @@ namespace DTXMania2
 
             int ヒット数の合計 = 0;
             var ヒット割合_実数 = new Dictionary<判定種別, double>();  // 実値（0～100）
-            var ヒット割合_整数 = new Dictionary<判定種別, int>(); // 実値を整数にしてさらに補正した値（0～100）
+            var ヒット割合_整数 = new Dictionary<判定種別, int>();     // 実値を整数にしてさらに補正した値（0～100）
             var ヒット数リスト = new List<(判定種別 judge, int hits)>();
             var 切り捨てした = new Dictionary<判定種別, bool>();
             判定種別 判定;
@@ -453,6 +454,6 @@ namespace DTXMania2
         }
 
         private static double _小数第3位以下切り捨て( double v )
-            => Math.Floor( 100.0 * v ) / 100.0;
+            => Math.Truncate( 100.0 * v ) / 100.0;
     }
 }

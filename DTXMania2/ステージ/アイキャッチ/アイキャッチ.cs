@@ -79,7 +79,8 @@ namespace DTXMania2
         /// <summary>
         ///     アイキャッチのアニメーションを進行し、アイキャッチ画像を描画する。
         /// </summary>
-        public void 進行描画する( DeviceContext dc )
+        /// <returns>現在のフェーズ。</returns>
+        public フェーズ 進行描画する( DeviceContext dc )
         {
             switch( this.現在のフェーズ )
             {
@@ -96,6 +97,8 @@ namespace DTXMania2
                     this.進行描画する( dc, StoryboardStatus.Ready );
                     break;
             }
+
+            return this.現在のフェーズ;
         }
 
         /// <summary>

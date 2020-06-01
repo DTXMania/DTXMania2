@@ -186,8 +186,8 @@ namespace DTXMania2
         public bool キャンセルキーが入力された()
         {
             return
-                ( this.Keybaord.TryGetTarget( out var keyboard ) && keyboard.キーが押された( 0, System.Windows.Forms.Keys.Escape ) ) ||
-                this.ドラムのいずれか１つが入力された( new[] { ドラム入力種別.Tom3, ドラム入力種別.Tom3_Rim } );
+                this.Keybaord.TryGetTarget( out var keyboard ) &&
+                keyboard.キーが押された( 0, System.Windows.Forms.Keys.Escape );
         }
 
         /// <summary>

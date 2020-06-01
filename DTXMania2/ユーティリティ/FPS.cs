@@ -7,10 +7,11 @@ using FDK;
 namespace DTXMania2
 {
     /// <summary>
-    ///		FPS（１秒間の進行処理回数）と VPS（１秒間の描画処理回数）を計測する。
+    ///		FPS（frames per second; １秒間の進行処理回数）と VPS（views per second; １秒間の描画処理回数）を計測する。
     /// </summary>
     /// <remarks>
-    ///		FPSをカウントする() を呼び出さないと、VPS も更新されないので注意。
+    ///		<see cref="FDK.FPS.FPSをカウントしプロパティを更新する"/> を呼び出さないと、
+    ///		<see cref="FDK.FPS.現在のVPS"/> も更新されないので注意。
     /// </remarks>
     class FPS : FDK.FPS, IDisposable
     {
