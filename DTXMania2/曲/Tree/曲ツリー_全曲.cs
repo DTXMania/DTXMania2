@@ -52,7 +52,7 @@ namespace DTXMania2.曲
         /// </remarks>
         public async Task 構築するAsync( IEnumerable<VariablePath> 曲検索フォルダパスリスト )
         {
-            using var _ = new LogBlock( Log.現在のメソッド名 );
+            //using var _ = new LogBlock( Log.現在のメソッド名 );
 
             await Task.Run( () => {
 
@@ -77,7 +77,7 @@ namespace DTXMania2.曲
         /// </summary>
         public async Task ノードにDBを反映するAsync()
         {
-            using var _ = new LogBlock( Log.現在のメソッド名 );
+            //using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._進捗カウンタ = 0;
 
@@ -107,7 +107,7 @@ namespace DTXMania2.曲
         /// </summary>
         public async Task 文字列画像を生成するAsync()
         {
-            using var _ = new LogBlock( Log.現在のメソッド名 );
+            //using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._進捗カウンタ = 0;
 

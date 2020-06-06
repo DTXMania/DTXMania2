@@ -11,7 +11,7 @@ namespace FDK
     ///		DirectWrite を使った Direct2D1ビットマップ。
     /// </summary>
     /// <remarks>
-    ///		<see cref="表示文字列"/> メンバを更新すれば、次回の描画時に新しいビットマップが生成される。
+    ///		<see cref="表示文字列"/> メンバが更新されると、次回の描画時に新しいビットマップが生成される。
     /// </remarks>
     public class 文字列画像D2D : IImage, IDisposable
     {
@@ -148,7 +148,7 @@ namespace FDK
         public enum 効果
         {
             /// <summary>
-            ///		前景色で描画。
+            ///		文字を前景色で描画する。
             /// </summary>
             通常,
 
@@ -408,25 +408,24 @@ namespace FDK
                     switch( this.描画効果 )
                     {
                         case 効果.通常:
-                            using( var de = new カスタムTextRenderer.DrawingEffect( rt ) { 文字の色 = this.前景色 } )
-                            {
-                                this._TextLayout.Draw( de, this._TextRenderer, 0f, 0f );
-                            }
+                        {
+                            using var de = new カスタムTextRenderer.DrawingEffect( rt ) { 文字の色 = this.前景色 };
+                            this._TextLayout.Draw( de, this._TextRenderer, 0f, 0f );
                             break;
+                        }
 
                         case 効果.ドロップシャドウ:
-                            using( var de = new カスタムTextRenderer.ドロップシャドウDrawingEffect( rt ) { 文字の色 = this.前景色, 影の色 = this.背景色, 影の距離 = 3.0f } )
-                            {
-                                this._TextLayout.Draw( de, this._TextRenderer, 0f, 0f );
-                            }
+                        {
+                            using var de = new カスタムTextRenderer.ドロップシャドウDrawingEffect( rt ) { 文字の色 = this.前景色, 影の色 = this.背景色, 影の距離 = 3.0f };
+                            this._TextLayout.Draw( de, this._TextRenderer, 0f, 0f );
                             break;
-
+                        }
                         case 効果.縁取り:
-                            using( var de = new カスタムTextRenderer.縁取りDrawingEffect( rt ) { 文字の色 = this.前景色, 縁の色 = this.背景色, 縁の太さ = this.縁のサイズdpx } )
-                            {
-                                this._TextLayout.Draw( de, this._TextRenderer, 8f, 8f ); // 描画位置をずらす(+8,+8)
-                            }
+                        {
+                            using var de = new カスタムTextRenderer.縁取りDrawingEffect( rt ) { 文字の色 = this.前景色, 縁の色 = this.背景色, 縁の太さ = this.縁のサイズdpx };
+                            this._TextLayout.Draw( de, this._TextRenderer, 8f, 8f ); // 描画位置をずらす(+8,+8)
                             break;
+                        }
                     }
 
                 } );
@@ -448,7 +447,7 @@ namespace FDK
         {
             var 変換行列2D =
                 Matrix3x2.Scaling( X方向拡大率, Y方向拡大率 ) *   // 拡大縮小
-                Matrix3x2.Translation( 左位置, 上位置 );          // 平行移動
+                Matrix3x2.Translation( 左位置, 上位置 );          // 移動
 
             this.描画する( dc, 変換行列2D, 変換行列3D, 不透明度0to1 );
         }
@@ -491,7 +490,7 @@ namespace FDK
         // ローカル
 
 
-        private SharpDX.DirectWrite.Factory _DWFactory;
+        private readonly SharpDX.DirectWrite.Factory _DWFactory;
 
         private string _表示文字列 = "";
 
@@ -522,7 +521,7 @@ namespace FDK
 
         private TextLayout _TextLayout = null!;
 
-        private カスタムTextRenderer _TextRenderer;
+        private readonly カスタムTextRenderer _TextRenderer;
 
         /// <summary>
         ///     TextLayout で作成された文字列のサイズ[dpx]。

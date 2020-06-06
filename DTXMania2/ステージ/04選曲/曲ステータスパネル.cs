@@ -52,27 +52,33 @@ namespace DTXMania2.選曲
         // 進行と描画
 
 
-        public void 描画する( DeviceContext dc, Node フォーカスノード )
+        public void 進行描画する( DeviceContext dc, Node フォーカスノード )
         {
             var 領域dpx = new RectangleF( 320f, 532f, 239f, 505f );
 
-            #region " 背景 "
+            #region " 背景を描画する。"
             //----------------
-            this._背景画像.描画する( 領域dpx.X, 領域dpx.Y );
+            this._背景画像.進行描画する( 領域dpx.X, 領域dpx.Y );
             //----------------
             #endregion
 
             if( !( フォーカスノード is SongNode snode ) || snode.曲.フォーカス譜面 is null )
-                return;    // 現状、BPMを表示できるノードは MusicNode のみ。
+            {
+                // 現状、BPMを表示できるノードは SongNode のみ。
+                // SongNode 以外は背景の描画だけで終わり。
+                return;
+            }
 
             #region " フォーカスノードが変更されていれば更新する。"
             //----------------
             if( フォーカスノード != this._現在表示しているノード )
+            {
                 this._現在表示しているノード = フォーカスノード;
+            }
             //----------------
             #endregion
 
-            #region " Total Notes を表示する。"
+            #region " Total Notes を描画する。"
             //----------------
             {
                 var map = snode.曲.フォーカス譜面.レーン別ノート数;

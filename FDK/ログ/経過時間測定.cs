@@ -10,6 +10,8 @@ namespace FDK
     {
         public ConcurrentDictionary<string, double> スタック { get; }
 
+        public double 現在のリアルタムカウントsec => this._Timer.現在のリアルタイムカウントsec;
+
 
         public 経過時間測定()
         {
@@ -41,16 +43,22 @@ namespace FDK
             {
                 double 直前の時刻 = 0.0;
                 var sortedDic = this.スタック.OrderBy( ( kvp ) => ( kvp.Value ) );
+                
+                for( int i = 0; i < sortedDic.Count(); i++ )
+                {
+                    var kvp = sortedDic.ElementAt( i );
+                    Debug.Write( $"{kvp.Key}," );
+                }
+                Debug.WriteLine( "区間計(ms)" );
 
                 for( int i = 0; i < sortedDic.Count(); i++ )
                 {
                     var kvp = sortedDic.ElementAt( i );
-                    Debug.Write( $"{kvp.Key}:{1000 * kvp.Value:0.00000}ms({1000 * ( kvp.Value - 直前の時刻 ):0.00000}), " );
+                    Debug.Write( $"+{1000 * ( kvp.Value - 直前の時刻 ):0.00000}, " );
 
                     直前の時刻 = kvp.Value;
                 }
-
-                Debug.WriteLine( "" );
+                Debug.WriteLine( $"{1000 * sortedDic.Last().Value:0.00000}" );
             }
         }
 

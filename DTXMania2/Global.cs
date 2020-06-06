@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
+using System.Text.RegularExpressions;
 using FDK;
 
 namespace DTXMania2
 {
     /// <summary>
-    ///     グローバルリソース。すべてが static。
+    ///     グローバルリソース。すべて static。
     /// </summary>
     static class Global
     {
@@ -15,32 +17,28 @@ namespace DTXMania2
 
 
         /// <summary>
-        ///     <see cref="DTXMania2.AppForm"/> インスタンスへの参照。
-        ///     <see cref="Global.生成する()"/> の前に設定しておくこと。
-        /// </summary>
-        public static AppForm AppForm { get; set; } = null!;
-
-        /// <summary>
-        ///     <see cref="DTXMania2.App"/> インスタンスへの参照。
-        ///     <see cref="Global.生成する()"/> の前に設定しておくこと。
+        ///     メインフォームインスタンスへの参照。
         /// </summary>
         public static App App { get; set; } = null!;
 
         /// <summary>
-        ///     起動時のコマンドラインオプション。
-        /// </summary>
-        public static CommandLineOptions Options { get; set; } = null!;
-
-        /// <summary>
-        ///     <see cref="DTXMania2.AppForm"/> インスタンスのウィンドウハンドル。
-        ///     <see cref="Global.生成する()"/> の前に設定しておくこと。
+        ///     メインフォームインスタンスのウィンドウハンドル。
         /// </summary>
         /// <remarks>
-        ///     <see cref="AppForm.Handle"/> と同じ値であるが、GUIスレッド 以 外 のスレッドから参照する場合は、
-        ///     <see cref="AppForm.Handle"/> ではなくこのメンバを参照すること。
-        ///     （<see cref="DTXMania2.AppForm"/> のメンバは必ずGUIスレッドから参照されなれければならない。）
+        ///     <see cref="DTXMania2.App.Handle"/> メンバと同じ値であるが、GUIスレッド 以 外 のスレッドから参照する場合は、
+        ///     <see cref="DTXMania2.App.Handle"/> ではなくこのメンバを参照すること。
+        ///     （<see cref="DTXMania2.App"/> のメンバはすべて、必ずGUIスレッドから参照されなれければならないため。）
         /// </remarks>
         public static IntPtr Handle { get; set; } = IntPtr.Zero;
+
+        /// <summary>
+        ///     アプリ起動時のコマンドラインオプション。
+        /// </summary>
+        /// <remarks>
+        ///     <see cref="Program.Main(string[])"/> の引数から生成される。
+        ///     YAML化することで、ビュアーモードで起動中の DTXMania2 のパイプラインサーバに送信する事が可能。
+        /// </remarks>
+        public static CommandLineOptions Options { get; set; } = null!;
 
         /// <summary>
         ///     設計（プログラム側）で想定する固定画面サイズ[dpx]。
@@ -103,32 +101,21 @@ namespace DTXMania2
             }
         }
 
-        #region " スワップチェーンに依存しないグラフィックリソース "
-        //----------------
+
+        // スワップチェーンに依存しないグラフィックリソース
+
         public static SharpDX.Direct3D11.Device1 D3D11Device1 { get; private set; } = null!;
-
         public static SharpDX.DXGI.Output1 DXGIOutput1 { get; private set; } = null!;
-
         public static SharpDX.MediaFoundation.DXGIDeviceManager MFDXGIDeviceManager { get; private set; } = null!;
-
         public static SharpDX.Direct2D1.Factory1 D2D1Factory1 { get; private set; } = null!;
-
         public static SharpDX.Direct2D1.Device D2D1Device { get; private set; } = null!;
-
         public static SharpDX.Direct2D1.DeviceContext 既定のD2D1DeviceContext { get; private set; } = null!;
-
         public static SharpDX.DirectComposition.DesktopDevice DCompDevice2 { get; private set; } = null!;    // IDCompositionDevice2 から派生
-
         public static SharpDX.DirectComposition.Visual2 DCompVisual2ForSwapChain { get; private set; } = null!;
-
         public static SharpDX.DirectComposition.Target DCompTarget { get; private set; } = null!;
-
         public static SharpDX.WIC.ImagingFactory2 WicImagingFactory2 { get; private set; } = null!;
-
         public static SharpDX.DirectWrite.Factory DWriteFactory { get; private set; } = null!;
-
         public static Animation Animation { get; private set; } = null!;
-
 
         private static void _スワップチェーンに依存しないグラフィックリソースを作成する()
         {
@@ -274,7 +261,6 @@ namespace DTXMania2
             //----------------
             #endregion
         }
-
         private static void _スワップチェーンに依存しないグラフィックリソースを解放する()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
@@ -373,11 +359,10 @@ namespace DTXMania2
             //----------------
             #endregion
         }
-        //----------------
-        #endregion
 
-        #region " スワップチェーン "
-        //----------------
+
+        // スワップチェーン
+
         public static SharpDX.DXGI.SwapChain1 DXGISwapChain1 { get; private set; } = null!;
 
         private static void _スワップチェーンを作成する()
@@ -393,7 +378,8 @@ namespace DTXMania2
                 AlphaMode = SharpDX.DXGI.AlphaMode.Ignore,      // Premultiplied にすると、ウィンドウの背景（デスクトップ画像）と加算合成される。（意味ない）
                 Stereo = false,
                 SampleDescription = new SharpDX.DXGI.SampleDescription( 1, 0 ), // マルチサンプリングは使わない。
-                SwapEffect = SharpDX.DXGI.SwapEffect.FlipSequential,    // SwapChainForComposition での必須条件。
+                //SwapEffect = SharpDX.DXGI.SwapEffect.FlipSequential,    // SwapChainForComposition での必須条件。
+                SwapEffect = SharpDX.DXGI.SwapEffect.FlipDiscard,
                 Scaling = SharpDX.DXGI.Scaling.Stretch,                 // SwapChainForComposition での必須条件。
                 Usage = SharpDX.DXGI.Usage.RenderTargetOutput,
                 Flags = SharpDX.DXGI.SwapChainFlags.None,
@@ -422,7 +408,6 @@ namespace DTXMania2
             DCompVisual2ForSwapChain.Content = DXGISwapChain1;
             DCompDevice2.Commit();
         }
-
         private static void _スワップチェーンを解放する()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
@@ -433,42 +418,35 @@ namespace DTXMania2
 
             DXGISwapChain1.Dispose();
         }
-        //----------------
-        #endregion
 
-        #region " スワップチェーンに依存するグラフィックリソース "
-        //----------------
+
+        // スワップチェーンに依存するグラフィックリソース
+
         /// <summary>
         ///     スワップチェーンのバックバッファとメモリを共有するD2Dレンダービットマップ。
         ///     これにD2Dで描画を行うことは、すなわちD3Dスワップチェーンのバックバッファに描画することを意味する。
         /// </summary>
         public static SharpDX.Direct2D1.Bitmap1 既定のD2D1RenderBitmap1 { get; private set; } = null!;
-
         /// <summary>
         ///     スワップチェーンのバックバッファに対する既定のレンダーターゲットビュー。
         /// </summary>
         public static SharpDX.Direct3D11.RenderTargetView 既定のD3D11RenderTargetView { get; private set; } = null!;
-
         /// <summary>
         ///     スワップチェーンのバックバッファに対する既定の深度ステンシル。
         /// </summary>
         public static SharpDX.Direct3D11.Texture2D 既定のD3D11DepthStencil { get; private set; } = null!;
-
         /// <summary>
         ///     スワップチェーンのバックバッファに対する既定の深度ステンシルビュー。
         /// </summary>
         public static SharpDX.Direct3D11.DepthStencilView 既定のD3D11DepthStencilView { get; private set; } = null!;
-
         /// <summary>
         ///     スワップチェーンのバックバッファに対する既定の深度ステンシルステート。
         /// </summary>
         public static SharpDX.Direct3D11.DepthStencilState 既定のD3D11DepthStencilState { get; private set; } = null!;
-
         /// <summary>
         ///     スワップチェーンのバックバッファに対する既定のビューポートの配列。
         /// </summary>
         public static SharpDX.Mathematics.Interop.RawViewportF[] 既定のD3D11ViewPort { get; private set; } = null!;
-
 
         private static void _スワップチェーンに依存するグラフィックリソースを作成する()
         {
@@ -526,15 +504,15 @@ namespace DTXMania2
                         DepthComparison = SharpDX.Direct3D11.Comparison.Less,           // 手前の物体を描画
                         StencilReadMask = 0,
                         StencilWriteMask = 0,
-                    // 面が表を向いている場合のステンシル・テストの設定
-                    FrontFace = new SharpDX.Direct3D11.DepthStencilOperationDescription() {
+                        // 面が表を向いている場合のステンシル・テストの設定
+                        FrontFace = new SharpDX.Direct3D11.DepthStencilOperationDescription() {
                             FailOperation = SharpDX.Direct3D11.StencilOperation.Keep,       // 維持
                             DepthFailOperation = SharpDX.Direct3D11.StencilOperation.Keep,  // 維持
                             PassOperation = SharpDX.Direct3D11.StencilOperation.Keep,       // 維持
                             Comparison = SharpDX.Direct3D11.Comparison.Never,               // 常に失敗
                         },
-                    // 面が裏を向いている場合のステンシル・テストの設定
-                    BackFace = new SharpDX.Direct3D11.DepthStencilOperationDescription() {
+                        // 面が裏を向いている場合のステンシル・テストの設定
+                        BackFace = new SharpDX.Direct3D11.DepthStencilOperationDescription() {
                             FailOperation = SharpDX.Direct3D11.StencilOperation.Keep,       // 維持
                             DepthFailOperation = SharpDX.Direct3D11.StencilOperation.Keep,  // 維持
                             PassOperation = SharpDX.Direct3D11.StencilOperation.Keep,       // 維持
@@ -581,7 +559,6 @@ namespace DTXMania2
                 #endregion
             }
         }
-
         private static void _スワップチェーンに依存するグラフィックリソースを解放する()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
@@ -607,8 +584,6 @@ namespace DTXMania2
             //----------------
             #endregion
         }
-        //----------------
-        #endregion
 
 
 
@@ -622,29 +597,19 @@ namespace DTXMania2
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            #region " Dispose 済みなら例外発出。"
-            //----------------
-            if( !_Dispose済み )
-                throw new ObjectDisposedException( "Global" );
-
-            _Dispose済み = false;
-            //----------------
-            #endregion
-
-            // 以下の3つは先行して設定しておくこと。
-            Debug.Assert( null != AppForm );
-            Debug.Assert( null != App );
-            Debug.Assert( IntPtr.Zero != Handle );
+            Debug.Assert( null != Global.App );
+            Debug.Assert( IntPtr.Zero != Global.Handle);
 
             Global.設計画面サイズ = 設計画面サイズ;
             Global.物理画面サイズ = 物理画面サイズ;
-
             Log.Info( $"設計画面サイズ: {設計画面サイズ}" );
             Log.Info( $"物理画面サイズ: {物理画面サイズ}" );
 
-            _スワップチェーンに依存しないグラフィックリソースを作成する();
-            _スワップチェーンを作成する();
-            _スワップチェーンに依存するグラフィックリソースを作成する();
+            Global._スワップチェーンに依存しないグラフィックリソースを作成する();
+            Global._スワップチェーンを作成する();
+            Global._スワップチェーンに依存するグラフィックリソースを作成する();
+
+            Global._Dispose済み = false;
         }
 
         /// <summary>
@@ -656,23 +621,23 @@ namespace DTXMania2
 
             #region " Dispose 済みなら何もしない。"
             //----------------
-            if( _Dispose済み )
+            if( Global._Dispose済み )
                 return;
 
-            _Dispose済み = true;
+            Global._Dispose済み = true;
             //----------------
             #endregion
 
-            _スワップチェーンに依存するグラフィックリソースを解放する();
-            _スワップチェーンを解放する();
-            _スワップチェーンに依存しないグラフィックリソースを解放する();
+            Global._スワップチェーンに依存するグラフィックリソースを解放する();
+            Global._スワップチェーンを解放する();
+            Global._スワップチェーンに依存しないグラフィックリソースを解放する();
 
-            Handle = IntPtr.Zero;
+            Global.Handle = IntPtr.Zero;
         }
 
 
 
-        // その他のユーティリティ
+        // その他
 
 
         /// <summary>
@@ -684,25 +649,25 @@ namespace DTXMania2
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             // (1) 依存リソースを解放。
-            _スワップチェーンに依存するグラフィックリソースを解放する();
+            Global._スワップチェーンに依存するグラフィックリソースを解放する();
 
             // (2) バックバッファのサイズを変更。
             using( var lb = new LogBlock( "バックバッファのリサイズ" ) )
             {
-                DXGISwapChain1.ResizeBuffers(
+                Global.DXGISwapChain1.ResizeBuffers(
                     0,                                  // 0: 現在のバッファ数を維持
                     (int) newSize.Width,                // 新しいサイズ
                     (int) newSize.Height,               // 新しいサイズ
                     SharpDX.DXGI.Format.Unknown,        // Unknown: 現在のフォーマットを維持
                     SharpDX.DXGI.SwapChainFlags.None );
 
-                物理画面サイズ = new SharpDX.Size2F( newSize.Width, newSize.Height );
+                Global.物理画面サイズ = new SharpDX.Size2F( newSize.Width, newSize.Height );
             }
 
             // (3) 依存リソースを作成。
-            _スワップチェーンに依存するグラフィックリソースを作成する();
+            Global._スワップチェーンに依存するグラフィックリソースを作成する();
 
-            Log.Info( $"物理画面サイズを変更しました。{物理画面サイズ}" );
+            Log.Info( $"物理画面サイズを変更しました。{Global.物理画面サイズ}" );
         }
 
         /// <summary>
@@ -733,6 +698,38 @@ namespace DTXMania2
                 -dz,                                            // 前方投影面までの距離
                 +dz );                                          // 後方投影面までの距離
             転置済み射影行列.Transpose();  // 転置
+        }
+
+        /// <summary>
+        ///		指定されたコマンド名が対象文字列内で使用されている場合に、パラメータ部分の文字列を返す。
+        /// </summary>
+        /// <remarks>
+        ///		.dtx や box.def 等で使用されている "#＜コマンド名＞[:]＜パラメータ＞[;コメント]" 形式の文字列（対象文字列）について、
+        ///		指定されたコマンドを使用する行であるかどうかを判別し、使用する行であるなら、そのパラメータ部分の文字列を引数に格納し、true を返す。
+        ///		対象文字列のコマンド名が指定したコマンド名と異なる場合には、パラメータ文字列に null を格納して false を返す。
+        ///		コマンド名は正しくてもパラメータが存在しない場合には、空文字列("") を格納して true を返す。
+        /// </remarks>
+        /// <param name="対象文字列">調べる対象の文字列。（例: "#TITLE: 曲名 ;コメント"）</param>
+        /// <param name="コマンド名">調べるコマンドの名前（例:"TITLE"）。#は不要、大文字小文字は区別されない。</param>
+        /// <returns>パラメータ文字列の取得に成功したら true、異なるコマンドだったなら false。</returns>
+        public static bool コマンドのパラメータ文字列部分を返す( string 対象文字列, string コマンド名, out string パラメータ文字列 )
+        {
+            // コメント部分を除去し、両端をトリムする。なお、全角空白はトリムしない。
+            対象文字列 = 対象文字列.Split( ';' )[ 0 ].Trim( ' ', '\t' );
+
+            string 正規表現パターン = $@"^\s*#\s*{コマンド名}(:|\s)+(.*)\s*$";  // \s は空白文字。
+            var m = Regex.Match( 対象文字列, 正規表現パターン, RegexOptions.IgnoreCase );
+
+            if( m.Success && ( 3 <= m.Groups.Count ) )
+            {
+                パラメータ文字列 = m.Groups[ 2 ].Value;
+                return true;
+            }
+            else
+            {
+                パラメータ文字列 = "";
+                return false;
+            }
         }
 
 

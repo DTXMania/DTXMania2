@@ -72,7 +72,6 @@ namespace DTXMania2.曲読み込み
 
             // 最初のフェーズへ。
             this.現在のフェーズ = フェーズ.フェードイン;
-            this._フェーズ完了 = false;
         }
 
         public void Dispose()
@@ -95,30 +94,40 @@ namespace DTXMania2.曲読み込み
         // 進行と描画
 
 
-        public void 進行する()
+        public void 進行描画する()
         {
+            var dc = Global.既定のD2D1DeviceContext;
+            dc.Transform = Global.拡大行列DPXtoPX;
+
             switch( this.現在のフェーズ )
             {
                 case フェーズ.フェードイン:
                 {
-                    #region " フェードインが完了したら次のフェーズへ。"
+                    #region " 背景画面＆アイキャッチフェードインを描画する。"
                     //----------------
-                    if( this._フェーズ完了 )
+                    this._背景画面を描画する( dc );
+
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
                     {
+                        // フェードインが完了したら次のフェーズへ。
                         this.現在のフェーズ = フェーズ.表示;
-                        this._フェーズ完了 = false;
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.表示:
                 {
                     #region " スコアを読み込んで完了フェーズへ。"
                     //----------------
+                    this._背景画面を描画する( dc );
+
                     スコアを読み込む();
 
                     Global.App.ドラム入力.すべての入力デバイスをポーリングする();  // 先行入力があったらここでキャンセル
+
+                    // 次のフェーズへ。
                     this.現在のフェーズ = フェーズ.完了;
                     break;
                     //----------------
@@ -128,51 +137,11 @@ namespace DTXMania2.曲読み込み
                 {
                     #region " 遷移終了。Appによるステージ遷移待ち。"
                     //----------------
-                    break;
+                    this._背景画面を描画する( dc );
                     //----------------
                     #endregion
-                }
-            }
-        }
 
-        public void 描画する()
-        {
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
-            switch( this.現在のフェーズ )
-            {
-                case フェーズ.フェードイン:
-                {
-                    #region " 背景画面＆アイキャッチフェードイン "
-                    //----------------
-                    this._舞台画像.進行描画する( dc );
-                    this._注意文.描画する( 0f, 760f );
-                    this._プレビュー画像.描画する();
-                    this._難易度.描画する( dc );
-                    this._曲名を描画する( dc );
-                    this._サブタイトルを描画する( dc );
-
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
-                        this._フェーズ完了 = true;    // 完了
                     break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.表示:
-                case フェーズ.完了:
-                {
-                    #region " 背景画面 "
-                    //----------------
-                    this._舞台画像.進行描画する( dc );
-                    this._注意文.描画する( 0f, 760f );
-                    this._プレビュー画像.描画する();
-                    this._難易度.描画する( dc );
-                    this._曲名を描画する( dc );
-                    this._サブタイトルを描画する( dc );
-                    break;
-                    //----------------
-                    #endregion
                 }
             }
         }
@@ -258,8 +227,6 @@ namespace DTXMania2.曲読み込み
 
         private readonly 難易度 _難易度;
 
-        private bool _フェーズ完了;
-
         private void _曲名を描画する( DeviceContext dc )
         {
             var 表示位置dpx = new Vector2( 782f, 409f );
@@ -278,6 +245,16 @@ namespace DTXMania2.曲読み込み
             float 最大幅dpx = Global.設計画面サイズ.Width - 表示位置dpx.X;
             float X方向拡大率 = ( this._サブタイトル画像.画像サイズdpx.Width <= 最大幅dpx ) ? 1f : 最大幅dpx / this._サブタイトル画像.画像サイズdpx.Width;
             this._サブタイトル画像.描画する( dc, 表示位置dpx.X, 表示位置dpx.Y, X方向拡大率: X方向拡大率 );
+        }
+
+        private void _背景画面を描画する( DeviceContext dc )
+        {
+            this._舞台画像.進行描画する( dc );
+            this._注意文.進行描画する( 0f, 760f );
+            this._プレビュー画像.進行描画する();
+            this._難易度.進行描画する( dc );
+            this._曲名を描画する( dc );
+            this._サブタイトルを描画する( dc );
         }
     }
 }

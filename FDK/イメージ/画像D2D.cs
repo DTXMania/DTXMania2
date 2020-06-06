@@ -18,7 +18,7 @@ namespace FDK
         // プロパティ
 
 
-        public Bitmap1? Bitmap { get; protected set; } = null;
+        public Bitmap1? Bitmap { get; protected set; } = null;  // 生成に失敗した場合は null。
 
         public bool 加算合成 { get; set; } = false;
 
@@ -50,9 +50,9 @@ namespace FDK
 
         protected void Bitmapを生成する( ImagingFactory2 imagingFactory2, DeviceContext d2dDeviceContext, VariablePath 画像ファイルパス, BitmapProperties1? bitmapProperties1 = null )
         {
-            var decoder = (BitmapDecoder) null!;
-            var sourceFrame = (BitmapFrameDecode) null!;
-            var converter = (FormatConverter) null!;
+            var decoder = (BitmapDecoder?) null;
+            var sourceFrame = (BitmapFrameDecode?) null;
+            var converter = (FormatConverter?) null;
 
             try
             {
@@ -176,11 +176,11 @@ namespace FDK
         /// <param name="転送元矩形">画像の転送元範囲。</param>
         /// <param name="描画先矩形を整数境界に合わせる">true なら、描画先の転送先矩形の座標を float から int に丸める。</param>
         /// <param name="変換行列3D">射影行列。</param>
-        /// <param name="レイヤーパラメータ></param>
+        /// <param name="レイヤーパラメータ>レイヤーを使う場合は指定する。</param>
         /// <remarks>
         ///		Direct2D の転送先矩形は float で指定できるが、非整数の値（＝物理ピクセル単位じゃない座標）を渡すと、表示画像がプラスマイナス1pxの範囲で乱れる。
         ///		これにより、数px程度の大きさの画像を移動させるとチカチカする原因になる。
-        ///		それが困る場合には、<paramref name="描画先矩形を整数境界に合わせる"/> に true を指定すること。
+        ///		それが困る場合には、「描画先矩形を整数境界に合わせる」に true を指定すること。
         ///		ただし、これを true にした場合、タイルのように並べて描画した場合に1pxずれる場合がある。この場合は false にすること。
         /// </remarks>
         public virtual void 描画する( DeviceContext dc, float 左位置, float 上位置, float 不透明度0to1 = 1.0f, float X方向拡大率 = 1.0f, float Y方向拡大率 = 1.0f, RectangleF? 転送元矩形 = null, bool 描画先矩形を整数境界に合わせる = false, Matrix? 変換行列3D = null, LayerParameters1? レイヤーパラメータ = null )
@@ -191,15 +191,15 @@ namespace FDK
             D2DBatch.Draw( dc, () => {
 
                 dc.PrimitiveBlend = ( this.加算合成 ) ? PrimitiveBlend.Add : PrimitiveBlend.SourceOver;
+                //dc.Transform = ...    → 呼び出し元で設定しておくこと。（どのdcへ描画するかで値が変わるため）
 
+                // 転送元・転送先矩形を算出する。
                 転送元矩形 ??= new RectangleF( 0f, 0f, this.サイズ.Width, this.サイズ.Height );
-
                 var 転送先矩形 = new RectangleF(
                     x: 左位置,
                     y: 上位置,
                     width: 転送元矩形.Value.Width * X方向拡大率,
                     height: 転送元矩形.Value.Height * Y方向拡大率 );
-
                 if( 描画先矩形を整数境界に合わせる )
                 {
                     転送先矩形.X = (float) Math.Round( 転送先矩形.X );
@@ -208,9 +208,8 @@ namespace FDK
                     転送先矩形.Height = (float) Math.Round( 転送先矩形.Height );
                 }
 
-
                 // レイヤーパラメータの指定があれば、描画前に Layer を作成して、Push する。
-                var layer = (Layer) null!;
+                var layer = (Layer?) null;
                 if( レイヤーパラメータ.HasValue )
                 {
                     layer = new Layer( dc );    // 因果関係は分からないが、同じBOX内の曲が増えるとこの行の負荷が増大するので、必要時にしか生成しないこと。
@@ -228,8 +227,10 @@ namespace FDK
 
                 // レイヤーパラメータの指定があれば、描画後に Pop する。
                 if( null != layer )
+                {
                     dc.PopLayer();
-                layer?.Dispose();
+                    layer.Dispose();
+                }
 
             } );
         }
@@ -244,18 +245,15 @@ namespace FDK
         public virtual void 描画する( DeviceContext dc, Matrix3x2? 変換行列2D = null, Matrix? 変換行列3D = null, float 不透明度0to1 = 1.0f, RectangleF? 転送元矩形 = null, LayerParameters1? レイヤーパラメータ = null )
         {
             if( this.Bitmap is null )
-                return;
+                return; // 画像の生成に失敗していたら何も描画しない。
 
             D2DBatch.Draw( dc, () => {
 
-                var pretrans = dc.Transform;
-
-                dc.Transform = ( 変換行列2D ?? Matrix3x2.Identity ) * pretrans;
                 dc.PrimitiveBlend = ( this.加算合成 ) ? PrimitiveBlend.Add : PrimitiveBlend.SourceOver;
+                dc.Transform = ( 変換行列2D ?? Matrix3x2.Identity ) * dc.Transform;
 
                 // レイヤーパラメータの指定があれば、描画前に Layer を作成して、Push する。
-                
-                var layer = (Layer) null!;
+                var layer = (Layer?) null;
                 if( レイヤーパラメータ.HasValue )
                 {
                     layer = new Layer( dc );    // 因果関係は分からないが、同じBOX内の曲が増えるとこの行の負荷が増大するので、必要時にしか生成しないこと。
@@ -271,10 +269,13 @@ namespace FDK
                     sourceRectangle: 転送元矩形,
                     erspectiveTransformRef: 変換行列3D ); // null 指定可。
 
-                // レイヤーパラメータの指定があれば、描画後に Pop する。
-                if( null != レイヤーパラメータ )
+                // layer を作成したなら、描画後に Pop する。
+                if( null != layer )
+                {
                     dc.PopLayer();
-                layer?.Dispose();
+                    layer.Dispose();
+                }
+
             } );
         }
     }

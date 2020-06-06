@@ -66,7 +66,7 @@ namespace DTXMania2
                 Matrix.Scaling( 拡大率 ) *
                 Matrix.Translation( 左上位置dpx );
 
-            this._矢印画像.描画する( 変換行列, 転送元矩形: 矩形 );
+            this._矢印画像.進行描画する( 変換行列, 転送元矩形: 矩形 );
         }
 
 

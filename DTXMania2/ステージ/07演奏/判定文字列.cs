@@ -276,7 +276,7 @@ namespace DTXMania2.演奏
                                         Global.画面左上dpx.Y - ( status.表示中央位置dpx.Y ),
                                         0f );
 
-                                this._判定文字列画像.描画する( 変換行列, 転送元矩形: 転送元矩形 );
+                                this._判定文字列画像.進行描画する( 変換行列, 転送元矩形: 転送元矩形 );
                             }
                             //----------------
                             #endregion
@@ -287,7 +287,7 @@ namespace DTXMania2.演奏
                             {
                                 var 転送元矩形 = this._判定文字列の矩形リスト[ status.判定種別.ToString() ]!;
 
-                                this._判定文字列画像.描画する(
+                                this._判定文字列画像.進行描画する(
                                     status.表示中央位置dpx.X - 転送元矩形.Value.Width / 2f,
                                     status.表示中央位置dpx.Y - 転送元矩形.Value.Height / 2f + (float) status.文字列影の相対Y位置dpx.Value,
                                     (float) status.文字列影の不透明度.Value,
@@ -305,7 +305,7 @@ namespace DTXMania2.演奏
                                 var sx = (float) status.文字列本体のX方向拡大率.Value;
                                 var sy = (float) status.文字列本体のY方向拡大率.Value;
 
-                                this._判定文字列画像.描画する(
+                                this._判定文字列画像.進行描画する(
                                     status.表示中央位置dpx.X - sx * 転送元矩形.Value.Width / 2f,
                                     status.表示中央位置dpx.Y - sy * 転送元矩形.Value.Height / 2f + (float) status.文字列本体の相対Y位置dpx.Value,
                                     X方向拡大率: sx,
@@ -351,7 +351,7 @@ namespace DTXMania2.演奏
                                     for( int i = 0; i < 文字数; i++ )
                                     {
                                         var 文字矩形 = this._FastSlow数字の矩形リスト[ 文字列[ i ] + 接尾詞 ]!;
-                                        this._FastSlow数字画像.描画する( x, y, X方向拡大率: 拡大率, Y方向拡大率: 拡大率, 転送元矩形: 文字矩形 );
+                                        this._FastSlow数字画像.進行描画する( x, y, X方向拡大率: 拡大率, Y方向拡大率: 拡大率, 転送元矩形: 文字矩形 );
                                         x += 文字矩形.Value.Width * 拡大率;
                                     }
                                 }

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.IO;
 using System.IO.Pipes;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using FDK;
 
@@ -41,10 +42,11 @@ namespace DTXMania2
                 //----------------
                 #endregion
 
-                #region " AppData/DTXMania2 フォルダがなければ作成する。"
+                #region " AppData に DTXMania2 フォルダがなければ作成する。"
                 //----------------
-                //var AppDataフォルダ名 = Application.UserAppDataPath;  // %USERPROFILE%/AppData/<会社名>/DTXMania2/
-                var AppDataフォルダ名 = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create ), "DTXMania2" ); // %USERPROFILE%/AppData/DTXMania2/
+                var AppDataフォルダ名 = Path.Combine( 
+                    Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.Create ),
+                    "DTXMania2" ); // %USERPROFILE%/AppData/local/DTXMania2/
 
                 if( !( Directory.Exists( AppDataフォルダ名 ) ) )
                     Directory.CreateDirectory( AppDataフォルダ名 );
@@ -80,10 +82,11 @@ namespace DTXMania2
                         // パイプラインサーバへの接続を試みる。
                         pipeToViewer.Connect( 100 );
 
-                        // (A) サービスが立ち上がっている
+                        // (A) サービスが立ち上がっている場合 → ビュアーモードかどうかでさらに分岐
+
                         if( Global.Options.ビュアーモードである )
                         {
-                            #region " (A-a) ビュアーモードである → オプション内容をサーバへ送信して正常終了。"
+                            #region " (A-a) ビュアーモードである → オプション内容をパイプラインサーバへ送信して正常終了。"
                             //----------------
                             var ss = new StreamStringForNamedPipe( pipeToViewer );
                             var yamlText = Global.Options.ToYaml(); // YAML化
@@ -109,7 +112,7 @@ namespace DTXMania2
                     }
                     catch( TimeoutException )
                     {
-                        // (B) サービスが立ち上がっていない → そのまま起動
+                        // (B) サービスが立ち上がっていない場合 → そのまま起動
                     }
                 }
                 //----------------
@@ -135,9 +138,8 @@ namespace DTXMania2
                         var os_build = subKey.GetValue( "CurrentBuild" ).ToString() ?? "Unknown Build";
                         var os_bit = Environment.Is64BitOperatingSystem ? "64bit" : "32bit";
                         var process_bit = Environment.Is64BitProcess ? "64bit" : "32bit";
-                        var dotnetcore_version = Environment.Version;
 
-                        Log.WriteLine( $"{os_product} {os_release}.{os_build} ({os_bit} OS, {process_bit} process, .NET Core {dotnetcore_version})" );
+                        Log.WriteLine( $"{os_product} {os_release}.{os_build} ({os_bit} OS, {process_bit} process)" );
                     }
                 }
                 //----------------
@@ -164,6 +166,12 @@ namespace DTXMania2
                 //----------------
                 #endregion
 
+                #region " .NET ランタイム情報 "
+                //----------------
+                Log.WriteLine( $".NET version {Environment.Version}" );
+                //----------------
+                #endregion
+
                 Log.WriteLine( "" );
                 //----------------
                 #endregion
@@ -184,24 +192,41 @@ namespace DTXMania2
                 //----------------
                 #endregion
 
+                #region " スレッドプールのオンラインスレッド数を変更する。"
+                //----------------
+                {
+                    const int 希望オンラインスレッド数 = 32;
 
-                // アプリ起動
+                    // 既定の数はCPUコア数。
+                    // .NET の仕様により、Taskの同時利用数が最小値を超えると、それ以降の Task.Run での起動には最大2回/秒もの制限がかかる。
+                    // https://docs.microsoft.com/ja-jp/dotnet/api/system.threading.threadpool.getminthreads
+                    ThreadPool.GetMaxThreads( out int workMax, out int compMax );
+                    ThreadPool.GetMinThreads( out int workMin, out int compMin );
+
+                    ThreadPool.SetMinThreads(
+                        Math.Clamp( 希望オンラインスレッド数, min: workMin, max: workMax ),     // workMin ～ workMax の範囲を越えない
+                        Math.Clamp( 希望オンラインスレッド数, min: compMin, max: compMax ) );   // compMin ～ compMax の範囲を越えない
+                }
+                //----------------
+                #endregion
+
+
+                // メインループ
 
                 Application.SetHighDpiMode( HighDpiMode.SystemAware );
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault( false );
-                
-                AppForm appForm;
+                App appForm;
                 do
                 {
-                    appForm = new AppForm();
+                    appForm = new App();
 
                     // アプリのメインループを実行する。
                     // アプリが終了するまでこのメソッドからは戻ってこない。
                     Application.Run( appForm );
-                
+
                     appForm.Dispose();
-                
+
                 } while( appForm.再起動が必要 );  // 戻ってきた際、再起動フラグが立っていたらここでアプリを再起動する。
 
                 #region " 備考: 再起動について "
@@ -209,6 +234,7 @@ namespace DTXMania2
                 // .NET Core 3 で Application.Restart() すると、「起動したプロセスじゃないので却下」と言われる。
                 // おそらく起動プロセスが dotnet であるため？
                 // 　
+                // ↓没コード
                 // if( appForm.再起動が必要 )
                 // {
                 //     // 注意：Visual Sutdio のデバッグ＞例外設定で Common Language Runtime Exceptions にチェックを入れていると、
@@ -229,13 +255,8 @@ namespace DTXMania2
             }
 #if !DEBUG
             // Release 時には、未処理の例外をキャッチしたらダイアログを表示する。
-            catch( Exception e )
+            catch( Exception )
             {
-                MessageBox.Show(
-                    $"未処理の例外が発生しました。\n\n" +
-                    $"{e.Message}\n" +
-                    $"{e.StackTrace}",
-                    "Exception" );
             }
 #else
             // Debug 時には、未処理の例外が発出されても無視。（デバッガでキャッチすることを想定。）

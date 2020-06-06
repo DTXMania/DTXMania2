@@ -57,12 +57,10 @@ namespace DTXMania2
         public void 描画する( DeviceContext dc, string 追加文字列 = "" )
         {
             double FPSの周期ms = ( 0 < this._FPS.現在のFPS ) ? ( 1000.0 / this._FPS.現在のFPS ) : -1.0;
-
             this._文字列画像.表示文字列 =
                 $"VPS: {this._FPS.現在のVPS.ToString()} / FPS: {this._FPS.現在のFPS.ToString()} (" + FPSの周期ms.ToString( "0.000" ) + "ms)" + Environment.NewLine +
                 $"GameMode: {ONOFF[ GameMode.ゲームモードである ]}" + Environment.NewLine +
                 追加文字列;
-
             this._文字列画像.描画する( dc, 0f, 0f );
         }
 

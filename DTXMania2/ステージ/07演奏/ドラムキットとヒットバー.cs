@@ -247,7 +247,7 @@ namespace DTXMania2.演奏
             var 中心位置 = this._パーツ画像の中心位置[ パーツ名 ];
             var srcRect = this._パーツ画像の矩形リスト[ パーツ名 ];
 
-            this._ドラムキット画像.描画する(
+            this._ドラムキット画像.進行描画する(
                 中心位置.X - srcRect.Width / 2 + X方向移動量,
                 中心位置.Y - srcRect.Height / 2 + Y方向移動量,
                 転送元矩形: srcRect );

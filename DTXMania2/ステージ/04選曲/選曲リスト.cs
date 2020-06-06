@@ -486,7 +486,7 @@ namespace DTXMania2.選曲
                         Matrix.Scaling( 0.9f ) *                            // ちょっと小さく
                         Matrix.Translation( サムネイル表示中央dpx - 4f );   // ちょっと下へ
 
-                    ノード画像.描画する( 変換行列 );
+                    ノード画像.進行描画する( 変換行列 );
                     //----------------
                     #endregion
                 }
@@ -505,7 +505,7 @@ namespace DTXMania2.選曲
                             0f ) *
                         Matrix.Translation( サムネイル表示中央dpx );
 
-                    ノード画像.描画する( 変換行列 );
+                    ノード画像.進行描画する( 変換行列 );
                     //----------------
                     #endregion
                 }
@@ -527,7 +527,7 @@ namespace DTXMania2.選曲
 
                         #region " 成績アイコン "
                         //----------------
-                        this._成績アイコン.描画する(
+                        this._成績アイコン.進行描画する(
                             ノード左上dpx.X + 6f,
                             ノード左上dpx.Y + 57f,
                             転送元矩形: this._成績アイコンの矩形リスト[ 最高ランク.ToString()! ] );
@@ -536,13 +536,13 @@ namespace DTXMania2.選曲
 
                         #region " 達成率ゲージ "
                         //----------------
-                        this._達成率ゲージアイコン.描画する(
+                        this._達成率ゲージアイコン.進行描画する(
                             ノード左上dpx.X + 160f,
                             ノード左上dpx.Y - 27f,
                             X方向拡大率: 0.4f,
                             Y方向拡大率: 0.4f );
 
-                        this._達成率数字画像.描画する(
+                        this._達成率数字画像.進行描画する(
                             ノード左上dpx.X + 204f,
                             ノード左上dpx.Y + 4,
                             score.最高記録.Achievement.ToString( "0.00" ).PadLeft( 6 ) + '%',
@@ -611,7 +611,7 @@ namespace DTXMania2.選曲
 
                         if( 0 < 評価 )
                         {
-                            this._評価アイコン.描画する(
+                            this._評価アイコン.進行描画する(
                                 ノード左上dpx.X + 6f,
                                 ノード左上dpx.Y + 0f,
                                 転送元矩形: this._評価アイコンの矩形リスト[ 評価.ToString() ] );

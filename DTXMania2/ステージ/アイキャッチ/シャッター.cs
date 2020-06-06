@@ -319,7 +319,7 @@ namespace DTXMania2
                 if( this._ロゴボード.Status != StoryboardStatus.Ready )
                     すべて完了 = false;
 
-                this._ロゴ.描画する(
+                this._ロゴ.進行描画する(
                     this._ロゴ表示領域.Left,
                     this._ロゴ表示領域.Top,
                     不透明度0to1: (float) this._ロゴ不透明度.Value,

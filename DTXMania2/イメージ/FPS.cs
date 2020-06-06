@@ -31,16 +31,16 @@ namespace DTXMania2
 
 
 
-        // 描画
+        // 進行と描画
 
 
-        public void 描画する( DeviceContext dc, float x = 0f, float y = 0f )
+        public void 進行描画する( DeviceContext dc, float x = 0f, float y = 0f )
         {
             int fps = this.現在のFPS;
             int vps = this.現在のVPS;
             double FPSの周期ms = ( 0 < fps ) ? ( 1000.0 / fps ) : -1.0;
 
-            this._FPSパラメータ.表示文字列 = $"VPS: {vps.ToString()} / FPS: {fps.ToString()} (" + FPSの周期ms.ToString( "0.000" ) + "ms)";
+            this._FPSパラメータ.表示文字列 = $"VPS: {vps} / FPS: {fps} (" + FPSの周期ms.ToString( "0.000" ) + "ms)";
             this._FPSパラメータ.描画する( dc, x, y );
         }
 
@@ -49,6 +49,6 @@ namespace DTXMania2
         // ローカル
 
 
-        private 文字列画像D2D _FPSパラメータ;
+        private readonly 文字列画像D2D _FPSパラメータ;
     }
 }

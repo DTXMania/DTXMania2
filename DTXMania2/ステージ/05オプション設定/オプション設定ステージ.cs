@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 using FDK;
+using SharpDX.Direct2D1;
 
 namespace DTXMania2.オプション設定
 {
@@ -45,11 +46,9 @@ namespace DTXMania2.オプション設定
                 フェードアウトフェーズへ移行する = () => { this.現在のフェーズ = フェーズ.フェードアウト; },
             };
             this._再起動が必要 = false;
-            Global.App.システムサウンド.再生する( システムサウンド種別.オプション設定ステージ_開始音 );
-            this._舞台画像.ぼかしと縮小を適用する( 0.5 );
 
+            // 最初のフェーズへ。
             this.現在のフェーズ = フェーズ.フェードイン;
-            this._フェーズ完了 = false;
         }
 
         public void Dispose()
@@ -66,8 +65,12 @@ namespace DTXMania2.オプション設定
         // 進行と描画
 
 
-        public void 進行する()
+        public void 進行描画する()
         {
+            var dc = Global.既定のD2D1DeviceContext;
+            dc.Transform = Global.拡大行列DPXtoPX;
+
+            this._システム情報.VPSをカウントする();
             this._システム情報.FPSをカウントしプロパティを更新する();
 
             var 入力 = Global.App.ドラム入力;
@@ -77,16 +80,20 @@ namespace DTXMania2.オプション設定
             {
                 case フェーズ.フェードイン:
                 {
-                    #region " フェードイン描画が完了したら表示フェーズへ。"
+                    #region " 背景画面を描画し、フェードインを開始して表示フェーズへ。"
                     //----------------
-                    if( this._フェーズ完了 )
-                    {
-                        this.現在のフェーズ = フェーズ.表示;
-                        this._フェーズ完了 = false;
-                    }
-                    break;
+                    Global.App.システムサウンド.再生する( システムサウンド種別.オプション設定ステージ_開始音 );
+
+                    this._舞台画像.ぼかしと縮小を適用する( 0.5 );
+                    this._パネルリスト.フェードインを開始する();
+                    this._背景画面を描画する( dc );
+
+                    // 表示フェーズへ。
+                    this.現在のフェーズ = フェーズ.表示;
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.表示:
                 {
@@ -94,8 +101,8 @@ namespace DTXMania2.オプション設定
                     //----------------
                     if( 入力.キャンセルキーが入力された() )
                     {
-                        // キャンセル
-
+                        #region " キャンセル "
+                        //----------------
                         if( this._パネルリスト.現在のパネルフォルダ.親パネル is null )
                         {
                             #region " (A) 親ツリーがない → ステージをフェードアウトフェーズへ。"
@@ -119,6 +126,8 @@ namespace DTXMania2.オプション設定
                             //----------------
                             #endregion
                         }
+                        //----------------
+                        #endregion
                     }
                     else if( 入力.上移動キーが入力された() )
                     {
@@ -165,149 +174,30 @@ namespace DTXMania2.オプション設定
                         //----------------
                         #endregion
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    #region " 背景画面を描画する。"
+                    //----------------
+                    this._背景画面を描画する( dc );
+                    //----------------
+                    #endregion
+
+                    break;
                 }
                 case フェーズ.入力割り当て:
                 {
-                    #region " 入力割り当てが完了したら表示フェーズへ。"
+                    #region " 背景画面を描画する。"
                     //----------------
-                    if( this._フェーズ完了 )
+                    this._背景画面を描画する( dc );
+                    //----------------
+                    #endregion
+
+                    #region " 入力割り当てダイアログを表示する。"
+                    //----------------
                     {
-                        this.現在のフェーズ = フェーズ.表示;
-                        this._フェーズ完了 = false;
-                    }
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.曲読み込みフォルダ割り当て:
-                {
-                    #region " 割り当てが完了したら次のフェーズへ。"
-                    //----------------
-                    if( this._フェーズ完了 )
-                    {
-                        this.現在のフェーズ = ( this._再起動が必要 ) ? フェーズ.再起動 : フェーズ.表示;
-                        this._フェーズ完了 = false;
-                    }
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.再起動:
-                {
-                    #region " 再起動の仕込みが完了すれば次のフェーズへ。 "
-                    //----------------
-                    if( this._フェーズ完了 )
-                    {
-                        this.現在のフェーズ = フェーズ.再起動待ち;
-                        this._フェーズ完了 = false;
-                    }
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.再起動待ち:
-                {
-                    #region " 遷移終了。Appによる再起動待ち。"
-                    //----------------
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.フェードアウト:
-                {
-                    #region " フェードアウト描画が完了したら次のフェーズへ。"
-                    //----------------
-                    if( this._フェーズ完了 )
-                    {
-                        this.現在のフェーズ = フェーズ.完了;
-                        this._フェーズ完了 = false;
-                    }
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.完了:
-                {
-                    #region " 遷移終了。Appによるステージ遷移を待つ。"
-                    //----------------
-                    break;
-                    //----------------
-                    #endregion
-                }
-            }
-
-            #region " 画面モードが外部（F11キーなど）で変更されている場合には、それを「画面モード」パネルにも反映する。"
-            //----------------
-            {
-                var 画面モードパネル = this._パネルリスト.パネルツリーのルートノード.子パネルリスト.Find( ( p ) => ( p.パネル名 == "画面モード" ) ) as パネル_文字列リスト;
-
-                if( 画面モードパネル is null )  // 念のため
-                    throw new Exception( "「画面モード」パネルが存在していません。" );
-
-                int システム設定上の現在の画面モード = ( Global.App.システム設定.全画面モードである ) ? 1 : 0; // 0:ウィンドウ, 1:全画面
-
-                if( 画面モードパネル.現在選択されている選択肢の番号 != システム設定上の現在の画面モード )
-                    画面モードパネル.現在選択されている選択肢の番号 = システム設定上の現在の画面モード;
-            }
-            //----------------
-            #endregion
-        }
-
-        public void 描画する()
-        {
-            this._システム情報.VPSをカウントする();
-
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
-            switch( this.現在のフェーズ )
-            {
-                case フェーズ.フェードイン:
-                {
-                    #region " 背景画面＆フェードイン "
-                    //----------------
-                    this._舞台画像.進行描画する( dc );
-                    this._パネルリスト.進行描画する( dc, 613f, 0f );
-                    this._システム情報.描画する( dc );
-
-                    if( !this._フェーズ完了 )
-                    {
-                        this._パネルリスト.フェードインを開始する();
-                        this._フェーズ完了 = true;    // 完了
-                    }
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.表示:
-                case フェーズ.再起動待ち:
-                {
-                    #region " 背景画面 "
-                    //----------------
-                    this._舞台画像.進行描画する( dc );
-                    this._パネルリスト.進行描画する( dc, 613f, 0f );
-                    this._システム情報.描画する( dc );
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.入力割り当て:
-                {
-                    #region " 入力割り当てダイアログ "
-                    //----------------
-                    this._舞台画像.進行描画する( dc );
-                    this._パネルリスト.進行描画する( dc, 613f, 0f );
-                    this._システム情報.描画する( dc );
-
-                    if( !this._フェーズ完了 )
-                    {
-                        var 完了通知 = new ManualResetEvent( false );
-
                         // 入力割り当てダイアログを表示。
-                        Global.AppForm.BeginInvoke( new Action( () => {
+                        var asycnResult = Global.App.BeginInvoke( new Action( () => {
 
                             using var dlg = new 入力割り当てダイアログ();
 
@@ -315,35 +205,35 @@ namespace DTXMania2.オプション設定
 
                             dlg.表示する();
 
-                            if( Global.AppForm.ScreenMode.IsFullscreenMode )
+                            if( Global.App.ScreenMode.IsFullscreenMode )
                                 Cursor.Hide();  // 全画面ならマウスカーソルを消す。
-
-                            完了通知.Set();
 
                         } ) );
 
-                        完了通知.WaitOne();
+                        // 入力割り当てダイアログが閉じられるのを待つ。
+                        asycnResult.AsyncWaitHandle.WaitOne();
 
+                        // 閉じられたら表示フェーズへ。
                         this._パネルリスト.フェードインを開始する();
-                        this._フェーズ完了 = true;    // 完了
+                        this.現在のフェーズ = フェーズ.表示;
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.曲読み込みフォルダ割り当て:
                 {
-                    #region " 曲読み込みフォルダ割り当てダイアログ "
+                    #region " 背景画面を描画する。"
                     //----------------
-                    this._舞台画像.進行描画する( dc );
-                    this._パネルリスト.進行描画する( dc, 613f, 0f );
-                    this._システム情報.描画する( dc );
-
-                    if( !this._フェーズ完了 )
+                    this._背景画面を描画する( dc );
+                    //----------------
+                    #endregion
+                    
+                    #region " 曲読み込みフォルダ割り当てダイアログを表示する。"
+                    //----------------
                     {
-                        var 完了通知 = new ManualResetEvent( false );
-
-                        Global.AppForm.BeginInvoke( new Action( () => {
+                        var asyncResult = Global.App.BeginInvoke( new Action( () => {
 
                             using var dlg = new 曲読み込みフォルダ割り当てダイアログ( Global.App.システム設定.曲検索フォルダ );
 
@@ -365,64 +255,98 @@ namespace DTXMania2.オプション設定
                                 this._再起動が必要 = false;
                             }
 
-                            if( Global.AppForm.ScreenMode.IsFullscreenMode )
+                            if( Global.App.ScreenMode.IsFullscreenMode )
                                 Cursor.Hide();  // 全画面ならマウスカーソルを消す。
-
-                            完了通知.Set();
 
                         } ) );
 
-                        完了通知.WaitOne();
+                        // 曲読み込みフォルダ割り当てダイアログが閉じられるのを待つ。
+                        asyncResult.AsyncWaitHandle.WaitOne();
 
-                        this._フェーズ完了 = true;    // 完了
+                        // 閉じられたら次のフェーズへ。
+                        this.現在のフェーズ = ( this._再起動が必要 ) ? フェーズ.再起動 : フェーズ.表示;
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.再起動:
                 {
-                    #region " UIスレッドで再起動を実行 "
+                    #region " 背景画面を描画する。"
                     //----------------
-                    this._舞台画像.進行描画する( dc );
-                    this._パネルリスト.進行描画する( dc, 613f, 0f );
-                    this._システム情報.描画する( dc );
-
-                    if( !this._フェーズ完了 )
-                    {
-                        Global.AppForm.BeginInvoke( new Action( () => {
-                            Global.AppForm.再起動する();     // UIスレッドで実行
-                        } ) );
-                        this._フェーズ完了 = true;    // 完了
-                    }
-                    break;
+                    this._背景画面を描画する( dc );
                     //----------------
                     #endregion
+
+                    #region " UIスレッドで再起動を実行する。"
+                    //----------------
+                    Global.App.BeginInvoke( new Action( () => {
+                        Global.App.再起動する();     // UIスレッドで実行
+                    } ) );
+
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.再起動待ち;
+                    //----------------
+                    #endregion
+                    
+                    break;
+                }
+                case フェーズ.再起動待ち:
+                {
+                    #region " 背景画面を描画する。"
+                    //----------------
+                    this._背景画面を描画する( dc );
+                    //----------------
+                    #endregion
+
+                    break;
                 }
                 case フェーズ.フェードアウト:
                 {
-                    #region " 背景画面＆フェードアウト "
+                    #region " 背景画面＆フェードアウトを描画する。"
                     //----------------
                     this._舞台画像.進行描画する( dc );
                     this._パネルリスト.進行描画する( dc, 613f, 0f );
-                    
+
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
-                        this._フェーズ完了 = true;    // 完了
+                    {
+                        // フェードアウトが完了したら次のフェーズへ。
+                        this.現在のフェーズ = フェーズ.完了;
+                    }
 
                     this._システム情報.描画する( dc );
-                    break;
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.完了:
                 {
-                    #region " 最後の画面を維持。"
+                    #region " 遷移終了。Appによるステージ遷移を待つ。"
                     //----------------
-                    break;
                     //----------------
                     #endregion
+
+                    break;
                 }
             }
+
+            #region " 画面モードが外部（F11キーなど）で変更されている場合には、それを「画面モード」パネルにも反映する。"
+            //----------------
+            {
+                var 画面モードパネル = this._パネルリスト.パネルツリーのルートノード.子パネルリスト.Find( ( p ) => ( p.パネル名 == "画面モード" ) ) as パネル_文字列リスト;
+
+                if( 画面モードパネル is null )  // 念のため
+                    throw new Exception( "「画面モード」パネルが存在していません。" );
+
+                int システム設定上の現在の画面モード = ( Global.App.システム設定.全画面モードである ) ? 1 : 0; // 0:ウィンドウ, 1:全画面
+
+                if( 画面モードパネル.現在選択されている選択肢の番号 != システム設定上の現在の画面モード )
+                    画面モードパネル.現在選択されている選択肢の番号 = システム設定上の現在の画面モード;
+            }
+            //----------------
+            #endregion
         }
 
 
@@ -436,8 +360,13 @@ namespace DTXMania2.オプション設定
 
         private readonly パネルリスト _パネルリスト;
 
-        private bool _フェーズ完了;
-
         private bool _再起動が必要;
+
+        private void _背景画面を描画する( DeviceContext dc )
+        {
+            this._舞台画像.進行描画する( dc );
+            this._パネルリスト.進行描画する( dc, 613f, 0f );
+            this._システム情報.描画する( dc );
+        }
     }
 }

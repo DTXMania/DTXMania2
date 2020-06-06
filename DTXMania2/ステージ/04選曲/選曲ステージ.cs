@@ -8,6 +8,7 @@ using FDK;
 using SSTFormat.v004;
 using DTXMania2.曲;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace DTXMania2.選曲
 {
@@ -98,30 +99,43 @@ namespace DTXMania2.選曲
         // 進行と描画
 
 
-        public void 進行する()
+        public void 進行描画する()
         {
             var 入力 = Global.App.ドラム入力;
             var 曲ツリー = Global.App.曲ツリーリスト.SelectedItem!;
             var フォーカスリスト = 曲ツリー.フォーカスリスト;
             var フォーカスノード = 曲ツリー.フォーカスノード!;
 
-            this._システム情報.FPSをカウントしプロパティを更新する();
+            var dc = Global.既定のD2D1DeviceContext;
+            dc.Transform = Global.拡大行列DPXtoPX;
+
             入力.すべての入力デバイスをポーリングする();
+
+            this._システム情報.VPSをカウントする();
+            this._システム情報.FPSをカウントしプロパティを更新する();
 
             switch( this.現在のフェーズ )
             {
                 case フェーズ.フェードイン:
                 {
-                    #region " フェードイン描画が完了したら次のフェーズへ。"
+                    #region " 背景画面＆フェードインを描画する。"
                     //----------------
-                    if( this._フェーズ完了 )
+                    this._背景画面を描画する( dc );
+
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
                     {
+                        // フェードイン描画が完了したら次のフェーズへ。
                         this.現在のフェーズ = フェーズ.表示;
-                        this._フェーズ完了 = false;
+
+                        if( !this._フェーズ完了 )             // まだ再開されてなければ、
+                            Global.App.現行化.再開する();     // 曲ツリーの現行化タスクが一時停止していれば、再開する。
                     }
-                    break;
+
+                    this._システム情報.描画する( dc );
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.表示:
                 {
@@ -129,8 +143,8 @@ namespace DTXMania2.選曲
                     //----------------
                     if( 入力.確定キーが入力された() && 1 < フォーカスリスト.Count )   // ノードが2つ以上ある（1つはランダムセレクト）
                     {
-                        // 確定
-
+                        #region " 確定 "
+                        //----------------
                         if( フォーカスノード is BoxNode )
                         {
                             #region " BOX の場合 → BOX に入る。"
@@ -162,7 +176,7 @@ namespace DTXMania2.選曲
                                 {
                                     this._選曲リスト.指定したノードを優先して現行化する( sn.Value.曲 );
                                     while( !sn.Value.曲.現行化済み )
-                                        Task.Delay( 100 );
+                                        Thread.Sleep( 100 );
                                 }
 
                                 // 曲ツリーの現行化タスクが動いていれば、一時停止する。
@@ -190,7 +204,7 @@ namespace DTXMania2.選曲
                             {
                                 this._選曲リスト.フォーカスノードを優先して現行化する();
                                 while( !snode.現行化済み )
-                                    Task.Delay( 100 );
+                                    Thread.Sleep( 100 );
                             }
 
                             // 曲ツリーの現行化タスクが動いていれば、一時停止する。
@@ -209,11 +223,13 @@ namespace DTXMania2.選曲
                             //----------------
                             #endregion
                         }
+                        //----------------
+                        #endregion
                     }
                     else if( 入力.キャンセルキーが入力された() )
                     {
-                        // キャンセル
-
+                        #region " キャンセル "
+                        //----------------
                         this._選曲リスト.プレビュー音声を停止する();
                         Global.App.システムサウンド.再生する( システムサウンド種別.取消音 );
 
@@ -233,6 +249,8 @@ namespace DTXMania2.選曲
                             //----------------
                             #endregion
                         }
+                        //----------------
+                        #endregion
                     }
                     else if( 入力.上移動キーが入力された() )
                     {
@@ -297,43 +315,61 @@ namespace DTXMania2.選曲
                         //----------------
                         #endregion
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    #region " 背景画面を描画する。"
+                    //----------------
+                    this._背景画面を描画する( dc );
+                    this._システム情報.描画する( dc );
+                    //----------------
+                    #endregion
+
+                    break;
                 }
                 case フェーズ.QuickConfig:
                 {
-                    #region " QuickConfig画面を進行する。完了したら次のフェーズへ。"
+                    #region " 背景画面＆QuickConfigを描画する。"
                     //----------------
-                    this._QuickConfig画面.進行する();
+                    this._背景画面を描画する( dc );
+                    this._システム情報.描画する( dc );
+                    this._QuickConfig画面.進行描画する( 568f, 68f );
 
                     if( this._QuickConfig画面.現在のフェーズ == QuickConfig.QuickConfigパネル.フェーズ.完了_戻る )
                     {
+                        // 戻る → 表示フェーズへ
                         this._QuickConfig画面.Dispose();
                         this.現在のフェーズ = フェーズ.表示;
                     }
                     else if( this._QuickConfig画面.現在のフェーズ == QuickConfig.QuickConfigパネル.フェーズ.完了_オプション設定 )
                     {
+                        // オプション設定 → 確定_設定フェーズへ。
                         this._選曲リスト.プレビュー音声を停止する();
                         this._QuickConfig画面.Dispose();
                         this.現在のフェーズ = フェーズ.確定_設定;
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.フェードアウト:
                 {
-                    #region " フェードアウト描画が完了したら次のフェーズへ。"
+                    #region " 背景画面＆フェードアウトを描画する。"
                     //----------------
-                    if( this._フェーズ完了 )
+                    this._背景画面を描画する( dc );
+
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
                     {
-                        this.現在のフェーズ = this._フェートアウト後のフェーズ; // 描画側で設定済み
-                        this._フェーズ完了 = false;
+                        // フェードアウト描画が完了したら次のフェーズへ。
+                        this.現在のフェーズ = this._フェートアウト後のフェーズ; // フェードアウト開始時に設定済み
                     }
-                    break;
+
+                    this._システム情報.描画する( dc );
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.確定_選曲:
                 case フェーズ.確定_設定:
@@ -341,85 +377,10 @@ namespace DTXMania2.選曲
                 {
                     #region " 遷移終了。Appによるステージ遷移を待つ。"
                     //----------------
-                    break;
                     //----------------
                     #endregion
-                }
-            }
-        }
 
-        public void 描画する()
-        {
-            this._システム情報.VPSをカウントする();
-
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
-            switch( this.現在のフェーズ )
-            {
-                case フェーズ.フェードイン:
-                {
-                    #region " 背景画面＆フェードイン "
-                    //----------------
-                    this._背景画面を描画する( dc );
-
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
-                    {
-                        if( !this._フェーズ完了 )             // まだ再開されてなければ、
-                            Global.App.現行化.再開する();     // 曲ツリーの現行化タスクが一時停止していれば、再開する。
-
-                        this._フェーズ完了 = true;            // 完了。
-                    }
-
-                    this._システム情報.描画する( dc );
                     break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.表示:
-                {
-                    #region " 背景画面 "
-                    //----------------
-                    this._背景画面を描画する( dc );
-                    this._システム情報.描画する( dc );
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.QuickConfig:
-                {
-                    #region " 背景画面＆QuickConfig "
-                    //----------------
-                    this._背景画面を描画する( dc );
-                    this._システム情報.描画する( dc );
-                    this._QuickConfig画面.描画する( 568f, 68f );
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.フェードアウト:
-                {
-                    #region " 背景画面＆フェードアウト "
-                    //----------------
-                    this._背景画面を描画する( dc );
-
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
-                        this._フェーズ完了 = true;    // 完了
-
-                    this._システム情報.描画する( dc );
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.確定_選曲:
-                case フェーズ.確定_設定:
-                case フェーズ.キャンセル:
-                {
-                    #region " 最後の画面を維持。"
-                    //----------------
-                    break;
-                    //----------------
-                    #endregion
                 }
             }
         }
@@ -507,7 +468,7 @@ namespace DTXMania2.選曲
 
                 this._舞台画像.進行描画する( dc );
                 this._表示方法選択パネル.進行描画する();
-                this._ステージタイマー.描画する( 1689f, 37f );
+                this._ステージタイマー.進行描画する( 1689f, 37f );
                 this._SongNotFound.描画する( dc, 1150f, 400f );
             }
             else
@@ -518,19 +479,20 @@ namespace DTXMania2.選曲
                 this._選曲リスト.進行描画する( dc );
                 this._その他パネルを描画する( dc );
                 this._表示方法選択パネル.進行描画する();
-                this._難易度と成績.描画する( dc, 曲ツリー.フォーカス難易度レベル, 曲ツリー.フォーカスノード! );
-                this._曲ステータスパネル.描画する( dc, 曲ツリー.フォーカスノード! );
+                this._難易度と成績.進行描画する( dc, 曲ツリー.フォーカス難易度レベル, 曲ツリー.フォーカスノード! );
+                this._曲ステータスパネル.進行描画する( dc, 曲ツリー.フォーカスノード! );
                 this._プレビュー画像を描画する( 曲ツリー.フォーカスノード! );
-                this._BPMパネル.描画する( dc, 曲ツリー.フォーカスノード! );
+                this._BPMパネル.進行描画する( dc, 曲ツリー.フォーカスノード! );
                 this._曲別スキルと達成率.進行描画する( dc, 曲ツリー.フォーカスノード! );
                 this._選択曲を囲む枠を描画する( dc );
                 this._選択曲枠ランナー.進行描画する();
                 this._導線を描画する( dc );
-                this._ステージタイマー.描画する( 1689f, 37f );
+                this._ステージタイマー.進行描画する( 1689f, 37f );
                 this._スクロールバーを描画する( dc, 曲ツリー.フォーカスリスト );
                 this._UpdatingSoglistパネル.進行描画する( 40f, 740f );
             }
         }
+        
         private void _選択曲を囲む枠を描画する( DeviceContext dc )
         {
             var 矩形 = new RectangleF( 1015f, 485f, 905f, 113f );
@@ -597,7 +559,7 @@ namespace DTXMania2.選曲
                     Global.画面左上dpx.Y - this._プレビュー画像表示位置dpx.Y - this._プレビュー画像表示サイズdpx.Y / 2f,
                     0f );
 
-            image.描画する( 変換行列 );
+            image.進行描画する( 変換行列 );
         }
 
 

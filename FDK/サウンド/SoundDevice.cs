@@ -75,6 +75,8 @@ namespace FDK
                     DataFlow.Render,    // 方向 ... 書き込み
                     Role.Console );     // 用途 ... ゲーム、システム通知音、音声命令
 
+                Log.Info( $"Device: {this._MMDevice.FriendlyName}" );
+
                 this._AudioClient = AudioClient.FromMMDevice( this._MMDevice );
                 //----------------
                 #endregion
@@ -84,7 +86,10 @@ namespace FDK
                 this.WaveFormat = this._適切なフォーマットを調べて返す( 希望フォーマット ) ??
                     throw new NotSupportedException( "サポート可能な WaveFormat が見つかりませんでした。" );
 
-                Log.Info( $"WaveFormat: {this.WaveFormat}" );
+                Log.Info( $"WaveFormat: Channels={this.WaveFormat.Channels}, "+
+                    $"SampleRate={this.WaveFormat.SampleRate}, " +
+                    $"BytesPerSecond={this.WaveFormat.BytesPerSecond}, BlockAlign={this.WaveFormat.BlockAlign}, "+
+                    $"BitsPerSample={this.WaveFormat.BitsPerSample}" );
                 //----------------
                 #endregion
 

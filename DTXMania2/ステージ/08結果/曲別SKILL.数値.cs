@@ -99,10 +99,10 @@ namespace DTXMania2.結果
                 float 左位置dpx = left + (float) this._左位置dpx.Value;
 
                 // 整数部を描画する（'.'含む）
-                this._数字画像.描画する( 左位置dpx, top, this._スキル値文字列_整数部, new Size2F( 1.0f, 1.2f ) );
+                this._数字画像.進行描画する( 左位置dpx, top, this._スキル値文字列_整数部, new Size2F( 1.0f, 1.2f ) );
 
                 // 小数部を描画する
-                this._数字画像.描画する( 左位置dpx + 180f, top + 17f, this._スキル値文字列_小数部, new Size2F( 1.0f, 1.0f ) );
+                this._数字画像.進行描画する( 左位置dpx + 180f, top + 17f, this._スキル値文字列_小数部, new Size2F( 1.0f, 1.0f ) );
             }
 
 

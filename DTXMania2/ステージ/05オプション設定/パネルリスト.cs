@@ -174,9 +174,9 @@ namespace DTXMania2.オプション設定
                             bool 全画面モードにする = ( 1 == ( (パネル_文字列リスト) panel ).現在選択されている選択肢の番号 );
 
                             if( 全画面モードにする )
-                                Global.AppForm.ScreenMode.ToFullscreenMode();
+                                Global.App.ScreenMode.ToFullscreenMode();
                             else
-                                Global.AppForm.ScreenMode.ToWindowMode();
+                                Global.App.ScreenMode.ToWindowMode();
 
                             systemConfig.全画面モードである = 全画面モードにする;
                         }

@@ -112,7 +112,7 @@ namespace DTXMania2.結果
                 float 左位置dpx = left + ( ( 1.0f - 拡大率 ) * this._アイコン画像.サイズ.Width ) / 2.0f;
                 float 上位置dpx = top + ( ( 1.0f - 拡大率 ) * this._アイコン画像.サイズ.Height ) / 2.0f;
                 
-                this._アイコン画像.描画する( 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
+                this._アイコン画像.進行描画する( 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
             }
 
 

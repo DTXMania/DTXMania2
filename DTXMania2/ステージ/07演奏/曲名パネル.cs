@@ -64,9 +64,9 @@ namespace DTXMania2.演奏
         // 進行と描画
 
 
-        public void 描画する( DeviceContext dc )
+        public void 進行描画する( DeviceContext dc )
         {
-            this._パネル.描画する( 1458f, 3f );
+            this._パネル.進行描画する( 1458f, 3f );
             this._サムネイルを描画する();
             this._曲名を描画する( dc );
             this._サブタイトルを描画する( dc );
@@ -109,7 +109,7 @@ namespace DTXMania2.演奏
                     Global.画面左上dpx.Y - this._サムネイル画像表示位置dpx.Y - this._サムネイル画像表示サイズdpx.Y / 2f,
                     0f );
 
-            サムネイル画像.描画する( 変換行列 );
+            サムネイル画像.進行描画する( 変換行列 );
         }
 
         private void _曲名を描画する( DeviceContext dc )

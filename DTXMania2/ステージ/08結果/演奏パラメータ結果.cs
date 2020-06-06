@@ -67,7 +67,7 @@ namespace DTXMania2.結果
         // 進行と描画
 
 
-        public override void 描画する( DeviceContext dc, float x, float y, 成績 現在の成績 )
+        public override void 進行描画する( DeviceContext dc, float x, float y, 成績 現在の成績 )
         {
             // パラメータアニメが完了してからフルコンボチェック。
 

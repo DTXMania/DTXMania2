@@ -6,11 +6,12 @@ using System.Threading;
 namespace DTXMania2
 {
     /// <summary>
-    ///     タスク間で送受信されるメッセージ。
+    ///     タスク（スレッド）間で送受信されるメッセージ。
     /// </summary>
     /// <remarks>
-    ///     DTXMania2 では、主に「GUIフォーム」タスクと「進行描画」タスクが並列に動作している。
-    ///     これらの間でのメッセージを送受信するための仕組みを提供する。
+    ///     DTXMania2 では、GUIタスクと進行描画タスクが並列に動作している。
+    ///     これらの間で送受信されるメッセージを定義する。
+    ///     メッセージは、<see cref="TaskMessageQueue"/> を介して送受信される。
     /// </remarks>
     class TaskMessage
     {
@@ -51,7 +52,6 @@ namespace DTXMania2
 
         /// <summary>
         ///     メッセージが受信され、対応する処理が完了した場合に Set されるイベント。
-        ///     オプション。
         /// </summary>
         public ManualResetEventSlim 完了通知 { get; }
 

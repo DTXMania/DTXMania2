@@ -88,8 +88,10 @@ namespace DTXMania2.起動
         // 進行と描画
 
 
-        public void 進行する()
+        public void 進行描画する()
         {
+            // 進行
+
             switch( this.現在のフェーズ )
             {
                 case フェーズ.開始:
@@ -97,6 +99,8 @@ namespace DTXMania2.起動
                     #region " 一度描画処理を通してから（画面を表示させてから）次のフェーズへ。"
                     //----------------
                     this._コンソール表示内容[ ^1 ] += " done.";
+
+                    // 次のフェーズへ。
                     this._コンソール表示内容.Add( "Creating global resources..." );
                     this.現在のフェーズ = フェーズ.グローバルリソース生成中;
                     break;
@@ -107,7 +111,9 @@ namespace DTXMania2.起動
                 {
                     #region " グローバルリソースを生成して次のフェーズへ。"
                     //----------------
-                    Global.App.グローバルリソースを作成する();
+
+                    //Global.App.グローバルリソースを作成する();  --> 今は何もしない。全部作成済み。
+
                     this._コンソール表示内容[ ^1 ] += " done.";
 
                     // 次のフェーズへ。
@@ -120,9 +126,8 @@ namespace DTXMania2.起動
                 {
                     #region " システムサウンドの構築を開始して次のフェーズへ。"
                     //----------------
-                    this._コンソール表示内容.Add( "Creating system sounds..." );
-
                     // 次のフェーズへ。
+                    this._コンソール表示内容.Add( "Creating system sounds..." );
                     this.現在のフェーズ = フェーズ.システムサウンド構築完了待ち;
                     break;
                     //----------------
@@ -296,33 +301,27 @@ namespace DTXMania2.起動
                     #endregion
                 }
             }
-        }
 
-        public void 描画する()
-        {
+
+            // 描画
+
             Global.App.画面をクリアする();
 
             var dc = Global.既定のD2D1DeviceContext;
             dc.Transform = Global.拡大行列DPXtoPX;
 
-            // 文字列表示
-            switch( this.現在のフェーズ )
-            {
-                case フェーズ.曲ツリー構築完了待ち:
-                    for( int i = 0; i < this._コンソール表示内容.Count; i++ )
-                        this._コンソールフォント.描画する( dc, 0f, i * 32f, this._コンソール表示内容[ i ] );
-                    break;
-
-                default:
-                    for( int i = 0; i < this._コンソール表示内容.Count; i++ )
-                        this._コンソールフォント.描画する( dc, 0f, i * 32f, this._コンソール表示内容[ i ] );
-                    break;
-            }
+            #region " 文字列表示 "
+            //----------------
+            for( int i = 0; i < this._コンソール表示内容.Count; i++ )
+                this._コンソールフォント.描画する( dc, 0f, i * 32f, this._コンソール表示内容[ i ] );
+            //----------------
+            #endregion
         }
 
 
 
         // ローカル
+
 
         private readonly フォント画像D2D _コンソールフォント;
 

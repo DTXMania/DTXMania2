@@ -66,7 +66,7 @@ namespace DTXMania2.選曲
             Task.Run( () => {
 
                 // 500ミリ秒待つ。
-                Task.Delay( 500 ).Wait();
+                Thread.Sleep( 500 );
                 if( cancelToken.IsCancellationRequested )
                     return; // キャンセルされた
 
@@ -92,18 +92,16 @@ namespace DTXMania2.選曲
                 // サウンドを解放する。
                 sound.Dispose();
 
-            }, cancelToken )
+            }, cancelToken ).ContinueWith( ( t ) => {
 
-                .ContinueWith( ( t ) => {
+                // タスクが終了したらトークンソースを解放。
+                lock( this._CancelTokenSources排他 )
+                {
+                    this._CanscellationTokenSources.Remove( cancelTokenSource );
+                    cancelTokenSource.Dispose();
+                }
 
-                    // タスクが終了したらトークンソースを解放。
-                    lock( this._CancelTokenSources排他 )
-                    {
-                        this._CanscellationTokenSources.Remove( cancelTokenSource );
-                        cancelTokenSource.Dispose();
-                    }
-
-                } );
+            } );
         }
 
         /// <summary>

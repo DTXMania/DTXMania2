@@ -1,6 +1,6 @@
 ﻿namespace DTXMania2
 {
-    partial class AppForm
+    partial class App
     {
         /// <summary>
         ///  Required designer variable.

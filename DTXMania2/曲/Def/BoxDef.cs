@@ -113,7 +113,7 @@ namespace DTXMania2.曲
 
                     #region " TITLE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"TITLE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"TITLE", out パラメータ ) )
                     {
                         this.TITLE = パラメータ;
                         continue;
@@ -123,7 +123,7 @@ namespace DTXMania2.曲
 
                     #region " COMMENT コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"COMMENT", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"COMMENT", out パラメータ ) )
                     {
                         this.COMMENT = パラメータ;
                         continue;
@@ -133,7 +133,7 @@ namespace DTXMania2.曲
 
                     #region " ARTIST コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"ARTIST", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"ARTIST", out パラメータ ) )
                     {
                         this.ARTIST = パラメータ;
                         continue;
@@ -143,7 +143,7 @@ namespace DTXMania2.曲
 
                     #region " PREIMAGE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"PREIMAGE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"PREIMAGE", out パラメータ ) )
                     {
                         this.PREIMAGE = パラメータ;
                         continue;
@@ -153,7 +153,7 @@ namespace DTXMania2.曲
 
                     #region " PREVIEW コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"PREVIEW", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"PREVIEW", out パラメータ ) )
                     {
                         this.PREVIEW = パラメータ;
                         continue;
@@ -163,7 +163,7 @@ namespace DTXMania2.曲
 
                     #region " PERFECTRANGE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"PERFECTRANGE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"PERFECTRANGE", out パラメータ ) )
                     {
                         if( int.TryParse( パラメータ, out int value ) )
                             this.PERFECTRANGE = value / 0.001;
@@ -176,7 +176,7 @@ namespace DTXMania2.曲
 
                     #region " GREATRANGE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"GREATRANGE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"GREATRANGE", out パラメータ ) )
                     {
                         if( int.TryParse( パラメータ, out int value ) )
                             this.GREATRANGE = value / 0.001;
@@ -189,7 +189,7 @@ namespace DTXMania2.曲
 
                     #region " GOODRANGE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"GOODRANGE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"GOODRANGE", out パラメータ ) )
                     {
                         if( int.TryParse( パラメータ, out int value ) )
                             this.GOODRANGE = value / 0.001;
@@ -202,7 +202,7 @@ namespace DTXMania2.曲
 
                     #region " OKRANGE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"OKRANGE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"OKRANGE", out パラメータ ) )
                     {
                         if( int.TryParse( パラメータ, out int value ) )
                             this.OKRANGE = value / 0.001;
@@ -215,7 +215,7 @@ namespace DTXMania2.曲
 
                     #region " POORRANGE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"POORRANGE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"POORRANGE", out パラメータ ) )
                     {
                         if( int.TryParse( パラメータ, out int value ) )
                             this.OKRANGE = value / 0.001;
@@ -228,7 +228,7 @@ namespace DTXMania2.曲
 
                     #region " SKINPATH コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"SKINPATH", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"SKINPATH", out パラメータ ) )
                     {
                         this.SKINPATH = パラメータ;
                         continue;
@@ -238,7 +238,7 @@ namespace DTXMania2.曲
 
                     #region " SKINPATH100 コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"SKINPATH100", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"SKINPATH100", out パラメータ ) )
                     {
                         this.SKINPATH100 = パラメータ;
                         continue;

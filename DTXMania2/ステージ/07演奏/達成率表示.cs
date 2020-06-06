@@ -35,7 +35,7 @@ namespace DTXMania2.演奏
         // 進行と描画
 
 
-        public void 描画する( DeviceContext dc, float 達成率0to100 )
+        public void 進行描画する( DeviceContext dc, float 達成率0to100 )
         {
             var 描画領域 = new RectangleF( 200f, 650f, 165f, 80f );
 

@@ -48,11 +48,11 @@ namespace DTXMania2.選曲
         /// <param name="選択している難易度レベル">
         ///		0:BASIC～4:ULTIMATE
         ///	</param>
-        public void 描画する( DeviceContext dc, int 選択している難易度レベル, Node フォーカスノード )
+        public void 進行描画する( DeviceContext dc, int 選択している難易度レベル, Node フォーカスノード )
         {
             var 背景領域dpx = new RectangleF( 642f, 529f, 338f, 508f );
 
-            #region " 背景 "
+            #region " 背景を描画する。"
             //----------------
             D2DBatch.Draw( dc, () => {
                 using var _黒透過ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, 0.5f ) );
@@ -70,7 +70,7 @@ namespace DTXMania2.選曲
                 ( 背景領域dpx.X + 156f, 背景領域dpx.Y +  13f ),
             };
 
-            #region " 難易度パネル（背景）"
+            #region " 難易度パネル（背景）を描画する。"
             //----------------
             using var 黒ブラシ = new SolidColorBrush( dc, Color4.Black );
             using var 白ブラシ = new SolidColorBrush( dc, Color4.White );
@@ -98,7 +98,9 @@ namespace DTXMania2.選曲
             #region " フォーカスノードが変更されていれば更新する。"
             //----------------
             if( フォーカスノード != this._現在表示しているノード )
+            {
                 this._現在表示しているノード = フォーカスノード;
+            }
             //----------------
             #endregion
 
@@ -129,7 +131,7 @@ namespace DTXMania2.選曲
             //----------------
             #endregion
 
-            #region " 難易度パネル（テキスト、数値）"
+            #region " 難易度パネル（テキスト、数値）を描画する。"
             //----------------
             D2DBatch.Draw( dc, () => {
                 for( int i = 0; i < 5; i++ )
@@ -138,7 +140,7 @@ namespace DTXMania2.選曲
             //----------------
             #endregion
 
-            #region " 選択枠 "
+            #region " 選択枠を描画する。"
             //----------------
             var 青い線 = this.青い線を取得する();
 

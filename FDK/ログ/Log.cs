@@ -57,7 +57,7 @@ namespace FDK
             {
                 Log._一定時間が経過していたら区切り線を表示する();
 
-                Trace.WriteLine( $"{tagINFO} {Log._日時とスレッドID} {Log._インデックスを返す( Log._深さ )}{出力}" );
+                Trace.WriteLine( $"{tagINFO} {Log._日時とスレッドID} {Log._インデックスを返す( Log._スレッドの深さを返す() )}{出力}" );
             }
         }
 
@@ -67,7 +67,7 @@ namespace FDK
             {
                 Log._一定時間が経過していたら区切り線を表示する();
 
-                Trace.WriteLine( $"{tagWARNING} {Log._日時とスレッドID} {Log._インデックスを返す( Log._深さ )}{出力}" );
+                Trace.WriteLine( $"{tagWARNING} {Log._日時とスレッドID} {Log._インデックスを返す( Log._スレッドの深さを返す() )}{出力}" );
             }
         }
 
@@ -77,7 +77,7 @@ namespace FDK
             {
                 Log._一定時間が経過していたら区切り線を表示する();
 
-                Trace.WriteLine( $"{tagERROR} {Log._日時とスレッドID} {Log._インデックスを返す( Log._深さ )}{出力}" );
+                Trace.WriteLine( $"{tagERROR} {Log._日時とスレッドID} {Log._インデックスを返す( Log._スレッドの深さを返す() )}{出力}" );
             }
         }
 
@@ -167,10 +167,12 @@ namespace FDK
             lock( Log._スレッド間同期 )
             {
                 Log._一定時間が経過していたら区切り線を表示する();
-                Trace.WriteLine( $"{tagINFO} {Log._日時とスレッドID} {Log._インデックスを返す( Log._深さ )}{開始ブロック名} --> 開始" );
+                Trace.WriteLine( $"{tagINFO} {Log._日時とスレッドID} {Log._インデックスを返す( Log._スレッドの深さを返す() )}{開始ブロック名} --> 開始" );
 
                 Log._Info開始時刻.Push( DateTime.Now );
-                Log._深さ++;
+
+                var NETスレッドID = Thread.CurrentThread.ManagedThreadId;
+                Log._深さ[ NETスレッドID ]++;
             }
         }
 
@@ -179,10 +181,12 @@ namespace FDK
             lock( Log._スレッド間同期 )
             {
                 var 経過時間ms = ( DateTime.Now - Log._Info開始時刻.Pop() ).TotalMilliseconds;
-                Log._深さ = Math.Max( ( Log._深さ - 1 ), 0 );
+
+                var NETスレッドID = Thread.CurrentThread.ManagedThreadId;
+                Log._深さ[NETスレッドID] = Math.Max( ( Log._深さ[NETスレッドID] - 1 ), 0 );
 
                 Log._一定時間が経過していたら区切り線を表示する();
-                Trace.WriteLine( $"{tagINFO} {Log._日時とスレッドID} {Log._インデックスを返す( Log._深さ )}{終了ブロック名} <-- 終了 ({経過時間ms}ms)" );
+                Trace.WriteLine( $"{tagINFO} {Log._日時とスレッドID} {Log._インデックスを返す( Log._スレッドの深さを返す() )}{終了ブロック名} <-- 終了 ({経過時間ms}ms)" );
             }
         }
 
@@ -220,8 +224,6 @@ namespace FDK
 
         private static DateTime _最終表示時刻 = DateTime.Now;
 
-        private static int _深さ = 0;
-
         private static Stack<DateTime> _Info開始時刻 = new Stack<DateTime>();
 
         private static readonly object _スレッド間同期 = new object();
@@ -234,6 +236,18 @@ namespace FDK
 
         private static readonly string tagINTERVAL = "[ INTERVAL  ]";
 
+        private static Dictionary<int, int> _深さ = new Dictionary<int, int>();
+
+        private static int _スレッドの深さを返す()
+        {
+            var NETスレッドID = Thread.CurrentThread.ManagedThreadId;
+
+            if( _深さ.TryGetValue( NETスレッドID, out int 深さ ) )
+                return 深さ;
+
+            _深さ.Add( NETスレッドID, 0 );
+            return 0;
+        }
 
         private static void _一定時間が経過していたら区切り線を表示する()
         {

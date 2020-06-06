@@ -64,11 +64,11 @@ namespace DTXMania2.演奏
             //----------------
             if( 0.25 > this._ゲージ量.Value )
             {
-                this._ゲージ枠DANGER.描画する( 540f, 955f );
+                this._ゲージ枠DANGER.進行描画する( 540f, 955f );
             }
             else
             {
-                this._ゲージ枠通常.描画する( 540f, 955f );
+                this._ゲージ枠通常.進行描画する( 540f, 955f );
             }
             //----------------
             #endregion

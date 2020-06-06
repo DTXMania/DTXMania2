@@ -25,8 +25,16 @@ namespace FDK
 
         public bool 加算合成する { get; set; } = false;
 
+        /// <summary>
+        ///     画像の有効領域のサイズ。
+        ///     有効領域は画像の左上を原点とし、大きさは<see cref="画像.実サイズ"/>と同じかそれより小さい。
+        /// </summary>
         public Size2F サイズ { get; protected set; }
 
+        /// <summary>
+        ///     Direct3D デバイス内で実際に生成された画像のサイズ。
+        ///     このサイズは、（あるなら）Direct3D デバイスの制約を受ける。
+        /// </summary>
         public Size2F 実サイズ { get; protected set; }
 
 
@@ -56,7 +64,7 @@ namespace FDK
             //----------------
             #endregion
 
-            this._CreateShaderResourceViewFromFile( d3dDevice1, bindFlags, 画像ファイルパス );
+            this._画像ファイルからシェーダリソースビューを作成して返す( d3dDevice1, bindFlags, 画像ファイルパス );
         }
 
         /// <summary>
@@ -70,21 +78,21 @@ namespace FDK
             //----------------
             if( 0f >= サイズ.Width || 0f >= サイズ.Height )
             {
-                Log.ERROR( $"テクスチャサイズが不正です。[{サイズ}]" );
+                Log.ERROR( $"テクスチャサイズが不正です。0 より大きい正の値を指定してください。[{サイズ}]" );
                 return;
             }
             //----------------
             #endregion
 
-            this._CreateShaderResourceView( d3dDevice1, bindFlags, サイズ );
+            this._空のテクスチャとそのシェーダーリソースビューを作成して返す( d3dDevice1, bindFlags, サイズ );
         }
 
         public virtual void Dispose()
         {
             //using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._ShaderResourceView?.Dispose();
-            this.Texture?.Dispose();
+            this._ShaderResourceView?.Dispose();    // 画像の生成に失敗した場合、null のままである。
+            this.Texture?.Dispose();                // 
         }
 
 
@@ -159,9 +167,11 @@ namespace FDK
                 this._定数バッファの転送元データ.World = ワールド行列変換;
 
                 // ビュー変換行列と射影変換行列
-                this._等倍3D平面描画用の変換行列を取得する( 設計画面サイズdpx, out Matrix 転置済みビュー行列, out Matrix 転置済み射影行列 );
-                this._定数バッファの転送元データ.View = 転置済みビュー行列;
-                this._定数バッファの転送元データ.Projection = 転置済み射影行列;
+                this._等倍3D平面描画用の変換行列を取得する( 設計画面サイズdpx, out Matrix ビュー行列, out Matrix 射影行列 );
+                ビュー行列.Transpose();  // 転置（シェーダーにあわせる）
+                射影行列.Transpose();    // 転置（シェーダーにあわせる）
+                this._定数バッファの転送元データ.View = ビュー行列;
+                this._定数バッファの転送元データ.Projection = 射影行列;
 
                 // 描画元矩形（x,y,zは0～1で指定する（UV座標））
                 this._定数バッファの転送元データ.TexLeft = srcRect.Left / this.サイズ.Width;
@@ -243,45 +253,48 @@ namespace FDK
 
         private ST定数バッファの転送元データ _定数バッファの転送元データ;
 
-        /// <summary>
-        ///		画像ファイルからシェーダリソースビューを作成して返す。
-        /// </summary>
-        /// <remarks>
-        ///		（参考: http://qiita.com/oguna/items/c516e09ee57d931892b6 ）
-        /// </remarks>
-        private void _CreateShaderResourceViewFromFile( Device d3dDevice, BindFlags bindFlags, VariablePath 画像ファイルパス )
+        /// <seealso cref="http://qiita.com/oguna/items/c516e09ee57d931892b6"/>
+        private void _画像ファイルからシェーダリソースビューを作成して返す( Device d3dDevice, BindFlags bindFlags, VariablePath 画像ファイルパス )
         {
-            using var image = new System.Drawing.Bitmap( 画像ファイルパス.変数なしパス );
-            var 画像の矩形 = new System.Drawing.Rectangle( 0, 0, image.Width, image.Height );
-            using var bitmap = image.Clone( 画像の矩形, System.Drawing.Imaging.PixelFormat.Format32bppArgb );
+            // ファイルからビットマップを生成し、Clone() でフォーマットを A8R8G8B8 に変換する。
+            using var originalBitmap = new System.Drawing.Bitmap( 画像ファイルパス.変数なしパス );
+            var 画像の矩形 = new System.Drawing.Rectangle( 0, 0, originalBitmap.Width, originalBitmap.Height );
+            using var bitmap = originalBitmap.Clone( 画像の矩形, System.Drawing.Imaging.PixelFormat.Format32bppArgb );
 
+            // ビットマップからテクスチャを生成する。
             var ロック領域 = bitmap.LockBits( 画像の矩形, System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat );
-            var dataBox = new[] { new DataBox( ロック領域.Scan0, bitmap.Width * 4, bitmap.Height ) };
-            var textureDesc = new Texture2DDescription() {
-                ArraySize = 1,
-                BindFlags = bindFlags,
-                CpuAccessFlags = CpuAccessFlags.None,
-                Format = SharpDX.DXGI.Format.B8G8R8A8_UNorm,
-                Height = bitmap.Height,
-                Width = bitmap.Width,
-                MipLevels = 1,
-                OptionFlags = ResourceOptionFlags.None,
-                SampleDescription = new SharpDX.DXGI.SampleDescription( 1, 0 ),
-                Usage = ResourceUsage.Default,
-            };
-            this.Texture = new Texture2D( d3dDevice, textureDesc, dataBox );
-            bitmap.UnlockBits( ロック領域 );
+            try
+            {
+                var dataBox = new[] { new DataBox( ロック領域.Scan0, bitmap.Width * 4, bitmap.Height ) };
+                var textureDesc = new Texture2DDescription() {
+                    ArraySize = 1,
+                    BindFlags = bindFlags,
+                    CpuAccessFlags = CpuAccessFlags.None,
+                    Format = SharpDX.DXGI.Format.B8G8R8A8_UNorm,
+                    Height = bitmap.Height,
+                    Width = bitmap.Width,
+                    MipLevels = 1,
+                    OptionFlags = ResourceOptionFlags.None,
+                    SampleDescription = new SharpDX.DXGI.SampleDescription( 1, 0 ),
+                    Usage = ResourceUsage.Default,
+                };
+                this.Texture = new Texture2D( d3dDevice, textureDesc, dataBox );
+            }
+            finally
+            {
+                bitmap.UnlockBits( ロック領域 );
+            }
 
+            // テクスチャのシェーダーリソースビューを生成する。
             this._ShaderResourceView = new ShaderResourceView( d3dDevice, this.Texture );
+
             this.サイズ = new Size2F( 画像の矩形.Width, 画像の矩形.Height );
             this.実サイズ = new Size2F( this.Texture.Description.Width, this.Texture.Description.Height );
         }
 
-        /// <summary>
-        ///		空のテクスチャとそのシェーダーリソースビューを作成し、返す。
-        /// </summary>
-        private void _CreateShaderResourceView( Device d3dDevice, BindFlags bindFlags, Size2F サイズ )
+        private void _空のテクスチャとそのシェーダーリソースビューを作成して返す( Device d3dDevice, BindFlags bindFlags, Size2F サイズ )
         {
+            // 空のテクスチャを生成する。
             var textureDesc = new Texture2DDescription() {
                 ArraySize = 1,
                 BindFlags = bindFlags,
@@ -295,7 +308,10 @@ namespace FDK
                 Usage = ResourceUsage.Default
             };
             this.Texture = new Texture2D( d3dDevice, textureDesc );
+
+            // テクスチャのシェーダーリソースビューを生成する。
             this._ShaderResourceView = new ShaderResourceView( d3dDevice, this.Texture );
+
             this.サイズ = サイズ;
             this.実サイズ = new Size2F( this.Texture.Description.Width, this.Texture.Description.Height );
         }
@@ -309,7 +325,7 @@ namespace FDK
         ///     この平面を使うと、3Dモデルの配置やサイズ設定を設計画面サイズを基準に行うことができるようになる。
         ///     本メソッドは、等倍3D平面を実現するためのビュー行列と射影行列を返す。
         /// </remarks>
-        public void _等倍3D平面描画用の変換行列を取得する( Size2F 設計画面サイズdpx, out Matrix 転置済みビュー行列, out Matrix 転置済み射影行列 )
+        public void _等倍3D平面描画用の変換行列を取得する( Size2F 設計画面サイズdpx, out Matrix ビュー行列, out Matrix 射影行列 )
         {
             const float 視野角deg = 45.0f;
 
@@ -319,15 +335,13 @@ namespace FDK
             var カメラの注視点 = new Vector3( 0f, 0f, 0f );
             var カメラの上方向 = new Vector3( 0f, 1f, 0f );
 
-            転置済みビュー行列 = Matrix.LookAtLH( カメラの位置, カメラの注視点, カメラの上方向 );
-            転置済みビュー行列.Transpose();  // 転置
+            ビュー行列 = Matrix.LookAtLH( カメラの位置, カメラの注視点, カメラの上方向 );
 
-            転置済み射影行列 = Matrix.PerspectiveFovLH(
+            射影行列 = Matrix.PerspectiveFovLH(
                 MathUtil.DegreesToRadians( 視野角deg ),
                 設計画面サイズdpx.Width / 設計画面サイズdpx.Height, // アスペクト比
                 -dz,                                                // 前方投影面までの距離
                 +dz );                                              // 後方投影面までの距離
-            転置済み射影行列.Transpose();  // 転置
         }
 
 
@@ -369,14 +383,14 @@ namespace FDK
         private static SharpDX.Direct3D11.Buffer _ConstantBuffer = null!;
 
 
-        public static void 全インスタンスで共有するリソースを作成する( Device1 d3dDevice1 )
+        public static void 全インスタンスで共有するリソースを作成する( Device1 d3dDevice1, VariablePath 頂点シェーダCSOパス, VariablePath ピクセルシェーダCSOパス )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             #region " 頂点シェーダを生成する。"
             //----------------
             {
-                var byteCode = File.ReadAllBytes( new VariablePath( @"$(Images)\TextureVS.cso" ).変数なしパス );
+                var byteCode = File.ReadAllBytes( 頂点シェーダCSOパス.変数なしパス );
                 _VertexShader = new VertexShader( d3dDevice1, byteCode );
             }
             //----------------
@@ -385,7 +399,7 @@ namespace FDK
             #region " ピクセルシェーダを生成する。"
             //----------------
             {
-                var byteCode = File.ReadAllBytes( new VariablePath( @"$(Images)\TexturePS.cso" ).変数なしパス );
+                var byteCode = File.ReadAllBytes( ピクセルシェーダCSOパス.変数なしパス );
                 _PixelShader = new PixelShader( d3dDevice1, byteCode );
             }
             //----------------
@@ -445,58 +459,48 @@ namespace FDK
 
             #region " ラスタライザステートを生成する。"
             //----------------
-            {
-                var RSDesc = new RasterizerStateDescription() {
-                    FillMode = FillMode.Solid,   // 普通に描画する
-                    CullMode = CullMode.None,    // 両面を描画する
-                    IsFrontCounterClockwise = false,    // 時計回りが表面
-                    DepthBias = 0,
-                    DepthBiasClamp = 0,
-                    SlopeScaledDepthBias = 0,
-                    IsDepthClipEnabled = true,
-                    IsScissorEnabled = false,
-                    IsMultisampleEnabled = false,
-                    IsAntialiasedLineEnabled = false,
-                };
-
-                _RasterizerState = new RasterizerState( d3dDevice1, RSDesc );
-            }
+            _RasterizerState = new RasterizerState( d3dDevice1, new RasterizerStateDescription() {
+                FillMode = FillMode.Solid,      // 普通に描画する
+                CullMode = CullMode.None,       // 両面を描画する
+                IsFrontCounterClockwise = false,// 時計回りが表面
+                DepthBias = 0,
+                DepthBiasClamp = 0,
+                SlopeScaledDepthBias = 0,
+                IsDepthClipEnabled = true,
+                IsScissorEnabled = false,
+                IsMultisampleEnabled = false,
+                IsAntialiasedLineEnabled = false,
+            } );
             //----------------
             #endregion
 
             #region " サンプラーステートを生成する。"
             //----------------
-            {
-                var descSampler = new SamplerStateDescription() {
-                    Filter = Filter.Anisotropic,
-                    AddressU = TextureAddressMode.Border,
-                    AddressV = TextureAddressMode.Border,
-                    AddressW = TextureAddressMode.Border,
-                    MipLodBias = 0.0f,
-                    MaximumAnisotropy = 2,
-                    ComparisonFunction = Comparison.Never,
-                    BorderColor = new RawColor4( 0f, 0f, 0f, 0f ),
-                    MinimumLod = float.MinValue,
-                    MaximumLod = float.MaxValue,
-                };
-
-                _SamplerState = new SamplerState( d3dDevice1, descSampler );
-            }
+            _SamplerState = new SamplerState( d3dDevice1, new SamplerStateDescription() {
+                Filter = Filter.Anisotropic,
+                AddressU = TextureAddressMode.Border,
+                AddressV = TextureAddressMode.Border,
+                AddressW = TextureAddressMode.Border,
+                MipLodBias = 0.0f,
+                MaximumAnisotropy = 2,
+                ComparisonFunction = Comparison.Never,
+                BorderColor = new RawColor4( 0f, 0f, 0f, 0f ),
+                MinimumLod = float.MinValue,
+                MaximumLod = float.MaxValue,
+            } );
             //----------------
             #endregion
 
             #region " 定数バッファを作成する。"
             //----------------
-            _ConstantBuffer = new SharpDX.Direct3D11.Buffer(
-                d3dDevice1,
-                new BufferDescription() {
-                    Usage = ResourceUsage.Dynamic,              // 動的使用法
-                    BindFlags = BindFlags.ConstantBuffer,       // 定数バッファ
-                    CpuAccessFlags = CpuAccessFlags.Write,      // CPUから書き込む
-                    OptionFlags = ResourceOptionFlags.None,
-                    SizeInBytes = SharpDX.Utilities.SizeOf<ST定数バッファの転送元データ>(),   // バッファサイズ
-                    StructureByteStride = 0,
-                } );
+            _ConstantBuffer = new SharpDX.Direct3D11.Buffer( d3dDevice1, new BufferDescription() {
+                Usage = ResourceUsage.Dynamic,              // 動的使用法
+                BindFlags = BindFlags.ConstantBuffer,       // 定数バッファ
+                CpuAccessFlags = CpuAccessFlags.Write,      // CPUから書き込む
+                OptionFlags = ResourceOptionFlags.None,
+                SizeInBytes = SharpDX.Utilities.SizeOf<ST定数バッファの転送元データ>(),   // バッファサイズ
+                StructureByteStride = 0,
+            } );
             //----------------
             #endregion
         }

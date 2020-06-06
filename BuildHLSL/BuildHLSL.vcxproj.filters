@@ -8,6 +8,6 @@
     <None Include="Texture.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\..\%40DTXMania\DTXMania2.Core\BuildHLSL\README.txt" />
+    <Text Include="README.txt" />
   </ItemGroup>
 </Project>

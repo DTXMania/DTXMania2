@@ -36,7 +36,7 @@ namespace DTXMania2.選曲.QuickConfig
         /// </summary>
         /// <param name="song">現在選択中の曲。曲以外が選択されているなら null 。</param>
         /// <param name="userId">現在ログイン中のユーザ名。</param>
-        public QuickConfigパネル(Song? song, string userId )
+        public QuickConfigパネル( Song? song, string userId )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
@@ -147,6 +147,9 @@ namespace DTXMania2.選曲.QuickConfig
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
+            foreach( var item in this._設定項目リスト )
+                item.Dispose();
+
             this._パネル.Dispose();
         }
 
@@ -155,8 +158,10 @@ namespace DTXMania2.選曲.QuickConfig
         // 進行と描画
 
 
-        public void 進行する()
+        public void 進行描画する( float 左位置, float 上位置 )
         {
+            var dc = Global.既定のD2D1DeviceContext;
+
             var 入力 = Global.App.ドラム入力;  // 呼び出し元でポーリング済み
 
             switch( this.現在のフェーズ )
@@ -275,37 +280,14 @@ namespace DTXMania2.選曲.QuickConfig
                         //----------------
                         #endregion
                     }
-                    break;
                     //----------------
                     #endregion
-                }
-                case フェーズ.完了_戻る:
-                case フェーズ.完了_オプション設定:
-                {
-                    #region " 遷移終了。呼び出し元による継続処理を待つ。"
-                    //----------------
-                    break;
-                    //----------------
-                    #endregion
-                }
-            }
-        }
 
-        public void 描画する(float 左位置, float 上位置 )
-        {
-            var dc = Global.既定のD2D1DeviceContext;
-
-            switch( this.現在のフェーズ )
-            {
-                case フェーズ.表示:
-                case フェーズ.完了_戻る:
-                case フェーズ.完了_オプション設定:
-                {
-                    #region " QuickConfig パネルを描画。"
+                    #region " QuickConfig パネルを描画する。"
                     //----------------
-                    this._パネル.描画する( 左位置, 上位置 );
+                    this._パネル.進行描画する( 左位置, 上位置 );
 
-                    for( int i = 0; i < this._設定項目リスト.Count; i++)
+                    for( int i = 0; i < this._設定項目リスト.Count; i++ )
                     {
                         const float 左右マージン = 24.0f;
                         const float 見出し行間 = 100.0f;
@@ -319,10 +301,10 @@ namespace DTXMania2.選曲.QuickConfig
                                 dc.Transform = Global.拡大行列DPXtoPX;
                                 using var brush = new SolidColorBrush( dc, new SharpDX.Color( 0.6f, 0.6f, 1f, 0.4f ) );
                                 dc.FillRectangle(
-                                    new SharpDX.RectangleF( 
-                                        左位置 + 左右マージン, 
-                                        上位置 + 見出し行間 + 項目行間 * i, 
-                                        this._パネル.サイズ.Width - 左右マージン * 2, 
+                                    new SharpDX.RectangleF(
+                                        左位置 + 左右マージン,
+                                        上位置 + 見出し行間 + 項目行間 * i,
+                                        this._パネル.サイズ.Width - 左右マージン * 2,
                                         項目行間 ),
                                     brush );
                             } );
@@ -331,9 +313,20 @@ namespace DTXMania2.選曲.QuickConfig
                         // 選択肢項目を描画する。
                         this._設定項目リスト[ i ].進行描画する( dc, 左位置 + 左右マージン * 2, 上位置 + 見出し行間 + i * 項目行間 + 項目ラベル上マージン );
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    break;
+                }
+                case フェーズ.完了_戻る:
+                case フェーズ.完了_オプション設定:
+                {
+                    #region " 遷移終了。呼び出し元による継続処理を待つ。"
+                    //----------------
+                    //----------------
+                    #endregion
+
+                    break;
                 }
             }
         }

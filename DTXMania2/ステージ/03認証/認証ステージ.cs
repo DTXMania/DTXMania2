@@ -54,7 +54,6 @@ namespace DTXMania2.認証
 
             // 最初のフェーズへ。
             this.現在のフェーズ = フェーズ.フェードイン;
-            this._フェーズ完了 = false;
         }
 
         public void Dispose()
@@ -77,9 +76,14 @@ namespace DTXMania2.認証
         // 進行と描画
 
 
-        public void 進行する()
+        public void 進行描画する()
         {
+            this._システム情報.VPSをカウントする();
             this._システム情報.FPSをカウントしプロパティを更新する();
+
+            var 描画領域 = new RectangleF( 566f, 60f, 784f, 943f );
+            var dc = Global.既定のD2D1DeviceContext;
+            dc.Transform = Global.拡大行列DPXtoPX;
 
             Global.App.ドラム入力.すべての入力デバイスをポーリングする();
 
@@ -87,16 +91,24 @@ namespace DTXMania2.認証
             {
                 case フェーズ.フェードイン:
                 {
-                    #region " フェードイン描画が完了したらユーザ選択フェーズへ。"
+                    #region " 認証画面＆フェードインを描画する。"
                     //----------------
-                    if( this._フェーズ完了 )
+                    this._舞台画像.進行描画する( dc, 黒幕付き: true );
+                    this._ウィンドウ画像.進行描画する( 描画領域.X, 描画領域.Y );
+                    this._プレイヤーを選択してください.描画する( dc, 描画領域.X + 28f, 描画領域.Y + 45f );
+                    this._ユーザリスト.進行描画する( dc );
+
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
                     {
+                        // フェードイン描画が完了したらユーザ選択フェーズへ。
                         this.現在のフェーズ = フェーズ.ユーザ選択;
-                        this._フェーズ完了 = false;
                     }
-                    break;
+
+                    this._システム情報.描画する( dc );
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.ユーザ選択:
                 {
@@ -141,97 +153,48 @@ namespace DTXMania2.認証
                         //----------------
                         #endregion
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    #region " 認証画面を描画する。"
+                    //----------------
+                    this._舞台画像.進行描画する( dc, 黒幕付き: true );
+                    this._ウィンドウ画像.進行描画する( 描画領域.X, 描画領域.Y );
+                    this._プレイヤーを選択してください.描画する( dc, 描画領域.X + 28f, 描画領域.Y + 45f );
+                    this._ユーザリスト.進行描画する( dc );
+                    this._システム情報.描画する( dc );
+                    //----------------
+                    #endregion
+
+                    break;
                 }
                 case フェーズ.フェードアウト:
                 {
-                    #region " アイキャッチが完了したら完了フェーズへ。"
+                    #region " 背景画面＆フェードアウトを描画する。"
                     //----------------
-                    if( this._フェーズ完了 )
+                    this._舞台画像.進行描画する( dc, true );
+
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
                     {
+                        // アイキャッチが完了したら完了フェーズへ。
                         this.現在のフェーズ = フェーズ.完了;
-                        this._フェーズ完了 = false;
                     }
-                    break;
+
+                    this._システム情報.描画する( dc );
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.完了:
                 case フェーズ.キャンセル:
                 {
                     #region " 遷移終了。Appによるステージ遷移を待つ。"
                     //----------------
-                    break;
                     //----------------
                     #endregion
-                }
-            }
-        }
 
-        public void 描画する()
-        {
-            this._システム情報.VPSをカウントする();
-
-            var 描画領域 = new RectangleF( 566f, 60f, 784f, 943f );
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
-            switch( this.現在のフェーズ )
-            {
-                case フェーズ.フェードイン:
-                {
-                    #region " 認証画面＆フェードイン "
-                    //----------------
-                    this._舞台画像.進行描画する( dc, 黒幕付き: true );
-                    this._ウィンドウ画像.描画する( 描画領域.X, 描画領域.Y );
-                    this._プレイヤーを選択してください.描画する( dc, 描画領域.X + 28f, 描画領域.Y + 45f );
-                    this._ユーザリスト.進行描画する( dc );
-
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
-                        this._フェーズ完了 = true;    // 完了
-
-                    this._システム情報.描画する( dc );
                     break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.ユーザ選択:
-                {
-                    #region " 認証画面 "
-                    //----------------
-                    this._舞台画像.進行描画する( dc, 黒幕付き: true );
-                    this._ウィンドウ画像.描画する( 描画領域.X, 描画領域.Y );
-                    this._プレイヤーを選択してください.描画する( dc, 描画領域.X + 28f, 描画領域.Y + 45f );
-                    this._ユーザリスト.進行描画する( dc );
-                    this._システム情報.描画する( dc );
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.フェードアウト:
-                {
-                    #region " 背景画面＆フェードアウト "
-                    //----------------
-                    this._舞台画像.進行描画する( dc, true );
-
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
-                        this._フェーズ完了 = true;    // 完了
-
-                    this._システム情報.描画する( dc );
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.完了:
-                case フェーズ.キャンセル:
-                {
-                    #region " 最後の画面を維持。"
-                    //----------------
-                    break;
-                    //----------------
-                    #endregion
                 }
             }
         }
@@ -250,7 +213,5 @@ namespace DTXMania2.認証
         private readonly ユーザリスト _ユーザリスト;
 
         private readonly システム情報 _システム情報;
-
-        private bool _フェーズ完了;
     }
 }

@@ -45,6 +45,13 @@ namespace DTXMania2.結果
         // 進行と描画
 
 
+        public void アニメを完了する()
+        {
+            this._アイコン.アニメを完了する();
+            this._下線.アニメを完了する();
+            this._数値.アニメを完了する();
+        }
+
         public void 進行描画する( DeviceContext dc, float left, float top, double スキル値 )
         {
             if( this._初めての進行描画 )
@@ -60,13 +67,6 @@ namespace DTXMania2.結果
             this._アイコン.進行描画する( left, top );
             this._数値.進行描画する( left + 180f, top + 3f );
             this._下線.進行描画する( dc, left + 33f, top + 113f );
-        }
-
-        public void アニメを完了する()
-        {
-            this._アイコン.アニメを完了する();
-            this._下線.アニメを完了する();
-            this._数値.アニメを完了する();
         }
 
 

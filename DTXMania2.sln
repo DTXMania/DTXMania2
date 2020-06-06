@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTXMania2", "DTXMania2\DTXMania2.csproj", "{90582898-3ACA-4746-9BE0-6B63EF89A105}"
-	ProjectSection(ProjectDependencies) = postProject
-		{80C8FBBC-F71D-4413-BD6B-756023F599BF} = {80C8FBBC-F71D-4413-BD6B-756023F599BF}
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSTFormat", "SSTFormat\SSTFormat.csproj", "{08404500-04A1-4413-BE88-ABA220449298}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BuildHLSL", "BuildHLSL\BuildHLSL.vcxproj", "{80C8FBBC-F71D-4413-BD6B-756023F599BF}"
@@ -29,16 +24,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{91F334F0-5
 		Docs\配布ファイルの作成手順.md = Docs\配布ファイルの作成手順.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTXMania2", "DTXMania2\DTXMania2.csproj", "{ED3CF274-10A3-4065-845C-4B43AECE8176}"
+	ProjectSection(ProjectDependencies) = postProject
+		{80C8FBBC-F71D-4413-BD6B-756023F599BF} = {80C8FBBC-F71D-4413-BD6B-756023F599BF}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{90582898-3ACA-4746-9BE0-6B63EF89A105}.Debug|x64.ActiveCfg = Debug|x64
-		{90582898-3ACA-4746-9BE0-6B63EF89A105}.Debug|x64.Build.0 = Debug|x64
-		{90582898-3ACA-4746-9BE0-6B63EF89A105}.Release|x64.ActiveCfg = Release|x64
-		{90582898-3ACA-4746-9BE0-6B63EF89A105}.Release|x64.Build.0 = Release|x64
 		{08404500-04A1-4413-BE88-ABA220449298}.Debug|x64.ActiveCfg = Debug|x64
 		{08404500-04A1-4413-BE88-ABA220449298}.Debug|x64.Build.0 = Debug|x64
 		{08404500-04A1-4413-BE88-ABA220449298}.Release|x64.ActiveCfg = Release|x64
@@ -55,6 +51,10 @@ Global
 		{6BEA50E0-0A24-4487-BF87-CD33701D50DE}.Debug|x64.Build.0 = Debug|x64
 		{6BEA50E0-0A24-4487-BF87-CD33701D50DE}.Release|x64.ActiveCfg = Release|x64
 		{6BEA50E0-0A24-4487-BF87-CD33701D50DE}.Release|x64.Build.0 = Release|x64
+		{ED3CF274-10A3-4065-845C-4B43AECE8176}.Debug|x64.ActiveCfg = Debug|x64
+		{ED3CF274-10A3-4065-845C-4B43AECE8176}.Debug|x64.Build.0 = Debug|x64
+		{ED3CF274-10A3-4065-845C-4B43AECE8176}.Release|x64.ActiveCfg = Release|x64
+		{ED3CF274-10A3-4065-845C-4B43AECE8176}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

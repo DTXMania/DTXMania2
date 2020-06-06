@@ -35,7 +35,7 @@ namespace DTXMania2.曲読み込み
         // 進行と描画
 
 
-        public void 描画する()
+        public void 進行描画する()
         {
             var ノード画像 = Global.App.演奏譜面.譜面と画像を現行化済み ? ( Global.App.演奏譜面.プレビュー画像 ?? this._既定のノード画像 ) : this._現行化前のノード画像;
 
@@ -49,7 +49,7 @@ namespace DTXMania2.曲読み込み
                     Global.画面左上dpx.Y - this._プレビュー画像表示位置dpx.Y - this._プレビュー画像表示サイズdpx.Y / 2f,
                     0f );
 
-            ノード画像.描画する( 変換行列 );
+            ノード画像.進行描画する( 変換行列 );
         }
 
 

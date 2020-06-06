@@ -49,18 +49,22 @@ namespace FDK
             // Texture2D の本体（DXGIサーフェス）から Bitmap を生成する。
             using var dxgiSurface = captureTexture.QueryInterface<Surface>();
             var dataRect = dxgiSurface.Map( SharpDX.DXGI.MapFlags.Read, out DataStream dataStream );
-            var bitmap = new Bitmap(
-                d2dDeviceContext,
-                new Size2( captureTexture.Description.Width, captureTexture.Description.Height ),
-                new DataPointer( dataStream.DataPointer, (int) dataStream.Length ),
-                dataRect.Pitch,
-                new BitmapProperties(
-                    new PixelFormat( Format.B8G8R8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Ignore ),
-                    d2dDeviceContext.DotsPerInch.Width,
-                    d2dDeviceContext.DotsPerInch.Width ) );
-            dxgiSurface.Unmap();
-
-            return bitmap;
+            try
+            {
+                return new Bitmap(
+                    d2dDeviceContext,
+                    new Size2( captureTexture.Description.Width, captureTexture.Description.Height ),
+                    new DataPointer( dataStream.DataPointer, (int) dataStream.Length ),
+                    dataRect.Pitch,
+                    new BitmapProperties(
+                        new PixelFormat( Format.B8G8R8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Ignore ),
+                        d2dDeviceContext.DotsPerInch.Width,
+                        d2dDeviceContext.DotsPerInch.Width ) );
+            }
+            finally
+            {
+                dxgiSurface.Unmap();
+            }
         }
     }
 }

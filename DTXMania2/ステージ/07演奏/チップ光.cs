@@ -165,7 +165,7 @@ namespace DTXMania2.演奏
 
                             const float 不透明度 = 0.5f;    // 眩しいので減光
 
-                            this._放射光.描画する( 変換行列, 転送元矩形: 転送元矩形dpx, 不透明度0to1: 不透明度 );
+                            this._放射光.進行描画する( 変換行列, 転送元矩形: 転送元矩形dpx, 不透明度0to1: 不透明度 );
                         }
 
                         // (2) 光輪 の進行描画。
@@ -179,7 +179,7 @@ namespace DTXMania2.演奏
                                     Global.画面左上dpx.Y - ( status.表示中央位置dpx.Y ),
                                     0f );
 
-                            this._光輪.描画する( 変換行列, 転送元矩形: 転送元矩形dpx, 不透明度0to1: (float) status.光輪の不透明度.Value );
+                            this._光輪.進行描画する( 変換行列, 転送元矩形: 転送元矩形dpx, 不透明度0to1: (float) status.光輪の不透明度.Value );
                         }
 
                         // 全部終わったら非表示へ。

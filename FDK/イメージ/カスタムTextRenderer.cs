@@ -105,8 +105,8 @@ namespace FDK
 
         protected override void Dispose( bool disposing )
         {
-            // ↓これをコメントアウトすると Null参照例外が発生する（.NET Core 3.0 のみ？）
-            //base.Dispose( disposing );
+            this._D2DDeviceContext = null!;
+            this._D2DFactory1 = null!;
         }
 
         /// <summary>
@@ -197,35 +197,34 @@ namespace FDK
             switch( drawingEffect )
             {
                 case 縁取りDrawingEffect effect:
-                    using( var 縁ブラシ = new SolidColorBrush( renderTarget, effect.縁の色 ) )
-                    using( var 文字ブラシ = new SolidColorBrush( renderTarget, effect.文字の色 ) )
-                    using( var strokeStyle = new StrokeStyle( this._D2DFactory1, new StrokeStyleProperties() { LineJoin = LineJoin.Miter } ) )    // 突き抜け防止
-                    {
-                        renderTarget.DrawGeometry( 原点移動済みパスジオメトリ, 縁ブラシ, effect.縁の太さ, strokeStyle );
-                        renderTarget.FillGeometry( 原点移動済みパスジオメトリ, 文字ブラシ );
-                    }
+                {
+                    using var 縁ブラシ = new SolidColorBrush( renderTarget, effect.縁の色 );
+                    using var 文字ブラシ = new SolidColorBrush( renderTarget, effect.文字の色 );
+                    using var strokeStyle = new StrokeStyle( this._D2DFactory1, new StrokeStyleProperties() { LineJoin = LineJoin.Miter } );    // 突き抜け防止
+                    renderTarget.DrawGeometry( 原点移動済みパスジオメトリ, 縁ブラシ, effect.縁の太さ, strokeStyle );
+                    renderTarget.FillGeometry( 原点移動済みパスジオメトリ, 文字ブラシ );
                     break;
-
+                }
                 case ドロップシャドウDrawingEffect effect:
-                    using( var 影ブラシ = new SolidColorBrush( renderTarget, effect.影の色 ) )
-                    using( var 文字ブラシ = new SolidColorBrush( renderTarget, effect.文字の色 ) )
-                    {
-                        var 影の変換行列 = 変換行列 * Matrix3x2.Translation( effect.影の距離, effect.影の距離 );
-                        using var 影のパスジオメトリ = new TransformedGeometry( this._D2DFactory1, パスジオメトリ, 影の変換行列 );
-                        renderTarget.FillGeometry( 影のパスジオメトリ, 影ブラシ );
-                        renderTarget.FillGeometry( 原点移動済みパスジオメトリ, 文字ブラシ );
-                    }
+                {
+                    using var 影ブラシ = new SolidColorBrush( renderTarget, effect.影の色 );
+                    using var 文字ブラシ = new SolidColorBrush( renderTarget, effect.文字の色 );
+                    var 影の変換行列 = 変換行列 * Matrix3x2.Translation( effect.影の距離, effect.影の距離 );
+                    using var 影のパスジオメトリ = new TransformedGeometry( this._D2DFactory1, パスジオメトリ, 影の変換行列 );
+                    renderTarget.FillGeometry( 影のパスジオメトリ, 影ブラシ );
+                    renderTarget.FillGeometry( 原点移動済みパスジオメトリ, 文字ブラシ );
                     break;
-
+                }
                 case DrawingEffect effect:
-                    using( var 文字ブラシ = new SolidColorBrush( renderTarget, effect.文字の色 ) )
-                    {
-                        renderTarget.FillGeometry( 原点移動済みパスジオメトリ, 文字ブラシ );
-                    }
+                {
+                    using var 文字ブラシ = new SolidColorBrush( renderTarget, effect.文字の色 );
+                    renderTarget.FillGeometry( 原点移動済みパスジオメトリ, 文字ブラシ );
                     break;
-
+                }
                 default:
+                {
                     throw new ArgumentException( "未知の DrawingEffect が指定されました。" );
+                }
             }
             //----------------
             #endregion
@@ -289,21 +288,24 @@ namespace FDK
         /// </summary>
         /// <param name="clientDrawingContext"></param>
         /// <returns>ピクセルスナッピングが無効なら true 、有効なら false。</returns>
-        public override bool IsPixelSnappingDisabled( object clientDrawingContext ) => false;
+        public override bool IsPixelSnappingDisabled( object clientDrawingContext )
+            => false;
 
         /// <summary>
         ///     抽象座標から DIP への変形行列を返す。
         /// </summary>
         /// <param name="clientDrawingContext"></param>
         /// <returns></returns>
-        public override RawMatrix3x2 GetCurrentTransform( object clientDrawingContext ) => this._現在の変換行列;
+        public override RawMatrix3x2 GetCurrentTransform( object clientDrawingContext )
+            => this._現在の変換行列;
 
         /// <summary>
         ///     DIP ごとの物理ピクセル数を返す。
         /// </summary>
         /// <param name="clientDrawingContext"></param>
         /// <returns></returns>
-        public override float GetPixelsPerDip( object clientDrawingContext ) => this._現在のDPI;
+        public override float GetPixelsPerDip( object clientDrawingContext ) 
+            => this._現在のDPI;
 
 
         private SharpDX.Direct2D1.Factory1 _D2DFactory1;

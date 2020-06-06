@@ -55,21 +55,6 @@ namespace DTXMania2.選曲.QuickConfig
         // 進行と描画
 
 
-        public override void 進行描画する( DeviceContext dc, float 左位置, float 上位置 )
-        {
-            // ラベル
-
-            base.進行描画する( dc, 左位置, 上位置 );
-
-            // 項目
-
-            int 項目番号 = this.現在の選択肢番号;
-            var 項目名 = this.選択肢リスト[ 項目番号 ];
-            var 項目画像 = this._選択肢文字列画像リスト[ 項目名 ];
-
-            項目画像.描画する( dc, 左位置 + 400f, 上位置 );
-        }
-
         public virtual void 前を選択する( bool Loop = true )
         {
             if( Loop )
@@ -104,6 +89,21 @@ namespace DTXMania2.選曲.QuickConfig
                     this._値が変更された?.Invoke( this );
                 }
             }
+        }
+
+        public override void 進行描画する( DeviceContext dc, float 左位置, float 上位置 )
+        {
+            // ラベル
+
+            base.進行描画する( dc, 左位置, 上位置 );
+
+            // 項目
+
+            int 項目番号 = this.現在の選択肢番号;
+            var 項目名 = this.選択肢リスト[ 項目番号 ];
+            var 項目画像 = this._選択肢文字列画像リスト[ 項目名 ];
+
+            項目画像.描画する( dc, 左位置 + 400f, 上位置 );
         }
 
 

@@ -33,7 +33,7 @@ namespace DTXMania2
         public Size2 ビュアーモード時のウィンドウサイズ { get; set; }
 
         /// <summary>
-        ///     チップヒットの判定位置を、判定バーからさらに上（負数）または下（正数）に調整する。
+        ///     チップヒットの判定位置を、判定バーからさらに上（負数; チップから下）または下（正数; チップから上）に調整する。
         ///     -99～+99[ms] 。
         /// </summary>
         /// <remarks>
@@ -115,7 +115,7 @@ namespace DTXMania2
 
             // (1) 読み込み or 新規作成
 
-            SystemConfig config;
+            SystemConfig config = null!;
             if( File.Exists( path.変数なしパス ) )
             {
                 var yamlText = File.ReadAllText( path.変数なしパス );
@@ -123,11 +123,12 @@ namespace DTXMania2
                 config = deserializer.Deserialize<SystemConfig>( yamlText );
 
                 if( VERSION != config.Version )
-                    throw new Exception( "バージョンが違います。" );
+                    config = null!;
             }
-            else
+            if( config is null )
             {
                 // 新規生成
+                Log.Info( "システム設定ファイルを新規に作成します。" );
                 config = new SystemConfig();
             }
 

@@ -6,8 +6,6 @@ namespace DTXMania2
 {
     interface IStage : IDisposable
     {
-        void 進行する();
-
-        void 描画する();
+        void 進行描画する();
     }
 }

@@ -51,7 +51,6 @@ namespace DTXMania2.タイトル
 
             // 最初のフェーズへ。
             this.現在のフェーズ = フェーズ.表示;
-            this._フェーズ完了 = false;
         }
 
         public void Dispose()
@@ -60,7 +59,7 @@ namespace DTXMania2.タイトル
 
             Global.App.システムサウンド.停止する( システムサウンド種別.タイトルステージ_開始音 );
             Global.App.システムサウンド.停止する( システムサウンド種別.タイトルステージ_ループBGM );
-            //Global.App.システムサウンド.停止する( システムサウンド種別.タイトルステージ_確定音 );  --> ならしっぱなしでいい
+            //Global.App.システムサウンド.停止する( システムサウンド種別.タイトルステージ_確定音 );  --> 鳴らしっぱなしでいい
 
             this._パッドを叩いてください.Dispose();
             this._帯ブラシ.Dispose();
@@ -74,9 +73,14 @@ namespace DTXMania2.タイトル
         // 進行と描画
 
 
-        public void 進行する()
+        public void 進行描画する()
         {
             this._システム情報.FPSをカウントしプロパティを更新する();
+            this._システム情報.VPSをカウントする();
+
+            var dc = Global.既定のD2D1DeviceContext;
+            dc.Transform = Global.拡大行列DPXtoPX;
+
             Global.App.ドラム入力.すべての入力デバイスをポーリングする();
 
             switch( this.現在のフェーズ )
@@ -104,89 +108,53 @@ namespace DTXMania2.タイトル
                         //----------------
                         #endregion
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    #region " タイトル画面を描画する。"
+                    //----------------
+                    this._舞台画像.進行描画する( dc );
+                    this._タイトルロゴ.進行描画する(
+                        ( Global.設計画面サイズ.Width - this._タイトルロゴ.サイズ.Width ) / 2f,
+                        ( Global.設計画面サイズ.Height - this._タイトルロゴ.サイズ.Height ) / 2f - 100f );
+                    this._帯メッセージを描画する( dc );
+                    this._システム情報.描画する( dc );
+                    //----------------
+                    #endregion
+
+                    break;
                 }
                 case フェーズ.フェードアウト:
                 {
-                    #region " フェードアウト描画が完了したら完了フェーズへ。"
+                    #region " タイトル画面＆フェードアウトを描画する。"
                     //----------------
-                    if( this._フェーズ完了 )
+                    this._舞台画像.進行描画する( dc );
+                    this._タイトルロゴ.進行描画する(
+                        ( Global.設計画面サイズ.Width - this._タイトルロゴ.サイズ.Width ) / 2f,
+                        ( Global.設計画面サイズ.Height - this._タイトルロゴ.サイズ.Height ) / 2f - 100f );
+                    this._帯メッセージを描画する( dc );
+
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
                     {
+                        // フェードアウト描画が完了したら完了フェーズへ。
                         this.現在のフェーズ = フェーズ.完了;
-                        this._フェーズ完了 = false;
                     }
-                    break;
+
+                    this._システム情報.描画する( dc );
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.キャンセル:
                 case フェーズ.完了:
                 {
                     #region " 遷移終了。Appによるステージ遷移を待つ。"
                     //----------------
-                    break;
                     //----------------
                     #endregion
-                }
-            }
-        }
 
-        public void 描画する()
-        {
-            this._システム情報.VPSをカウントする();
-
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
-            switch( this.現在のフェーズ )
-            {
-                case フェーズ.表示:
-                {
-                    #region " タイトル画面。"
-                    //----------------
-                    this._舞台画像.進行描画する( dc );
-
-                    this._タイトルロゴ.描画する(
-                        ( Global.設計画面サイズ.Width - this._タイトルロゴ.サイズ.Width ) / 2f,
-                        ( Global.設計画面サイズ.Height - this._タイトルロゴ.サイズ.Height ) / 2f - 100f );
-
-                    this._帯メッセージを描画する( dc );
-
-                    this._システム情報.描画する( dc );
                     break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.フェードアウト:
-                {
-                    #region " タイトル画面＆フェードアウト。"
-                    //----------------
-                    this._舞台画像.進行描画する( dc );
-
-                    this._タイトルロゴ.描画する(
-                        ( Global.設計画面サイズ.Width - this._タイトルロゴ.サイズ.Width ) / 2f,
-                        ( Global.設計画面サイズ.Height - this._タイトルロゴ.サイズ.Height ) / 2f - 100f );
-
-                    this._帯メッセージを描画する( dc );
-
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
-                        this._フェーズ完了 = true;    // 完了
-
-                    this._システム情報.描画する( dc );
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.キャンセル:
-                case フェーズ.完了:
-                {
-                    #region " 最後の画面を維持。"
-                    //----------------
-                    break;
-                    //----------------
-                    #endregion
                 }
             }
         }
@@ -205,9 +173,6 @@ namespace DTXMania2.タイトル
         private readonly Brush _帯ブラシ;
 
         private readonly 文字列画像D2D _パッドを叩いてください;
-
-        private bool _フェーズ完了;
-
 
         private void _帯メッセージを描画する( DeviceContext dc )
         {

@@ -291,23 +291,25 @@ namespace DTXMania2
             this.UpdateFrom( user );
         }
 
-        public static UserConfig 読み込むFromPath( VariablePath path )
+        public static UserConfig 読み込む( string userId )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
+            var path = new VariablePath( @$"$(AppData)\User_{userId}.yaml" );
             var yamlText = File.ReadAllText( path.変数なしパス );
             var deserializer = new Deserializer();
             var config = deserializer.Deserialize<UserConfig>( yamlText );
 
             if( VERSION != config.Version )
-                throw new Exception( "バージョンが違います。" );
+            {
+                Log.Info( $"ユーザ設定ファイル[ID={userId}]を新規に作成します。" );
+                config = new UserConfig() {
+                    Id = userId,
+                    Name = userId,
+                };
+            }
 
             return config;
-        }
-
-        public static UserConfig 読み込むFromID( string userId )
-        {
-            return 読み込むFromPath( @$"$(AppData)\User_{userId}.yaml" );
         }
 
         /// <summary>

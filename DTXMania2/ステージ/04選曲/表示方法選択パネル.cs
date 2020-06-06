@@ -36,6 +36,20 @@ namespace DTXMania2.選曲
         // 進行と描画
 
 
+        public void 次のパネルを選択する()
+        {
+            this._論理パネル番号.目標値++;
+
+            Global.App.曲ツリーリスト.SelectNext( Loop: true );
+        }
+
+        public void 前のパネルを選択する()
+        {
+            this._論理パネル番号.目標値--;
+
+            Global.App.曲ツリーリスト.SelectPrev( Loop: true );
+        }
+
         public void 進行描画する()
         {
             // パネルを合計８枚表示する。（左隠れ１枚 ＋ 表示６枚 ＋ 右隠れ１枚）
@@ -49,30 +63,11 @@ namespace DTXMania2.選曲
                 var 画像 = this._パネルs[ 実パネル番号 ].画像;
 
                 const float パネル幅 = 144f;
-                画像.描画する(
+                画像.進行描画する(
                     左位置: (float) ( 768f + パネル幅 * ( i - 差分 ) ),
                     上位置: ( 3 == i ) ? 90f : 54f,            // i==3 が現在の選択パネル。他より下に描画。
                     不透明度0to1: ( 3 == i ) ? 1f : 0.5f );    //          〃　　　　　　　他より明るく描画。
             }
-        }
-
-
-
-        // パネルの選択
-
-
-        public void 次のパネルを選択する()
-        {
-            this._論理パネル番号.目標値++;
-
-            Global.App.曲ツリーリスト.SelectNext( Loop: true );
-        }
-
-        public void 前のパネルを選択する()
-        {
-            this._論理パネル番号.目標値--;
-
-            Global.App.曲ツリーリスト.SelectPrev( Loop: true );
         }
 
 
@@ -105,7 +100,7 @@ namespace DTXMania2.選曲
             new Panel( @"$(Images)\SelectStage\Sorting_Evaluation.png" ),
         };
 
-        private TraceValue _論理パネル番号;
+        private readonly TraceValue _論理パネル番号;
 
         private int _論理パネル番号を実パネル番号に変換して返す( int 論理パネル番号 )
         {

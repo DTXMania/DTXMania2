@@ -12,14 +12,24 @@ namespace DTXMania2
     class TaskMessageQueue
     {
 
+        // 生成と終了
+
+
+        public TaskMessageQueue()
+        {
+            this._TaskMessageList = new List<TaskMessage>();
+        }
+
+
+
         // メッセージの送信・取得
 
 
         /// <summary>
-        ///     タスクメッセージを投稿し、完了通知待ち用のイベントを返す。
+        ///     タスクメッセージをキューに格納し、完了通知待ち用のイベントを返す。
         /// </summary>
         /// <returns>
-        ///     返されるイベントは、<see cref="TaskMessage.完了通知"/> と同一のインスタンスである。
+        ///     返されるイベントは、引数で受け取ったメッセージの <see cref="TaskMessage.完了通知"/> と同一である。
         /// </returns>
         public ManualResetEventSlim Post( TaskMessage msg )
         {
@@ -34,7 +44,7 @@ namespace DTXMania2
         ///     宛先に対するメッセージを1つ取得して返す。
         /// </summary>
         /// <param name="宛先">取得するメッセージの宛先。</param>
-        /// <returns>取得できたメッセージの列挙。1つも無ければ空。</returns>
+        /// <returns>取得できたメッセージの列挙。1つも無ければ空の列挙を返す。</returns>
         public IEnumerable<TaskMessage> Get( TaskMessage.タスク名 宛先 )
         {
             lock( this._TaskMessageList )
@@ -67,6 +77,6 @@ namespace DTXMania2
         // ローカル
 
 
-        private readonly List<TaskMessage> _TaskMessageList = new List<TaskMessage>();
+        private readonly List<TaskMessage> _TaskMessageList;
     }
 }

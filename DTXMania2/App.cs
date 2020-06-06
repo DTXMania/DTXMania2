@@ -1,66 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using SharpDX;
+using System.Windows.Forms;
 using FDK;
 using SSTFormat.v004;
 using DTXMania2.曲;
 
 namespace DTXMania2
 {
-    /// <summary>
-    ///     アプリケーションの進行描画（とそのタスク）。
-    /// </summary>
-    class App : IDisposable
+    [DebuggerDisplay("Form")]   // Form.ToString() の評価タイムアウト回避用。
+    public partial class App : Form
     {
 
         // プロパティ
 
 
-        public Random 乱数 { get; }
+        internal ScreenMode ScreenMode { get; private protected set; } = null!;
 
-        public SystemConfig システム設定 { get; set; }
+        internal KeyboardHID KeyboardHID { get; private protected set; } = null!;
 
-        public システムサウンド システムサウンド { get; }
+        internal GameControllersHID GameControllersHID { get; private protected set; } = null!;
 
-        public ドラムサウンド ドラムサウンド { get; }
+        internal MidiIns MidiIns { get; private protected set; } = null!;
 
-        public ドラム入力 ドラム入力 { get; protected set; } = null!;
+        internal Random 乱数 { get; } = new Random( DateTime.Now.Millisecond );
 
-        public SoundDevice サウンドデバイス { get; protected set; } = null!;
+        internal SystemConfig システム設定 { get; set; } = null!;
 
-        public SoundTimer サウンドタイマ { get; protected set; } = null!;
+        internal システムサウンド システムサウンド { get; private protected set; } = null!;
 
-        public アイキャッチ管理 アイキャッチ管理 { get; protected set; } = null!;
+        internal ドラムサウンド ドラムサウンド { get; private protected set; } = null!;
 
-        public SelectableList<ユーザ設定> ユーザリスト { get; }
+        internal ドラム入力 ドラム入力 { get; private protected set; } = null!;
 
-        public ユーザ設定 ログオン中のユーザ => this.ユーザリスト.SelectedItem!;
+        internal SoundDevice サウンドデバイス { get; private protected set; } = null!;
 
-        public List<Score> 全譜面リスト { get; }
+        internal SoundTimer サウンドタイマ { get; private protected set; } = null!;
 
-        public List<Song> 全曲リスト { get; }
+        internal アイキャッチ管理 アイキャッチ管理 { get; private protected set; } = null!;
+
+        internal SelectableList<ユーザ設定> ユーザリスト { get; } = new SelectableList<ユーザ設定>();
+
+        internal ユーザ設定 ログオン中のユーザ => this.ユーザリスト.SelectedItem!;
+
+        internal List<Score> 全譜面リスト { get; } = new List<Score>();
+
+        internal List<Song> 全曲リスト { get; } = new List<Song>();
 
         /// <summary>
         ///     曲ツリーのリスト。選曲画面の「表示方法選択パネル」で変更できる。<br/>
         ///     [0]全曲、[1]評価順 で固定。
         /// </summary>
-        public SelectableList<曲ツリー> 曲ツリーリスト { get; }
+        internal SelectableList<曲ツリー> 曲ツリーリスト { get; } = new SelectableList<曲ツリー>();
 
-        public 現行化 現行化 { get; }
+        internal 現行化 現行化 { get; } = new 現行化();
 
-        public CacheStore<CSCore.ISampleSource> WAVキャッシュ { get; protected set; } = null!;
+        internal CacheStore<CSCore.ISampleSource> WAVキャッシュ { get; private protected set; } = null!;
 
-        public IStage? ステージ { get; protected set; } = null;
+        internal IStage? ステージ { get; private protected set; } = null;
+
+        /// <summary>
+        ///     アプリケーション再起動指示フラグ。
+        /// </summary>
+        /// <remarks>
+        ///     <see cref="App"/> インスタンスの終了時にこのフラグが true になっている場合には、
+        ///     このインスタンスの保持者（おそらくProgramクラス）は適切に再起動を行うこと。
+        /// </remarks>
+        internal bool 再起動が必要 { get; private protected set; } = false;
 
 
 
-        // 演奏ごとのプロパティ
+        // 演奏ごとに更新されるプロパティ
 
 
         /// <summary>
@@ -71,23 +89,23 @@ namespace DTXMania2
         ///     <see cref="RandomSelectNode"/> がフォーカスされている場合は、ここには譜面がランダムに設定されるため
         ///     <see cref="曲ツリー.フォーカスノード"/> の譜面とは必ずしも一致しないので注意。
         /// </remarks>
-        public Score 演奏譜面 { get; set; } = null!;
+        internal Score 演奏譜面 { get; set; } = null!;
 
         /// <summary>
         ///     現在演奏中のスコア。
         ///     曲読み込みステージで<see cref="App.演奏譜面"/>を読み込んで生成される。
         /// </summary>
-        public スコア 演奏スコア { get; set; } = null!;
+        internal スコア 演奏スコア { get; set; } = null!;
 
         /// <summary>
         ///     <see cref="App.演奏スコア"/> に対応して生成されたWAVサウンドインスタンスの管理。
         /// </summary>
-        public WAV管理 WAV管理 { get; set; } = null!;
+        internal WAV管理 WAV管理 { get; set; } = null!;
 
         /// <summary>
         ///     <see cref="App.演奏スコア"/>  に対応して生成されたAVI動画インスタンスの管理。
         /// </summary>
-        public AVI管理 AVI管理 { get; set; } = null!;
+        internal AVI管理 AVI管理 { get; set; } = null!;
 
 
 
@@ -95,169 +113,127 @@ namespace DTXMania2
 
 
         /// <summary>
-        ///     コンストラクタ。一部のグローバルリソースを初期化する。
+        ///     コンストラクタ。
         /// </summary>
-        /// <remarks>
-        ///     アプリの起動直後の沈黙期間を短縮するために、コンストラクタでは必要最低限のグローバルリソースだけを生成し、
-        ///     残りは <see cref="App.グローバルリソースを作成する()"/> メソッドで生成する。
-        /// </remarks>
-        public App()
+        internal App()
         {
+            InitializeComponent();
+        }
+
+        /// <summary>
+        ///     アプリケーションの起動処理を行う。
+        /// </summary>
+        protected override void OnLoad( EventArgs e )
+        {
+            // ※ このメソッドは GUI スレッドで実行されるので、後回しにできる初期化処理は進行描画タスクに回して、
+            // 　 なるべく早くこのメソッドを抜けること。
+
+            Log.Header( "アプリケーション起動" );
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            SystemConfig.最新版にバージョンアップする();
-            UserConfig.最新版にバージョンアップする();
+            
+            // フォームを設定する。
+            
+            this.Text = $"DTXMania2 Release {int.Parse( Application.ProductVersion.Split( '.' ).ElementAt( 0 ) ):000}";
+            this.ClientSize = new Size( 1024, 576 );
+            this.Icon = Properties.Resources.DTXMania2;
+            
+            this.ScreenMode = new ScreenMode( this );
+            
+            Global.App = this;
+            Global.Handle = this.Handle;
 
-            this.乱数 = new Random( DateTime.Now.Millisecond );
-            this.システム設定 = SystemConfig.読み込む();
-            this.ユーザリスト = new SelectableList<ユーザ設定>();
-            this.全譜面リスト = new List<Score>();
-            this.全曲リスト = new List<Song>();
-            this.曲ツリーリスト = new SelectableList<曲ツリー>();
-            this.現行化 = new 現行化();
 
-            #region " リソース関連のフォルダ変数を更新する。"
-            //----------------
-            {
-                // DrumSounds
-                var drumSounds = this.システム設定.DrumSoundsFolder;
-                Folder.フォルダ変数を追加または更新する( "DrumSounds", ( Path.IsPathRooted( drumSounds.変数なしパス ) ) ? 
-                    drumSounds.変数なしパス :
-                    new VariablePath( @$"$(ResourcesRoot)\{drumSounds}" ).変数なしパス );
-                Log.Info( $"DrumSounds folder: {new VariablePath( Folder.フォルダ変数の内容を返す( "DrumSounds" ) ).変数付きパス}" );
-
-                // SystemSounds
-                var systemSounds = this.システム設定.SystemSoundsFolder;
-                Folder.フォルダ変数を追加または更新する( "SystemSounds", ( Path.IsPathRooted( systemSounds.変数なしパス ) ) ?
-                    systemSounds.変数なしパス :
-                    new VariablePath( @$"$(ResourcesRoot)\{systemSounds}" ).変数なしパス );
-                Log.Info( $"SystemSounds folder: {new VariablePath( Folder.フォルダ変数の内容を返す( "SystemSounds" ) ).変数付きパス}" );
-
-                // Images
-                var images = this.システム設定.ImagesFolder;
-                Folder.フォルダ変数を追加または更新する( "Images", ( Path.IsPathRooted( images.変数なしパス ) ) ?
-                    images.変数なしパス :
-                    new VariablePath( @$"$(ResourcesRoot)\{images}" ).変数なしパス );
-                Log.Info( $"Images folder: {new VariablePath( Folder.フォルダ変数の内容を返す( "Images" ) ).変数付きパス}" );
-            }
-            //----------------
-            #endregion
+            // サウンドデバイスとサウンドタイマを初期化する。これらは入力デバイスで使用されるので先に初期化する。
 
             this.サウンドデバイス = new SoundDevice( CSCore.CoreAudioAPI.AudioClientShareMode.Shared );
             // マスタ音量（小:0～1:大）... 0.5を超えるとだいたいWASAPI共有モードのリミッターに抑制されるようになる
             // ※サウンドデバイスの音量プロパティはコンストラクタの実行後でないと set できないので、初期化子にはしないこと。（した場合の挙動は不安定）
             this.サウンドデバイス.音量 = 0.5f;
             this.サウンドタイマ = new SoundTimer( this.サウンドデバイス );
-            this.システムサウンド = new システムサウンド( this.サウンドデバイス );  // 個々のサウンドの生成は後工程で。
-            this.ドラムサウンド = new ドラムサウンド( this.サウンドデバイス );      // 　　　　　　〃
+
+
+            // 入力デバイスを初期化する。これらは GUI スレッドで行う必要がある。
+
+            this.KeyboardHID = new KeyboardHID( this.サウンドタイマ );
+            this.GameControllersHID = new GameControllersHID( this.Handle, this.サウンドタイマ );
+            this.MidiIns = new MidiIns( this.サウンドタイマ );
+
+
+            // システム設定ファイルを読み込む。
+
+            SystemConfig.最新版にバージョンアップする();
+            this.システム設定 = SystemConfig.読み込む();
+
+
+            // メインループを別スレッドで開始する。
+
+            if( !this._進行描画タスクを起動する().WaitOne( 5000 ) )
+                throw new TimeoutException( "進行描画タスクの起動処理がタイムアウトしました。" );
+
+            
+            // 初期化完了。（進行描画タスクの起動後に）
+            
+            this._未初期化 = false;
+
+            
+            // 全画面モードが設定されているならここで全画面に切り替える。
+            
+            if( this.システム設定.全画面モードである )
+                this.ScreenMode.ToFullscreenMode();
+
+            base.OnLoad( e );
         }
 
         /// <summary>
-        ///     残りのグローバルリソースを初期化する。
+        ///     アプリケーションの終了処理を行う。
         /// </summary>
-        /// <remarks>
-        ///     アプリの起動直後の沈黙期間を短縮するために、コンストラクタでは必要最低限のグローバルリソースだけを生成し、
-        ///     残りはこのメソッドで生成する。
-        /// </remarks>
-        public void グローバルリソースを作成する()
+        protected override void OnClosing( CancelEventArgs e )
         {
-            this.ドラム入力 = new ドラム入力( Global.AppForm.KeyboardHID, Global.AppForm.GameControllersHID, Global.AppForm.MidiIns );
-            this.WAVキャッシュ = new CacheStore<CSCore.ISampleSource>() {
-                ファイルからデータを生成する = ( path ) => SampleSourceFactory.Create( Global.App.サウンドデバイス, path, Global.App.ログオン中のユーザ.再生速度 ),
-            };
-
-            #region " ユーザリストにユーザを登録する。"
-            //----------------
-            {
-                var userYamls = Directory.EnumerateFiles( Folder.フォルダ変数の内容を返す( "AppData" ), @"User_*.yaml", SearchOption.TopDirectoryOnly );
-                int headLength = "User_".Length;
-                int tailLength = ".yaml".Length;
-
-                foreach( var userYaml in userYamls )
-                {
-                    // ファイル名からユーザIDを抽出。
-                    var fname = Path.GetFileName( userYaml );
-                    var userId = fname[ headLength..(fname.Length - tailLength) ];
-
-                    var userConfig = ユーザ設定.読み込む( userId );
-                    this.ユーザリスト.Add( userConfig );
-                }
-            }
-            //----------------
-            #endregion
-
-            // 各DBを最新版にバージョンアップする。
-            ScoreDB.最新版にバージョンアップする();
-            RecordDB.最新版にバージョンアップする();
-            ScorePropertiesDB.最新版にバージョンアップする();
-        }
-
-        /// <summary>
-        ///     グローバルリソースを破棄する。
-        /// </summary>
-        public virtual void Dispose()
-        {
+            Log.Header( "アプリケーション終了" );
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            //this.現行化.終了する();  --> Globalが破棄されるより前に実行する必要があるので、進行描画のメインループの終了箇所（Globalが破棄されるところ）に移動。
 
-            this.ステージ?.Dispose();  // 進行描画メインループ終了時にDispose済みだが念のため
-            this.ステージ = null;      // 
+            // 進行描画タスクのメインループに終了指示を送り、終了するのを待つ。
 
-            foreach( var song in this.全曲リスト )
-                song.Dispose(); // 全譜面リストもここで解放される。
+            this._進行描画タスクを終了する();
 
-            foreach( var tree in this.曲ツリーリスト )
-                tree.Dispose();
 
-            this.ドラムサウンド.Dispose();
-            this.システムサウンド.Dispose();
-            this.サウンドタイマ.Dispose();
-            this.サウンドデバイス.Dispose();
-            this.WAVキャッシュ?.Dispose();    // WAVキャッシュの破棄は最後に。
+            // システム設定ファイルを保存する。
 
             this.システム設定.保存する();
+
+
+            // 入力デバイスを破棄する。
+
+            this.MidiIns.Dispose();
+            this.GameControllersHID.Dispose();
+            this.KeyboardHID.Dispose();
+
+
+            // サウンドデバイスとサウンドタイマを破棄する。
+
+            this.サウンドタイマ.Dispose();
+            this.サウンドデバイス.Dispose();
+            this.WAVキャッシュ?.Dispose();   // WAVキャッシュの破棄は最後に。
+
+
+            // 未初期化状態へ。
+
+            this._未初期化 = true;
+
+            base.OnClosing( e );
         }
 
         /// <summary>
-        ///     進行描画タスクを生成し、進行描画処理ループを開始する。
+        ///     再起動フラグをセットして、アプリケーションを終了する。
         /// </summary>
-        public void 進行描画タスクを開始する( Size2F 設計画面サイズ, Size2F 物理画面サイズ )
+        internal void 再起動する()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            Task.Run( () => {
-
-                Log.現在のスレッドに名前をつける( "進行描画" );
-                this._進行描画タスクのNETスレッドID = Thread.CurrentThread.ManagedThreadId;
-
-                this._進行描画のメインループを実行する( 設計画面サイズ, 物理画面サイズ );
-
-            } );
-        }
-
-        /// <summary>
-        ///     進行描画処理を終了し、タスクを終了する。
-        /// </summary>
-        public void 進行描画タスクを終了する()
-        {
-            using var _ = new LogBlock( Log.現在のメソッド名 );
-
-            // 進行描画タスクに終了を指示する。
-            var msg = new TaskMessage(
-                宛先: TaskMessage.タスク名.進行描画,
-                内容: TaskMessage.内容名.終了指示 );
-
-            // 進行描画タスクからの完了通知を待つ。
-            if( Thread.CurrentThread.ManagedThreadId != this._進行描画タスクのNETスレッドID )   // ハングアップ回避; 念のため
-            {
-                if( !Global.TaskMessageQueue.Post( msg ).Wait( 5000 ) )
-                    throw new Exception( "進行描画タスクの終了がタイムアウトしました。" );
-            }
-            else
-            {
-                Log.WARNING( "進行描画タスクから呼び出されました。完了通知待ちをスキップします。" );
-            }
+            this.再起動が必要 = true;
+            this.Close();
         }
 
 
@@ -265,60 +241,96 @@ namespace DTXMania2
         // 進行と描画
 
 
-        /// <summary>
-        ///     進行描画処理の初期化、メインループ、終了処理を行う。
-        ///     <see cref="TaskMessage"/>で終了が指示されるまで、このメソッドからは戻らない。
-        /// </summary>
-        private void _進行描画のメインループを実行する( Size2F 設計画面サイズ, Size2F 物理画面サイズ )
+        private ManualResetEvent _進行描画タスクを起動する()
+        {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            var 起動完了通知 = new ManualResetEvent( false );
+
+            Task.Run( () => {
+
+                Log.現在のスレッドに名前をつける( "進行描画" );
+                Log.Info( "進行描画タスクを起動しました。" );
+                
+                this._進行描画タスクのNETスレッドID = Thread.CurrentThread.ManagedThreadId;
+                Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+
+                起動完了通知.Set();
+
+                this._進行描画のメインループを実行する();
+
+            } );
+
+            return 起動完了通知;
+        }
+
+        private void _進行描画タスクを終了する()
+        {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            if( Thread.CurrentThread.ManagedThreadId != this._進行描画タスクのNETスレッドID )
+            {
+                // 進行描画タスクに終了を指示し、完了を待つ。
+                var msg = new TaskMessage(
+                    宛先: TaskMessage.タスク名.進行描画,
+                    内容: TaskMessage.内容名.終了指示 );
+
+                if( !Global.TaskMessageQueue.Post( msg ).Wait( 5000 ) )     // 最大5秒待つ
+                    throw new TimeoutException( "進行描画タスクの終了がタイムアウトしました。" );
+            }
+            else
+            {
+                // ハングアップ回避; 念のため。
+                Log.WARNING( "進行描画タスクから呼び出されました。完了通知待ちをスキップします。" );
+            }
+        }
+
+        private void _進行描画のメインループを実行する()
         {
             try
             {
-                #region " 初期化する。"
+                #region " 初期化 "
                 //----------------
                 this._パイプラインサーバを起動する();
 
-                #region " スレッドプールのオンラインスレッド数を変更する。"
-                //----------------
-                const int 希望オンラインスレッド数 = 32;
+                UserConfig.最新版にバージョンアップする();
+                ScoreDB.最新版にバージョンアップする();
+                RecordDB.最新版にバージョンアップする();
+                ScorePropertiesDB.最新版にバージョンアップする();
 
-                // 既定の数はCPUコア数に同じ。.NET の仕様により、Taskの同時利用数がこの数を超えると、それ以降の Task.Run での起動には最大2回/秒もの制限がかかる。
-                ThreadPool.GetMaxThreads( out int workMax, out int compMax );
-                ThreadPool.GetMinThreads( out int workMin, out int compMin );
+                Global.生成する(
+                    設計画面サイズ: new SharpDX.Size2F( 1920f, 1080f ),
+                    物理画面サイズ: new SharpDX.Size2F( this.ClientSize.Width, this.ClientSize.Height ) );
 
-                ThreadPool.SetMinThreads(
-                    Math.Clamp( 希望オンラインスレッド数, min: workMin, max: workMax ),     // workMin ～ workMax の範囲を越えない
-                    Math.Clamp( 希望オンラインスレッド数, min: compMin, max: compMax ) );   // compMin ～ compMax の範囲を越えない
-                //----------------
-                #endregion
+                画像.全インスタンスで共有するリソースを作成する( Global.D3D11Device1, @"$(Images)\TextureVS.cso", @"$(Images)\TexturePS.cso" );
 
-                QueueTimer timer;
-                AutoResetEvent tick通知;
+                this._システム設定をもとにリソース関連のフォルダ変数を更新する();
 
-                using( new LogBlock( "進行描画タスクの開始" ) )
-                {
-                    // グローバルリソースの大半は、進行描画タスクの中で生成する。
-                    Global.生成する( 設計画面サイズ, 物理画面サイズ );
-                    画像.全インスタンスで共有するリソースを作成する( Global.D3D11Device1 );
+                this.システムサウンド = new システムサウンド( this.サウンドデバイス );  // 個々のサウンドの生成は後工程で。
 
-                    this.アイキャッチ管理 = new アイキャッチ管理();
+                this.ドラムサウンド = new ドラムサウンド( this.サウンドデバイス );      // 　　　　　　〃
 
-                    // 1ms ごとに進行描画ループを行うよう仕込む。
-                    tick通知 = new AutoResetEvent( false );
-                    timer = new QueueTimer( 1, 1, () => tick通知.Set() );   // 1ms ごとに tick通知を set する
-                }
+                this.WAVキャッシュ = new CacheStore<CSCore.ISampleSource>() {
+                    ファイルからデータを生成する = ( path ) => SampleSourceFactory.Create( this.サウンドデバイス, path, this.ログオン中のユーザ.再生速度 ),
+                };
 
-                var スワップチェーン表示タスク = new PresentSwapChainVSync();
-                TaskMessage? 終了指示メッセージ = null;
+                this._ユーザリストにユーザを登録する();
+
+                this.アイキャッチ管理 = new アイキャッチ管理();
+
+                this.ドラム入力 = new ドラム入力( this.KeyboardHID, this.GameControllersHID, this.MidiIns );
+
 
                 // 最初のステージを生成する。
+
                 Log.Header( "起動ステージ" );
                 this.ステージ = new 起動.起動ステージ();
                 //----------------
                 #endregion
 
-                Log.Info( "進行描画ループを開始します。" );
+                TaskMessage? 終了指示メッセージ = null;
 
-                while( tick通知.WaitOne() )     // Tick 通知が来るまで待機。
+                while( true )
                 {
                     #region " 自分宛のメッセージが届いていたら、すべて処理する。"
                     //----------------
@@ -331,7 +343,7 @@ namespace DTXMania2
                                 break;
 
                             case TaskMessage.内容名.サイズ変更:
-                                this.Onサイズ変更( msg );
+                                this._リソースを再構築する( msg );
                                 break;
                         }
                     }
@@ -342,340 +354,318 @@ namespace DTXMania2
                     //----------------
                     #endregion
 
-                    #region " 進行・描画する。"
+                    #region " 進行し、描画し、表示する。"
                     //----------------
-                    this._進行する();
+                    Global.Animation.進行する();
 
-                    if( スワップチェーン表示タスク.表示待機中 )
-                    {
-                        // 表示タスクがすでに起動されているなら、今回は描画も表示も行わない。
-                    }
-                    else
-                    {
-                        // 表示タスクが起動していないなら、描画して、表示タスクを起動する。
-                        this._描画する();
-                        スワップチェーン表示タスク.表示する( Global.DXGIOutput1, Global.DXGISwapChain1! );
-                    }
+                    this.ステージ?.進行描画する();
+
+                    Global.DXGISwapChain1.Present( 1, SharpDX.DXGI.PresentFlags.None );
                     //----------------
                     #endregion
-                }
 
-                #region " 終了する。"
-                //----------------
-                using( new LogBlock( "進行描画タスクの終了" ) )
-                {
-                    this._パイプラインサーバを終了する();
-
-                    this.現行化.終了する();
-
-                    this.ステージ?.Dispose();
-                    this.ステージ = null;
-
-                    timer.Dispose();
-                    tick通知.Dispose();
-
-                    this.アイキャッチ管理.Dispose();
-
-                    画像.全インスタンスで共有するリソースを解放する();
-                    Global.解放する();
-
-                    // 終了指示を受け取っていた場合は完了を通知する。
-                    終了指示メッセージ?.完了通知.Set();
-                }
-                //----------------
-                #endregion
-            }
-            catch( Exception e )
-            {
-                Log.ERROR( $"進行描画タスクを異常終了します。[{e.Message}]" );
-                Global.AppForm.例外を通知する( e );
-            }
-        }
-
-        /// <summary>
-        ///     アプリケーションの進行処理を行う。
-        /// </summary>
-        private void _進行する()
-        {
-            // ステージを進行する。
-
-            this.ステージ?.進行する();
-            Global.Animation.進行する();
-
-            // ステージの現在のフェーズにより処理分岐。
-
-            if( this.ステージ is null )
-                return;
-
-            switch( this.ステージ )
-            {
-                case 起動.起動ステージ stage:
-
-                    #region " 完了 → タイトルステージまたは演奏ステージへ "
+                    #region " ステージの現在のフェーズにより処理分岐。"
                     //----------------
-                    if( stage.現在のフェーズ == 起動.起動ステージ.フェーズ.完了 )
+                    switch( this.ステージ )
                     {
-                        this.ステージ.Dispose();
-
-                        if( Global.Options.ビュアーモードである )
+                        case 起動.起動ステージ stage:
                         {
-                            #region " (A) ビュアーモードなら演奏ステージへ "
+                            #region " 完了 → タイトルステージまたは演奏ステージへ "
                             //----------------
-                            Log.Header( "ビュアーステージ" );
-
-                            // AutoPlayer でログイン。
-                            if( !this.ログオンする( "AutoPlay" ) )
+                            if( stage.現在のフェーズ == 起動.起動ステージ.フェーズ.完了 )
                             {
-                                System.Windows.Forms.MessageBox.Show( "AutoPlayerでのログオンに失敗しました。", "DTXMania2 error" );
-                                this.ステージ = null;
+                                this.ステージ.Dispose();
+
+                                if( Global.Options.ビュアーモードである )
+                                {
+                                    #region " (A) ビュアーモードなら演奏ステージへ "
+                                    //----------------
+                                    Log.Header( "ビュアーステージ" );
+
+                                    // AutoPlayer でログイン。
+                                    if( !this.ログオンする( "AutoPlay" ) )
+                                    {
+                                        System.Windows.Forms.MessageBox.Show( "AutoPlayerでのログオンに失敗しました。", "DTXMania2 error" );
+                                        this.ステージ = null;
+                                        this._アプリを終了する();
+                                    }
+                                    else
+                                    {
+                                        Log.Info( "AutoPlayer でログオンしました。" );
+                                    }
+
+                                    this.ステージ = new 演奏.演奏ステージ();
+                                    //----------------
+                                    #endregion
+                                }
+                                else
+                                {
+                                    #region " (B) 通常時はタイトルステージへ "
+                                    //----------------
+                                    Log.Header( "タイトルステージ" );
+                                    this.ステージ = new タイトル.タイトルステージ();
+                                    //----------------
+                                    #endregion
+                                }
+                            }
+                            //----------------
+                            #endregion
+
+                            break;
+                        }
+                        case タイトル.タイトルステージ stage:
+                        {
+                            #region " キャンセル → 終了ステージへ "
+                            //----------------
+                            if( stage.現在のフェーズ == タイトル.タイトルステージ.フェーズ.キャンセル )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "終了ステージ" );
+                                this.ステージ = new 終了.終了ステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            #region " 完了 → 認証ステージへ "
+                            //----------------
+                            else if( stage.現在のフェーズ == タイトル.タイトルステージ.フェーズ.完了 )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "認証ステージ" );
+                                this.ステージ = new 認証.認証ステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            break;
+                        }
+                        case 認証.認証ステージ stage:
+                        {
+                            #region " キャンセル → タイトルステージへ "
+                            //----------------
+                            if( stage.現在のフェーズ == 認証.認証ステージ.フェーズ.キャンセル )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "タイトルステージ" );
+                                this.ステージ = new タイトル.タイトルステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            #region " 完了 → 選曲ステージへ "
+                            //----------------
+                            else if( stage.現在のフェーズ == 認証.認証ステージ.フェーズ.完了 )
+                            {
+                                // 選択中のユーザでログインする。ログオン中のユーザがあれば先にログオフされる。
+                                this.ログオンする( this.ユーザリスト[ stage.現在選択中のユーザ ].ID ?? "AutoPlayer" );
+
+                                this.ステージ.Dispose();
+
+                                Log.Header( "選曲ステージ" );
+                                this.ステージ = new 選曲.選曲ステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            break;
+                        }
+                        case 選曲.選曲ステージ stage:
+                        {
+                            #region " キャンセル → タイトルステージへ "
+                            //----------------
+                            if( stage.現在のフェーズ == 選曲.選曲ステージ.フェーズ.キャンセル )
+                            {
+                                // 曲ツリーの現行化タスクが動いていれば、一時停止する。
+                                this.現行化.一時停止する();
+
+                                this.ステージ.Dispose();
+
+                                Log.Header( "タイトルステージ" );
+                                this.ステージ = new タイトル.タイトルステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            #region " 確定_選曲 → 曲読み込みステージへ "
+                            //----------------
+                            else if( stage.現在のフェーズ == 選曲.選曲ステージ.フェーズ.確定_選曲 )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "曲読み込みステージ" );
+                                this.ステージ = new 曲読み込み.曲読み込みステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            #region " 確定_設定 → 設定ステージへ "
+                            //----------------
+                            else if( stage.現在のフェーズ == 選曲.選曲ステージ.フェーズ.確定_設定 )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "オプション設定ステージ" );
+                                this.ステージ = new オプション設定.オプション設定ステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            break;
+                        }
+                        case オプション設定.オプション設定ステージ stage:
+                        {
+                            #region " 完了 → 選曲ステージへ "
+                            //----------------
+                            if( stage.現在のフェーズ == オプション設定.オプション設定ステージ.フェーズ.完了 )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "選曲ステージ" );
+                                this.ステージ = new 選曲.選曲ステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            break;
+                        }
+                        case 曲読み込み.曲読み込みステージ stage:
+                        {
+                            #region " 完了 → 演奏ステージへ "
+                            //----------------
+                            if( stage.現在のフェーズ == 曲読み込み.曲読み込みステージ.フェーズ.完了 )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "演奏ステージ" );
+                                this.ステージ = new 演奏.演奏ステージ();
+
+                                // 曲読み込みステージ画面をキャプチャする（演奏ステージのクロスフェードで使う）
+                                ( (演奏.演奏ステージ) this.ステージ ).キャプチャ画面 = 画面キャプチャ.取得する(
+                                    Global.D3D11Device1,
+                                    Global.DXGISwapChain1,
+                                    Global.既定のD3D11RenderTargetView,
+                                    Global.既定のD2D1DeviceContext );
+                            }
+                            //----------------
+                            #endregion
+
+                            break;
+                        }
+                        case 演奏.演奏ステージ stage:
+                        {
+                            #region " キャンセル完了 → 選曲ステージへ "
+                            //----------------
+                            if( stage.現在のフェーズ == 演奏.演奏ステージ.フェーズ.キャンセル完了 )   // ビュアーモードではこのフェーズにはならない。
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "選曲ステージ" );
+                                this.ステージ = new 選曲.選曲ステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            #region " クリア → 結果ステージへ "
+                            //----------------
+                            else if( stage.現在のフェーズ == 演奏.演奏ステージ.フェーズ.クリア )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "結果ステージ" );
+                                this.ステージ = new 結果.結果ステージ( stage.成績 );
+                            }
+                            //----------------
+                            #endregion
+
+                            #region " 失敗 → 現在未対応 "
+                            //----------------
+                            else if( stage.現在のフェーズ == 演奏.演奏ステージ.フェーズ.失敗 )
+                            {
+                                // todo: 演奏失敗処理の実装
+                                throw new NotImplementedException();
+                            }
+                            //----------------
+                            #endregion
+
+                            break;
+                        }
+                        case 結果.結果ステージ stage:
+                        {
+                            #region " 完了 → 選曲ステージへ "
+                            //----------------
+                            if( stage.現在のフェーズ == 結果.結果ステージ.フェーズ.完了 )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "選曲ステージ" );
+                                this.ステージ = new 選曲.選曲ステージ();
+                            }
+                            //----------------
+                            #endregion
+
+                            break;
+                        }
+                        case 終了.終了ステージ stage:
+                        {
+                            #region " 完了 → アプリ終了 "
+                            //----------------
+                            if( stage.現在のフェーズ == 終了.終了ステージ.フェーズ.完了 )
+                            {
                                 this._アプリを終了する();
                             }
-                            else
-                            {
-                                Log.Info( "AutoPlayer でログオンしました。" );
-                            }
-
-                            this.ステージ = new 演奏.演奏ステージ();
                             //----------------
                             #endregion
-                        }
-                        else
-                        {
-                            #region " (B) 通常時はタイトルステージへ "
-                            //----------------
-                            Log.Header( "タイトルステージ" );
-                            this.ステージ = new タイトル.タイトルステージ();
-                            //----------------
-                            #endregion
+                            
+                            break;
                         }
                     }
                     //----------------
                     #endregion
+                }
 
-                    break;
+                #region " 終了 "
+                //----------------
+                this._パイプラインサーバを終了する(); // これ以上受信しないよう真っ先に終了。
 
+                this.現行化.終了する();
 
-                case タイトル.タイトルステージ stage:
+                this.ステージ?.Dispose();
 
-                    #region " キャンセル → 終了ステージへ "
-                    //----------------
-                    if( stage.現在のフェーズ == タイトル.タイトルステージ.フェーズ.キャンセル )
-                    {
-                        this.ステージ.Dispose();
-                        
-                        Log.Header( "終了ステージ" );
-                        this.ステージ = new 終了.終了ステージ();
-                    }
-                    //----------------
-                    #endregion
+                this.アイキャッチ管理.Dispose();
 
-                    #region " 完了 → 認証ステージへ "
-                    //----------------
-                    else if( stage.現在のフェーズ == タイトル.タイトルステージ.フェーズ.完了 )
-                    {
-                        this.ステージ.Dispose();
+                foreach( var song in this.全曲リスト )
+                    song.Dispose(); // 全譜面リストもここで解放される。
 
-                        Log.Header( "認証ステージ" );
-                        this.ステージ = new 認証.認証ステージ();
-                    }
-                    //----------------
-                    #endregion
+                foreach( var tree in this.曲ツリーリスト )
+                    tree.Dispose();
 
-                    break;
+                this.ドラムサウンド.Dispose();
 
+                this.システムサウンド.Dispose();
 
-                case 認証.認証ステージ stage:
+                画像.全インスタンスで共有するリソースを解放する();
 
-                    #region " キャンセル → タイトルステージへ "
-                    //----------------
-                    if( stage.現在のフェーズ == 認証.認証ステージ.フェーズ.キャンセル )
-                    {
-                        this.ステージ.Dispose();
+                Global.解放する();
+                //----------------
+                #endregion
 
-                        Log.Header( "タイトルステージ" );
-                        this.ステージ = new タイトル.タイトルステージ();
-                    }
-                    //----------------
-                    #endregion
-
-                    #region " 完了 → 選曲ステージへ "
-                    //----------------
-                    else if( stage.現在のフェーズ == 認証.認証ステージ.フェーズ.完了 )
-                    {
-                        // 選択中のユーザでログインする。ログオン中のユーザがあれば先にログオフされる。
-                        Global.App.ログオンする( Global.App.ユーザリスト[ stage.現在選択中のユーザ ].ID ?? "AutoPlayer" );
-
-                        this.ステージ.Dispose();
-
-                        Log.Header( "選曲ステージ" );
-                        this.ステージ = new 選曲.選曲ステージ();
-                    }
-                    //----------------
-                    #endregion
-
-                    break;
-
-
-                case 選曲.選曲ステージ stage:
-
-                    #region " キャンセル → タイトルステージへ "
-                    //----------------
-                    if( stage.現在のフェーズ == 選曲.選曲ステージ.フェーズ.キャンセル )
-                    {
-                        // 曲ツリーの現行化タスクが動いていれば、一時停止する。
-                        Global.App.現行化.一時停止する();
-
-                        this.ステージ.Dispose();
-
-                        Log.Header( "タイトルステージ" );
-                        this.ステージ = new タイトル.タイトルステージ();
-                    }
-                    //----------------
-                    #endregion
-
-                    #region " 確定_選曲 → 曲読み込みステージへ "
-                    //----------------
-                    else if( stage.現在のフェーズ == 選曲.選曲ステージ.フェーズ.確定_選曲 )
-                    {
-                        this.ステージ.Dispose();
-
-                        Log.Header( "曲読み込みステージ" );
-                        this.ステージ = new 曲読み込み.曲読み込みステージ();
-                    }
-                    //----------------
-                    #endregion
-
-                    #region " 確定_設定 → 設定ステージへ "
-                    //----------------
-                    else if( stage.現在のフェーズ == 選曲.選曲ステージ.フェーズ.確定_設定 )
-                    {
-                        this.ステージ.Dispose();
-
-                        Log.Header( "オプション設定ステージ" );
-                        this.ステージ = new オプション設定.オプション設定ステージ();
-                    }
-                    //----------------
-                    #endregion
-
-                    break;
-
-                case オプション設定.オプション設定ステージ stage:
-
-                    #region " 完了 → 選曲ステージへ "
-                    //----------------
-                    if( stage.現在のフェーズ == オプション設定.オプション設定ステージ.フェーズ.完了 )
-                    {
-                        this.ステージ.Dispose();
-
-                        Log.Header( "選曲ステージ" );
-                        this.ステージ = new 選曲.選曲ステージ();
-                    }
-                    //----------------
-                    #endregion
-
-                    break;
-
-                case 曲読み込み.曲読み込みステージ stage:
-
-                    #region " 完了 → 演奏ステージへ "
-                    //----------------
-                    if( stage.現在のフェーズ == 曲読み込み.曲読み込みステージ.フェーズ.完了 )
-                    {
-                        this.ステージ.Dispose();
-
-                        Log.Header( "演奏ステージ" );
-                        this.ステージ = new 演奏.演奏ステージ();
-
-                        // 曲読み込みステージ画面をキャプチャする（演奏ステージのクロスフェードで使う）
-                        ( (演奏.演奏ステージ) this.ステージ ).キャプチャ画面 = 画面キャプチャ.取得する(
-                            Global.D3D11Device1,
-                            Global.DXGISwapChain1,
-                            Global.既定のD3D11RenderTargetView,
-                            Global.既定のD2D1DeviceContext );
-                    }
-                    //----------------
-                    #endregion
-
-                    break;
-
-                case 演奏.演奏ステージ stage:
-
-                    #region " キャンセル完了 → 選曲ステージへ "
-                    //----------------
-                    if( stage.現在のフェーズ == 演奏.演奏ステージ.フェーズ.キャンセル完了 )   // ビュアーモードではこのフェーズにはならない。
-                    {
-                        this.ステージ.Dispose();
-
-                        Log.Header( "選曲ステージ" );
-                        this.ステージ = new 選曲.選曲ステージ();
-                    }
-                    //----------------
-                    #endregion
-
-                    #region " クリア → 結果ステージへ "
-                    //----------------
-                    else if( stage.現在のフェーズ == 演奏.演奏ステージ.フェーズ.クリア )
-                    {
-                        this.ステージ.Dispose();
-
-                        Log.Header( "結果ステージ" );
-                        this.ステージ = new 結果.結果ステージ( stage.成績 );
-                    }
-                    //----------------
-                    #endregion
-
-                    #region " 失敗 → 現在未対応 "
-                    //----------------
-                    else if( stage.現在のフェーズ == 演奏.演奏ステージ.フェーズ.失敗 )
-                    {
-                        // todo: 演奏失敗処理の実装
-                        throw new NotImplementedException();
-                    }
-                    //----------------
-                    #endregion
-
-                    break;
-
-                case 結果.結果ステージ stage:
-
-                    #region " 完了 → 選曲ステージへ "
-                    //----------------
-                    if( stage.現在のフェーズ == 結果.結果ステージ.フェーズ.完了 )
-                    {
-                        this.ステージ.Dispose();
-
-                        Log.Header( "選曲ステージ" );
-                        this.ステージ = new 選曲.選曲ステージ();
-                    }
-                    //----------------
-                    #endregion
-
-                    break;
-
-                case 終了.終了ステージ stage:
-
-                    #region " 完了 → アプリ終了 "
-                    //----------------
-                    if( stage.現在のフェーズ == 終了.終了ステージ.フェーズ.完了 )
-                    {
-                        this.ステージ?.Dispose();
-                        this.ステージ = null;
-
-                        this._アプリを終了する();
-                    }
-                    //----------------
-                    #endregion
-
-                    break;
+                終了指示メッセージ.完了通知.Set();
             }
-        }
-
-        /// <summary>
-        ///     アプリケーションの描画処理を行う。
-        /// </summary>
-        private void _描画する()
-        {
-            this.ステージ?.描画する();
+#if !DEBUG
+                // GUIスレッド以外のスレッドで発生した例外は、Debug 版だとデバッガがキャッチするが、
+                // Release 版だと何も表示されずスルーされるので、念のためログ出力しておく。
+                catch( Exception e )
+                {
+                    Log.ERROR( $"例外が発生しました。\n{e}" );
+                }
+#endif
+            finally
+            {
+                Log.Info( "進行描画タスクを終了しました。" );
+            }
         }
 
         internal void 画面をクリアする()
@@ -683,7 +673,7 @@ namespace DTXMania2
             var d3ddc = Global.D3D11Device1.ImmediateContext;
 
             // 既定のD3Dレンダーターゲットビューを黒でクリアする。
-            d3ddc.ClearRenderTargetView( Global.既定のD3D11RenderTargetView, Color4.Black );
+            d3ddc.ClearRenderTargetView( Global.既定のD3D11RenderTargetView, SharpDX.Color4.Black );
 
             // 既定の深度/ステンシルバッファをクリアする。
             d3ddc.ClearDepthStencilView(
@@ -704,40 +694,53 @@ namespace DTXMania2
         /// </summary>
         /// <param name="ユーザID"></param>
         /// <returns>ログオンに成功したらtrue。</returns>
-        public bool ログオンする( string ユーザID )
+        internal bool ログオンする( string ユーザID )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
+
+            // 現在ログオン中のユーザがあれば、先にログオフする。
+
             this.ログオフする();
 
+            
             // 新しいユーザを選択する。
-            if( !Global.App.ユーザリスト.SelectItem( ( user ) => user.ID == ユーザID ) )
+
+            if( !this.ユーザリスト.SelectItem( ( user ) => user.ID == ユーザID ) )
             {
                 Log.ERROR( $"ユーザ「{ユーザID}」のログオンに失敗しました。ユーザが存在しません。" );
                 return false;
             }
+            var userConfig = this.ログオン中のユーザ;
+            var roots = this.曲ツリーリスト.Select( ( t ) => t.ルートノード );
 
-            var userConfig = Global.App.ログオン中のユーザ;
-            var roots = Global.App.曲ツリーリスト.Select( ( t ) => t.ルートノード );
 
             // すべての曲ツリーのユーザ依存情報をリセットし、属性のみ今ここで現行化する。
-            Global.App.現行化.リセットする( roots, userConfig );
-            Global.App.現行化.すべての譜面について属性を現行化する( userConfig.ID! );
+
+            this.現行化.リセットする( roots, userConfig );
+            this.現行化.すべての譜面について属性を現行化する( userConfig.ID! );
+
 
             // 評価順曲ツリーを新しい属性にあわせて再構築する。
-            var ratingTree = (曲ツリー_評価順) Global.App.曲ツリーリスト[ 1 ];  // [1]評価順
+
+            var ratingTree = (曲ツリー_評価順) this.曲ツリーリスト[ 1 ];  // [1]評価順
             ratingTree.再構築する();
 
+            
             // すべての曲ツリーの現行化を開始する。
-            Global.App.現行化.開始する( roots, Global.App.ログオン中のユーザ );
+
+            this.現行化.開始する( roots, this.ログオン中のユーザ );
+
 
             // 選択する曲ツリーリストを初期化。
-            foreach( var tree in Global.App.曲ツリーリスト )
+
+            foreach( var tree in this.曲ツリーリスト )
                 tree.ルートノード.子ノードリスト.SelectFirst();
-            Global.App.曲ツリーリスト.SelectFirst();
+            this.曲ツリーリスト.SelectFirst();
 
 
             // 完了。
+
             Log.Info( $"{ユーザID} でログオンしました。" );
             return true;
         }
@@ -745,66 +748,121 @@ namespace DTXMania2
         /// <summary>
         ///     現在ログオン中のユーザをログオフする。
         /// </summary>
-        public void ログオフする()
+        internal void ログオフする()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             var userConfig = this.ユーザリスト.SelectedItem;
             if( null != userConfig )
             {
-                Global.App.現行化.終了する();
+                this.現行化.終了する();
 
                 Log.Info( $"{userConfig.ID} をログオフしました。" );
             }
 
             // ユーザを未選択状態へ。
-            Global.App.ユーザリスト.SelectItem( -1 );
+            this.ユーザリスト.SelectItem( -1 );
         }
 
 
 
-        // ウィンドウサイズの変更への対応
+        // ウィンドウサイズの変更
 
 
-        protected void Onサイズ変更( TaskMessage msg )
+        /* 次の２通りがある。
+         * 
+         * A.ユーザのドラッグによるサイズ変更。
+         *      → ResizeBegin ～ ResizeEnd の範囲内で Resize が発生するがいったん無視し、ResizeEnd のタイミングでサイズの変更を行う。
+         * 
+         * B.最大化、最小化など。
+         *      → ResizeBegin ～ ResizeEnd の範囲外で Resize が発生するので、そのタイミングでサイズの変更を行う。
+         */
+
+        protected override void OnResizeBegin( EventArgs e )
+        {
+            this._リサイズ中 = true; // リサイズ開始
+
+            base.OnResizeBegin( e );
+        }
+
+        protected override void OnResizeEnd( EventArgs e )
+        {
+            this._リサイズ中 = false;    // リサイズ終了（先に設定）
+
+            if( this.WindowState == FormWindowState.Minimized )
+            {
+                // (A) 最小化された → 何もしない
+            }
+            else if( this.ClientSize.IsEmpty )
+            {
+                // (B) クライアントサイズが空 → たまに起きるらしい。スキップする。
+            }
+            else
+            {
+                // (C) それ以外は Resize イベントハンドラへ委譲。
+                this.OnResize( e );
+            }
+
+            base.OnResizeEnd( e );
+        }
+
+        protected override void OnResize( EventArgs e )
+        {
+            if( this._未初期化 || this._リサイズ中 )
+            {
+                //Log.Info( "未初期化、またはリサイズ中なので無視します。" );
+                return;
+            }
+            else
+            {
+                using var _ = new LogBlock( Log.現在のメソッド名 );
+
+                Log.Info( $"新画面サイズ: {this.ClientSize}" );
+
+                // スワップチェーンとその依存リソースを解放し、改めて作成しなおすように進行描画タスクへ指示する。
+                var msg = new TaskMessage(
+                    宛先: TaskMessage.タスク名.進行描画,
+                    内容: TaskMessage.内容名.サイズ変更,
+                    引数: new object[] { this.ClientSize } );
+
+                // 進行描画タスクからの完了通知を待つ。
+                if( !Global.TaskMessageQueue.Post( msg ).Wait( 5000 ) )
+                    throw new TimeoutException( "サイズ変更タスクメッセージがタイムアウトしました。" );
+            }
+
+            base.OnResize( e );
+        }
+
+        private bool _リサイズ中 = false;
+
+        private void _リソースを再構築する( TaskMessage msg )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             // リソースを解放して、
-            this.Onスワップチェーンに依存するグラフィックリソースの解放();
+            //this.Onスワップチェーンに依存するグラフィックリソースの解放();
 
             // スワップチェーンを再構築して、
             var size = (System.Drawing.Size) msg.引数![ 0 ];
-            Global.物理画面サイズを変更する( new Size2F( size.Width, size.Height ) );
+            Global.物理画面サイズを変更する( new SharpDX.Size2F( size.Width, size.Height ) );
 
             // リソースを再作成する。
-            this.Onスワップチェーンに依存するグラフィックリソースの作成();
+            //this.Onスワップチェーンに依存するグラフィックリソースの作成();
 
             // 完了。
             msg.完了通知.Set();
         }
 
-        protected void Onスワップチェーンに依存するグラフィックリソースの作成()
-        {
-            using var _ = new LogBlock( Log.現在のメソッド名 );
-        }
-
-        protected void Onスワップチェーンに依存するグラフィックリソースの解放()
-        {
-            using var _ = new LogBlock( Log.現在のメソッド名 );
-        }
 
 
-
-        // パイプラインサービス
+        // パイプラインサーバ
 
 
         private CancellationTokenSource _PipeServerCancellationTokenSource = null!;
 
-
         private async void _パイプラインサーバを起動する()
         {
-            using var _ = new LogBlock( Log.現在のメソッド名 );
+            //using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._PipeServerCancellationTokenSource?.Dispose();
             this._PipeServerCancellationTokenSource = new CancellationTokenSource();
@@ -903,7 +961,81 @@ namespace DTXMania2
             if( !this._PipeServerCancellationTokenSource.IsCancellationRequested )
                 this._PipeServerCancellationTokenSource.Cancel();
 
-            this._PipeServerCancellationTokenSource.Dispose();
+            //this._PipeServerCancellationTokenSource.Dispose();
+        }
+
+
+
+        // ウィンドウメッセージ
+
+
+        protected override void WndProc( ref Message m )
+        {
+            const int WM_INPUT = 0x00FF;
+
+            switch( m.Msg )
+            {
+                case WM_INPUT:
+                    this.OnInput( m );
+                    break;
+            }
+
+            base.WndProc( ref m );
+        }
+
+        protected override void OnKeyDown( KeyEventArgs e )
+        {
+            #region " F11 → 全画面／ウィンドウモードを切り替える。"
+            //----------------
+            if( e.KeyCode == Keys.F11 )
+            {
+                // ScreenMode は非同期処理なので、すぐに値が反映されるとは限らない。
+                // なので、ログオン中のユーザへの設定は、その変更より先に行なっておく。
+                this.システム設定.全画面モードである = this.ScreenMode.IsWindowMode; // 先に設定するので Mode が逆になっていることに注意。
+
+                if( this.ScreenMode.IsWindowMode )
+                    this.ScreenMode.ToFullscreenMode();
+                else
+                    this.ScreenMode.ToWindowMode();
+            }
+            //----------------
+            #endregion
+
+            base.OnKeyDown( e );
+        }
+
+        protected virtual void OnInput( in Message m )
+        {
+            RawInput.RawInputData rawInputData;
+
+            #region " RawInput データを取得する。"
+            //----------------
+            unsafe
+            {
+                // RawInputData 構造体（可変長）の実サイズを取得する。
+                int dataSize = 0;
+                if( 0 > RawInput.GetRawInputData( m.LParam, RawInput.DataType.Input, null, ref dataSize, Marshal.SizeOf<RawInput.RawInputHeader>() ) )
+                {
+                    Log.ERROR( $"GetRawInputData(): error = { Marshal.GetLastWin32Error()}" );
+                    return;
+                }
+
+                // RawInputData 構造体の実データを取得する。
+                var dataBytes = stackalloc byte[ dataSize ];
+                if( 0 > RawInput.GetRawInputData( m.LParam, RawInput.DataType.Input, dataBytes, &dataSize, Marshal.SizeOf<RawInput.RawInputHeader>() ) )
+                {
+                    Log.ERROR( $"GetRawInputData(): error = { Marshal.GetLastWin32Error()}" );
+                    return;
+                }
+
+                // 取得された実データは byte[] なので、これを RawInputData 構造体に変換する。
+                rawInputData = Marshal.PtrToStructure<RawInput.RawInputData>( new IntPtr( dataBytes ) );
+            }
+            //----------------
+            #endregion
+
+            this.KeyboardHID.OnInput( rawInputData );
+            this.GameControllersHID.OnInput( rawInputData );
         }
 
 
@@ -911,12 +1043,63 @@ namespace DTXMania2
         // ローカル
 
 
+        /// <summary>
+        ///     アプリの初期化が完了していなければ true。
+        ///     起動直後は true, OnLoad() で false, OnClosing() で true になる。
+        /// </summary>
+        /// <remarks>
+        ///     アプリの OnLoad() より前に OnResize() が呼び出されることがあるので、その対策用。
+        /// </remarks>
+        private bool _未初期化 = true;
+
         private int _進行描画タスクのNETスレッドID;
+
+        private void _システム設定をもとにリソース関連のフォルダ変数を更新する()
+        {
+            // DrumSounds
+            var drumSounds = this.システム設定.DrumSoundsFolder;
+            Folder.フォルダ変数を追加または更新する( "DrumSounds", ( Path.IsPathRooted( drumSounds.変数なしパス ) ) ?
+                drumSounds.変数なしパス :
+                new VariablePath( @$"$(ResourcesRoot)\{drumSounds}" ).変数なしパス );
+            Log.Info( $"DrumSounds folder: {new VariablePath( Folder.フォルダ変数の内容を返す( "DrumSounds" ) ).変数付きパス}" );
+
+            // SystemSounds
+            var systemSounds = this.システム設定.SystemSoundsFolder;
+            Folder.フォルダ変数を追加または更新する( "SystemSounds", ( Path.IsPathRooted( systemSounds.変数なしパス ) ) ?
+                systemSounds.変数なしパス :
+                new VariablePath( @$"$(ResourcesRoot)\{systemSounds}" ).変数なしパス );
+            Log.Info( $"SystemSounds folder: {new VariablePath( Folder.フォルダ変数の内容を返す( "SystemSounds" ) ).変数付きパス}" );
+
+            // Images
+            var images = this.システム設定.ImagesFolder;
+            Folder.フォルダ変数を追加または更新する( "Images", ( Path.IsPathRooted( images.変数なしパス ) ) ?
+                images.変数なしパス :
+                new VariablePath( @$"$(ResourcesRoot)\{images}" ).変数なしパス );
+            Log.Info( $"Images folder: {new VariablePath( Folder.フォルダ変数の内容を返す( "Images" ) ).変数付きパス}" );
+        }
+
+        private void _ユーザリストにユーザを登録する()
+        {
+            // パターンに該当するファイルをすべて列挙する。
+            var userYamls = Directory.EnumerateFiles( Folder.フォルダ変数の内容を返す( "AppData" ), @"User_*.yaml", SearchOption.TopDirectoryOnly );
+            int headLength = "User_".Length;
+            int tailLength = ".yaml".Length;
+
+            foreach( var userYaml in userYamls )
+            {
+                // ファイル名からユーザIDを抽出。
+                var fname = Path.GetFileName( userYaml );
+                var userId = fname[ headLength..( fname.Length - tailLength ) ];
+
+                var userConfig = ユーザ設定.読み込む( userId );
+                this.ユーザリスト.Add( userConfig );
+            }
+        }
 
         private void _アプリを終了する()
         {
-            Global.AppForm.BeginInvoke( new Action( () => {   // UIスレッドで実行する
-                Global.AppForm.Close();
+            this.BeginInvoke( new Action( () => {   // UIスレッドで実行する
+                this.Close();
             } ) );
         }
     }

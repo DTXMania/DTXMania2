@@ -53,6 +53,8 @@ namespace FDK
         public Video( IVideoSource videoSource, double 再生速度 = 1.0 )
             : this()
         {
+            using var _ = new LogBlock( Log.現在のメソッド名 );
+
             this.再生速度 = 再生速度;
 
             this._VideoSource = videoSource;
@@ -189,11 +191,11 @@ namespace FDK
         ///     <see cref="_VideoSource"/> をファイルから生成した場合は true、
         ///     参照を受け取った場合は false。
         /// </summary>
-        private bool _ファイルから生成した = false;
+        private readonly bool _ファイルから生成した = false;
 
         private VideoFrame? _最後に描画したフレーム = null;
 
-        private QPCTimer _再生タイマ;
+        private readonly QPCTimer _再生タイマ;
 
 
         private void _次のフレームを読み込んで描画する( DeviceContext dc, Matrix3x2 変換行列2D, float 不透明度0to1 = 1.0f )

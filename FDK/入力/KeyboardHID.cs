@@ -23,9 +23,11 @@ namespace FDK
         // 生成と終了
 
 
-        public KeyboardHID()
+        public KeyboardHID( SoundTimer soundTimer )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            this._SoundTimer = soundTimer;
 
             // 登録したいデバイスの配列（ここでは１個）。
             var devs = new RawInput.RawInputDevice[] {
@@ -44,6 +46,8 @@ namespace FDK
         public virtual void Dispose()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            this._SoundTimer = null!;
         }
 
 
@@ -70,7 +74,7 @@ namespace FDK
                 Key = keyboard.VKey,  // 仮想キーコード(VK_*)
                 押された = ( RawInput.ScanCodeFlags.Make == ( keyboard.Flags & RawInput.ScanCodeFlags.Break ) ),
                 Velocity = 255,       // 固定
-                TimeStamp = Stopwatch.GetTimestamp(),
+                TimeStamp = this._SoundTimer.現在時刻sec,
                 Extra = keyboard.ExtraInformation.ToString( "X8" ),
             };
 
@@ -244,5 +248,7 @@ namespace FDK
         ///	    true なら押されている状態、false なら離されている状態。
         /// </summary>
         private readonly Dictionary<int, bool> _現在のキーの押下状態 = new Dictionary<int, bool>();
+
+        private SoundTimer _SoundTimer;
     }
 }

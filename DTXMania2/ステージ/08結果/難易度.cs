@@ -58,7 +58,7 @@ namespace DTXMania2.結果
             }
 
             this._アイコン.進行描画する( left, top );
-            this._数値.進行描画する( dc, left + 221f, top + 3f );
+            this._数値.進行描画する( left + 221f, top + 3f );
             this._下線.進行描画する( dc, left + 33f, top + 113f );
         }
 

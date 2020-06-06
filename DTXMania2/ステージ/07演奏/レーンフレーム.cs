@@ -75,7 +75,7 @@ namespace DTXMania2.演奏
         // 進行と描画
 
 
-        public void 描画する( DeviceContext dc, int BGAの透明度, bool レーンラインを描画する = true )
+        public void 進行描画する( DeviceContext dc, int BGAの透明度, bool レーンラインを描画する = true )
         {
             D2DBatch.Draw( dc, () => {
 

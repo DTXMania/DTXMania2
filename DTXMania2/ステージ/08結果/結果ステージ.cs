@@ -97,7 +97,6 @@ namespace DTXMania2.結果
 
             // 最初のフェーズへ。
             this.現在のフェーズ = フェーズ.表示;
-            this._フェーズ完了 = false;
         }
 
         public virtual void Dispose()
@@ -130,16 +129,27 @@ namespace DTXMania2.結果
         // 進行と描画
 
 
-        public void 進行する()
+        public void 進行描画する()
         {
+            var dc = Global.既定のD2D1DeviceContext;
+            dc.Transform = Global.拡大行列DPXtoPX;
+
+            this._システム情報.VPSをカウントする();
             this._システム情報.FPSをカウントしプロパティを更新する();
+
             Global.App.ドラム入力.すべての入力デバイスをポーリングする();
 
             switch( this.現在のフェーズ )
             {
                 case フェーズ.表示:
                 {
-                    #region " 入力処理 "
+                    #region " 背景画面を描画する。"
+                    //----------------
+                    this._画面を描画する( dc );
+                    //----------------
+                    #endregion
+
+                    #region " 入力処理。"
                     //----------------
                     if( Global.App.ドラム入力.確定キーが入力された() ||
                         Global.App.ドラム入力.キャンセルキーが入力された() )
@@ -156,7 +166,7 @@ namespace DTXMania2.結果
                     }
                     else
                     {
-                        #region " その他　→　空うちサウンドを再生 "
+                        #region " その他　→　空うちサウンドを再生する "
                         //----------------
                         if( Global.App.ログオン中のユーザ.ドラムの音を発声する )
                             this._空うちサウンドを再生する();
@@ -167,12 +177,19 @@ namespace DTXMania2.結果
                         //----------------
                         #endregion
                     }
-                    break;
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.アニメ完了:
                 {
+                    #region " 背景画面を描画する。"
+                    //----------------
+                    this._画面を描画する( dc );
+                    //----------------
+                    #endregion
+
                     #region " 入力処理 "
                     //----------------
                     if( Global.App.ドラム入力.確定キーが入力された() ||
@@ -195,98 +212,38 @@ namespace DTXMania2.結果
                         //----------------
                         #endregion
                     }
-                    break;
                     //----------------
                     #endregion
-                }
-                case フェーズ.フェードアウト:
-                {
-                    #region " フェードアウトが完了したら完了フェーズへ。"
-                    //----------------
-                    if( this._フェーズ完了 )
-                    {
-                        this.現在のフェーズ = フェーズ.完了;
-                        this._フェーズ完了 = false;
-                    }
-                    break;
-                    //----------------
-                    #endregion
-                }
-                case フェーズ.完了:
-                {
-                    #region " 遷移終了。Appによるステージ遷移待ち。"
-                    //----------------
-                    break;
-                    //----------------
-                    #endregion
-                }
-            }
-        }
 
-        public void 描画する()
-        {
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
-            this._システム情報.VPSをカウントする();
-
-            switch( this.現在のフェーズ )
-            {
-                case フェーズ.表示:
-                case フェーズ.アニメ完了:
-                {
-                    #region " 背景画面 "
-                    //----------------
-                    画面を描画する();
                     break;
-                    //----------------
-                    #endregion
                 }
                 case フェーズ.フェードアウト:
                 {
                     #region " 背景画面＆フェードアウト "
                     //----------------
-                    画面を描画する();
+                    this._画面を描画する( dc );
 
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
-                        this._フェーズ完了 = true;    // 完了
-                    break;
+                    {
+                        // フェードアウトが完了したら完了フェーズへ。
+                        this.現在のフェーズ = フェーズ.完了;
+                    }
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.完了:
                 {
-                    #region " 最後の画面を維持。"
+                    #region " 遷移終了。Appによるステージ遷移待ち。"
                     //----------------
-                    break;
                     //----------------
                     #endregion
+
+                    break;
                 }
             }
-
-            #region " ローカル関数 "
-            //----------------
-            void 画面を描画する()
-            {
-                this._背景.進行描画する( dc );
-                D2DBatch.Draw( dc, () => {
-                    dc.FillRectangle( new RectangleF( 0f, 36f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Height - 72f ), this._黒マスクブラシ );
-                } );
-                this._プレビュー画像を描画する( dc );
-                this._曲名パネル.描画する( 660f, 796f );
-                this._曲名を描画する( dc );
-                this._サブタイトルを描画する( dc );
-                this._演奏パラメータ結果.描画する( dc, 1317f, 716f, this._結果 );
-                this._ランク.進行描画する( 200f, 300f, this._結果.ランク );
-                this._難易度.進行描画する( dc, 1341f, 208f, Global.App.演奏スコア.難易度 );
-                this._曲別SKILL.進行描画する( dc, 1329f, 327f, this._結果.スキル );
-                this._達成率.進行描画する( dc, 1233f, 428f, this._結果.Achievement );
-                this._システム情報.描画する( dc );
-            }
-            //----------------
-            #endregion
         }
-
 
         private void _プレビュー画像を描画する( DeviceContext dc )
         {
@@ -315,7 +272,7 @@ namespace DTXMania2.結果
                     Global.画面左上dpx.Y - this._プレビュー画像表示位置dpx.Y - this._プレビュー画像表示サイズdpx.Y / 2f,
                     0f );
             
-            preimage.描画する( 変換行列 );
+            preimage.進行描画する( 変換行列 );
         }
 
         private void _曲名を描画する( DeviceContext dc )
@@ -336,6 +293,24 @@ namespace DTXMania2.結果
             float 最大幅dpx = 545f;
             float X方向拡大率 = ( this._サブタイトル画像.画像サイズdpx.Width <= 最大幅dpx ) ? 1f : 最大幅dpx / this._サブタイトル画像.画像サイズdpx.Width;
             this._サブタイトル画像.描画する( dc, 表示位置dpx.X, 表示位置dpx.Y, X方向拡大率: X方向拡大率 );
+        }
+
+        private void _画面を描画する( DeviceContext dc )
+        {
+            this._背景.進行描画する( dc );
+            D2DBatch.Draw( dc, () => {
+                dc.FillRectangle( new RectangleF( 0f, 36f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Height - 72f ), this._黒マスクブラシ );
+            } );
+            this._プレビュー画像を描画する( dc );
+            this._曲名パネル.進行描画する( 660f, 796f );
+            this._曲名を描画する( dc );
+            this._サブタイトルを描画する( dc );
+            this._演奏パラメータ結果.進行描画する( dc, 1317f, 716f, this._結果 );
+            this._ランク.進行描画する( 200f, 300f, this._結果.ランク );
+            this._難易度.進行描画する( dc, 1341f, 208f, Global.App.演奏スコア.難易度 );
+            this._曲別SKILL.進行描画する( dc, 1329f, 327f, this._結果.スキル );
+            this._達成率.進行描画する( dc, 1233f, 428f, this._結果.Achievement );
+            this._システム情報.描画する( dc );
         }
 
 
@@ -374,8 +349,6 @@ namespace DTXMania2.結果
         private readonly SolidColorBrush _プレビュー枠ブラシ;
 
         private 成績 _結果 = null!;
-
-        private bool _フェーズ完了;
 
         private readonly Vector3 _プレビュー画像表示位置dpx = new Vector3( 668f, 194f, 0f );
 

@@ -63,7 +63,7 @@ namespace DTXMania2.演奏
         // 進行と描画
 
 
-        public void 描画する()
+        public void 進行描画する()
         {
             // テクスチャは画面中央が (0,0,0) で、Xは右がプラス方向, Yは上がプラス方向, Zは奥がプラス方向+。
 
@@ -71,7 +71,7 @@ namespace DTXMania2.演奏
                 Matrix.RotationY( MathUtil.DegreesToRadians( -48f ) ) *
                 Matrix.Translation( Global.画面左上dpx.X + 230f, Global.画面左上dpx.Y - 530f, 0f );
 
-            this.クリアパネル.描画する( 変換行列 );
+            this.クリアパネル.進行描画する( 変換行列 );
         }
 
 

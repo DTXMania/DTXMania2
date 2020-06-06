@@ -49,6 +49,11 @@ namespace FDK
             }
         }
 
+        /// <summary>
+        ///     デコードタスクがデコードを完了したらセットされるイベント。
+        /// </summary>
+        public ManualResetEventSlim DecodeComplete { get; } = new ManualResetEventSlim( false );
+
 
 
         // 生成と終了
@@ -131,11 +136,6 @@ namespace FDK
             this._DecodedWaveDataQueue = new QueueMemoryStream();
             this._デコードキャンセル = new CancellationTokenSource();
             this._デコードタスク = Task.Factory.StartNew( this._デコードタスクエントリ, this._デコードキャンセル.Token );
-
-            // ある程度ストックされるまで待機。
-            //while( !( this._デコードタスク.IsCompleted ) && this._DecodedWaveDataQueue.読み出し可能サイズ < ( this.WaveFormat.BytesPerSecond * 1/*秒*/ ) )
-            while( !( this._デコードタスク.IsCompleted ) ) // --> 動画が追い付かないのでいっそすべて完了するまで待機
-                Task.Delay( 100 );
         }
 
         public void Dispose()
@@ -266,6 +266,7 @@ namespace FDK
                 }
             }
 
+            this.DecodeComplete.Set();
             Log.Info( $"デコードタスクを終了しました。[{this.Name}]" );
         }
 

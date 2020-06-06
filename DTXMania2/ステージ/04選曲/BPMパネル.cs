@@ -36,18 +36,22 @@ namespace DTXMania2.選曲
         // 進行と描画
 
 
-        public void 描画する( DeviceContext dc, Node フォーカスノード )
+        public void 進行描画する( DeviceContext dc, Node フォーカスノード )
         {
             var 領域 = new RectangleF( 78f, 455f, 357f, 55f );
 
-            #region " パネル "
+            #region " パネルを描画する。"
             //----------------
-            this._BPMパネル.描画する( 領域.X - 5f, 領域.Y - 4f );
+            this._BPMパネル.進行描画する( 領域.X - 5f, 領域.Y - 4f );
             //----------------
             #endregion
 
             if( !( フォーカスノード is SongNode snode ) )
-                return;    // 現状、BPMを表示できるノードは MusicNode のみ。
+            {
+                // 現状、BPMを表示できるノードは SongNode のみ。
+                // SongNode 以外はパネルの表示だけで終わり。
+                return;
+            }
 
             #region " フォーカスノードが変更されていれば情報を更新する。"
             //----------------
@@ -69,19 +73,19 @@ namespace DTXMania2.選曲
             //----------------
             #endregion
 
-            #region " BPM "
+            #region " BPM を描画する。"
             //----------------
             if( this._最小BPM.HasValue && this._最大BPM.HasValue )
             {
                 if( 10.0 >= Math.Abs( this._最大BPM.Value - this._最小BPM.Value ) ) // 差が10以下なら同一値(A)とみなす。
                 {
                     // (A) 「最小値」だけ描画。
-                    this._パラメータ文字.描画する( 領域.X + 120f, 領域.Y, this._最小BPM.Value.ToString( "0" ).PadLeft( 3 ) );
+                    this._パラメータ文字.進行描画する( 領域.X + 120f, 領域.Y, this._最小BPM.Value.ToString( "0" ).PadLeft( 3 ) );
                 }
                 else
                 {
                     // (B) 「最小～最大」を描画。
-                    this._パラメータ文字.描画する( 領域.X + 120f, 領域.Y, this._最小BPM.Value.ToString( "0" ) + "~" + this._最大BPM.Value.ToString( "0" ) );
+                    this._パラメータ文字.進行描画する( 領域.X + 120f, 領域.Y, this._最小BPM.Value.ToString( "0" ) + "~" + this._最大BPM.Value.ToString( "0" ) );
                 }
             }
             //----------------

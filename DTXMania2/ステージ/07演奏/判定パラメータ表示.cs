@@ -36,7 +36,7 @@ namespace DTXMania2.演奏
         // 進行と描画
 
 
-        public virtual void 描画する( DeviceContext dc, float x, float y, 成績 現在の成績 )
+        public virtual void 進行描画する( DeviceContext dc, float x, float y, 成績 現在の成績 )
         {
             var scaling = new Size2F( 1.0f, 1.4f );
 

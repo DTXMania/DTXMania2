@@ -56,19 +56,19 @@ namespace DTXMania2.演奏
             var 中央位置dpx = new Vector2( 1308f, 876f - this._現在位置 * 767f );
 
             var バー矩形 = this._演奏位置カーソルの矩形リスト[ "Bar" ]!;
-            this._演奏位置カーソル画像.描画する(
+            this._演奏位置カーソル画像.進行描画する(
                 中央位置dpx.X - バー矩形.Value.Width / 2f,
                 中央位置dpx.Y - バー矩形.Value.Height / 2f,
                 転送元矩形: バー矩形 );
 
             var 左三角矩形 = this._演奏位置カーソルの矩形リスト[ "Left" ]!;
-            this._演奏位置カーソル画像.描画する(
+            this._演奏位置カーソル画像.進行描画する(
                 中央位置dpx.X - 左三角矩形.Value.Width / 2f - this._左右三角アニメ用カウンタ.現在値の割合 * 40f,
                 中央位置dpx.Y - 左三角矩形.Value.Height / 2f,
                 転送元矩形: 左三角矩形 );
 
             var 右三角矩形 = this._演奏位置カーソルの矩形リスト[ "Right" ]!;
-            this._演奏位置カーソル画像.描画する(
+            this._演奏位置カーソル画像.進行描画する(
                 中央位置dpx.X - 右三角矩形.Value.Width / 2f + this._左右三角アニメ用カウンタ.現在値の割合 * 40f,
                 中央位置dpx.Y - 右三角矩形.Value.Height / 2f,
                 転送元矩形: 右三角矩形 );

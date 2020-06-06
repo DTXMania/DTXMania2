@@ -53,7 +53,7 @@ namespace DTXMania2.曲
 
                     #region " TITLE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"TITLE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"TITLE", out パラメータ ) )
                     {
                         if( blockが有効 )
                         {
@@ -72,7 +72,7 @@ namespace DTXMania2.曲
 
                     #region " FONTCOLOR コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"FONTCOLOR", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"FONTCOLOR", out パラメータ ) )
                     {
                         if( !( パラメータ.StartsWith( "#" ) ) )
                             パラメータ = "#" + パラメータ;
@@ -86,7 +86,7 @@ namespace DTXMania2.曲
 
                     #region " L1FILE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L1FILE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L1FILE", out パラメータ ) )
                     {
                         block.File[ 0 ] = パラメータ;
                         blockが有効 = true;
@@ -97,7 +97,7 @@ namespace DTXMania2.曲
                     
                     #region " L2FILE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L2FILE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L2FILE", out パラメータ ) )
                     {
                         block.File[ 1 ] = パラメータ;
                         blockが有効 = true;
@@ -108,7 +108,7 @@ namespace DTXMania2.曲
                     
                     #region " L3FILE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L3FILE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L3FILE", out パラメータ ) )
                     {
                         block.File[ 2 ] = パラメータ;
                         blockが有効 = true;
@@ -119,7 +119,7 @@ namespace DTXMania2.曲
                     
                     #region " L4FILE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L4FILE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L4FILE", out パラメータ ) )
                     {
                         block.File[ 3 ] = パラメータ;
                         blockが有効 = true;
@@ -130,7 +130,7 @@ namespace DTXMania2.曲
                     
                     #region " L5FILE コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L5FILE", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L5FILE", out パラメータ ) )
                     {
                         block.File[ 4 ] = パラメータ;
                         blockが有効 = true;
@@ -141,7 +141,7 @@ namespace DTXMania2.曲
                     
                     #region " L1LABEL コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L1LABEL", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L1LABEL", out パラメータ ) )
                     {
                         block.Label[ 0 ] = パラメータ;
                         blockが有効 = true;
@@ -152,7 +152,7 @@ namespace DTXMania2.曲
                     
                     #region " L2LABEL コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L2LABEL", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L2LABEL", out パラメータ ) )
                     {
                         block.Label[ 1 ] = パラメータ;
                         blockが有効 = true;
@@ -163,7 +163,7 @@ namespace DTXMania2.曲
                     
                     #region " L3LABEL コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L3LABEL", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L3LABEL", out パラメータ ) )
                     {
                         block.Label[ 2 ] = パラメータ;
                         blockが有効 = true;
@@ -174,7 +174,7 @@ namespace DTXMania2.曲
                     
                     #region " L4LABEL コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L4LABEL", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L4LABEL", out パラメータ ) )
                     {
                         block.Label[ 3 ] = パラメータ;
                         blockが有効 = true;
@@ -185,7 +185,7 @@ namespace DTXMania2.曲
                     
                     #region " L5LABEL コマンド "
                     //---------------------
-                    if( Utilities.コマンドのパラメータ文字列部分を返す( 行, @"L5LABEL", out パラメータ ) )
+                    if( Global.コマンドのパラメータ文字列部分を返す( 行, @"L5LABEL", out パラメータ ) )
                     {
                         block.Label[ 4 ] = パラメータ;
                         blockが有効 = true;

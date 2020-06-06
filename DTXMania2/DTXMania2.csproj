@@ -3,19 +3,18 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>54.0.0</Version>
+    <Platforms>x64</Platforms>
+    <Nullable>enable</Nullable>
+    <Version>55.0.0</Version>
     <Authors>FROM / Kenji Yamazaki</Authors>
     <Copyright>Copyright (C) 2000 2020 FROM / Kenji Yamazaki</Copyright>
-    <Platforms>x64</Platforms>
     <Configurations>Debug;Release</Configurations>
     <ApplicationIcon>Resources\DTXMania2.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputPath></OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -58,6 +57,12 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="ステージ\05オプション設定\入力割り当てダイアログ.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ステージ\05オプション設定\曲読み込みフォルダ割り当てダイアログ.cs">
+      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
 

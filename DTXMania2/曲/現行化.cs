@@ -283,7 +283,7 @@ namespace DTXMania2.曲
         {
             this._タスク終了通知.Reset();
 
-            this._現行化タスク = Task.Run( async () => {
+            this._現行化タスク = Task.Run( () => {
 
                 //Log.現在のスレッドに名前をつける( "現行化" );  --> await 後にワーカスレッドが変わることがある
                 Log.Info( "現行化タスクを開始しました。" );
@@ -302,7 +302,7 @@ namespace DTXMania2.曲
                     {
                         // スタックが空だったら少し待機。
                         this._現行化中.Reset();
-                        await Task.Delay( 100 );
+                        Thread.Sleep( 100 );
                     }
                 }
 

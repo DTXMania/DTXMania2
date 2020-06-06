@@ -17,9 +17,6 @@ namespace FDK
         public MediaFoundationOnMemoryWaveSource( VariablePath ファイルパス, CSCore.WaveFormat deviceFormat )
             : base( ファイルパス, deviceFormat )
         {
-            // 読み込み＆デコード完了まで待機。
-            if( !( this._デコードタスク.Wait( 60 * 1000 ) ) )
-                throw new TimeoutException( $"デコードタスクがタイムアウトしました。[{ファイルパス.変数付きパス}]" );
         }
     }
 }

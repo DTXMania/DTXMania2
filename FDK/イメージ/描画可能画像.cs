@@ -8,8 +8,8 @@ using SharpDX.Direct3D11;
 namespace FDK
 {
     /// <summary>
-    ///		D3Dテクスチャとメモリを共有するD2Dビットマップを持つテクスチャ。
-    ///		D2Dビットマップに対して描画を行えば、それをD3Dテクスチャとして表示することができる。
+    ///		D2Dビットマップとメモリを共有するD3Dテクスチャを持つ画像。
+    ///		D2Dビットマップに対してD2Dで描画を行い、それをD3Dテクスチャとして表示する。
     /// </summary>
     public class 描画可能画像 : 画像
     {
@@ -44,6 +44,7 @@ namespace FDK
             //using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._Bitmap.Dispose();
+
             base.Dispose();
         }
 
@@ -74,7 +75,7 @@ namespace FDK
         // ローカル
 
 
-        private Bitmap1 _Bitmap;
+        private readonly Bitmap1 _Bitmap;
 
         private Bitmap1 _作成したテクスチャとデータを共有するビットマップターゲットを作成する( SharpDX.Direct2D1.DeviceContext d2dDeviceContext )
         {

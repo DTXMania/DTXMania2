@@ -41,9 +41,11 @@ namespace FDK
         /// <param name="hWindow">
         ///     対象とするウィンドウのハンドル。<see cref="IntPtr.Zero"/> にすると、キーボードフォーカスに追従する。
         /// </param>
-        public GameControllersHID( IntPtr hWindow )
+        public GameControllersHID( IntPtr hWindow, SoundTimer soundTimer )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            this._SoundTimer = soundTimer;
 
             this.入力イベントリスト = new List<InputEvent>();
             this.Devices = new Dictionary<IntPtr, GameControllerHIDProperty>();
@@ -76,6 +78,8 @@ namespace FDK
             foreach( var kvp in this.Devices )
                 kvp.Value.Dispose();
             this.Devices.Clear();
+
+            this._SoundTimer = null!;
         }
 
 
@@ -358,7 +362,7 @@ namespace FDK
                                     Key = usagePage << 16 | usage,  // ExtendUsage = 上位16bit:UsagePage, 下位16bit:Usage
                                     押された = currentButtonState[ usageIndex ],
                                     Velocity = 255,       // 固定
-                                    TimeStamp = Stopwatch.GetTimestamp(),
+                                    TimeStamp = this._SoundTimer.現在時刻sec,
                                     Extra = $"{buttonCap.UsagePageName} / {HID.GetUsageName( usagePage, usage )}",
                                 };
 
@@ -489,5 +493,7 @@ namespace FDK
         ///	    true なら押されている状態、false なら離されている状態。
         /// </summary>
         private readonly Dictionary<int, bool> _現在のキーの押下状態 = new Dictionary<int, bool>();
+
+        private SoundTimer _SoundTimer;
     }
 }

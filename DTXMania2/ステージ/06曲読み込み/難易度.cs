@@ -37,7 +37,7 @@ namespace DTXMania2.曲読み込み
         // 進行と描画
 
 
-        public void 描画する( DeviceContext dc )
+        public void 進行描画する( DeviceContext dc )
         {
             var 見出し描画領域 = new RectangleF( 783f, 117f, 414f, 63f );
             var 数値描画領域 = new RectangleF( 783f, 180f, 414f, 213f );

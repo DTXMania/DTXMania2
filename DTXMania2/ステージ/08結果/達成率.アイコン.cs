@@ -97,14 +97,14 @@ namespace DTXMania2.結果
                 this._ストーリーボード?.Finish( 0.0 );
             }
 
-            public void 進行描画する( DeviceContext dc, float left, float top )
+            public void 進行描画する( float left, float top )
             {
                 double 回転による拡大率 = Math.Abs( Math.Cos( this._拡大角度rad.Value ) );    // (0) 1 → 0 → 1（π) → 0 → 1 (2π)
                 float 拡大率 = (float) ( 1.0 + 回転による拡大率 * this._半径倍率.Value );
                 float 左位置dpx = left + ( ( 1.0f - 拡大率 ) * this._アイコン画像.サイズ.Width ) / 2.0f;
                 float 上位置dpx = top + ( ( 1.0f - 拡大率 ) * this._アイコン画像.サイズ.Height ) / 2.0f;
                 
-                this._アイコン画像.描画する( 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
+                this._アイコン画像.進行描画する( 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
             }
 
 

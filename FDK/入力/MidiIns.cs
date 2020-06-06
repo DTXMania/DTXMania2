@@ -48,9 +48,11 @@ namespace FDK
         // 生成と終了
 
 
-        public MidiIns()
+        public MidiIns( SoundTimer soundTimer )
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            this._SoundTimer = soundTimer;
 
             // コールバックをデリゲートとして生成し、そのデリゲートをGCの対象から外す。
             this._midiInProc = new MidiInProc( this.MIDI入力コールバック );
@@ -135,8 +137,7 @@ namespace FDK
                         if( ( 0 <= pos ) && ( this.入力イベントリスト.Count > pos ) &&
                             ( 0 <= this.HiHatNotes.FindIndex( ( hh ) => ( hh == this.入力イベントリスト[ pos ].Key ) ) ) )
                         {
-                            long 時刻差ct = Math.Abs( this.入力イベントリスト[ fppos ].TimeStamp - this.入力イベントリスト[ pos ].TimeStamp );
-                            double 時刻差 = (double) 時刻差ct / (double) Stopwatch.Frequency;
+                            double 時刻差 = Math.Abs( this.入力イベントリスト[ fppos ].TimeStamp - this.入力イベントリスト[ pos ].TimeStamp );
                             if( しきい値 >= 時刻差 )
                             {
                                 this.入力イベントリスト[ pos ].Key = -1;       // 無効印
@@ -188,7 +189,7 @@ namespace FDK
 
         protected virtual void MIDI入力コールバック( IntPtr hMidiIn, uint wMsg, int dwInstance, int dwParam1, int dwParam2 )
         {
-            var timeStamp = Stopwatch.GetTimestamp();     // できるだけ早く取得しておく。
+            var timeStamp = this._SoundTimer.現在時刻sec;     // できるだけ早く取得しておく。
 
             if( MIM_DATA != wMsg )
                 return;
@@ -280,6 +281,8 @@ namespace FDK
         private GCHandle _midiInProcGCh;
 
         private readonly object _コールバック同期 = new object();
+
+        private SoundTimer _SoundTimer;
 
 
         #region " Win32 "

@@ -37,9 +37,9 @@ namespace FDK
         }
 
         /// <summary>
-        ///		このイベントが発生した時点の生パフォーマンスカウンタの値。
+        ///		このイベントが発生した時点のタイマの時刻[sec]。
         /// </summary>
-        public long TimeStamp { get; set; }
+        public double TimeStamp { get; set; }
 
         /// <summary>
         ///		入力されたキーの強さ。

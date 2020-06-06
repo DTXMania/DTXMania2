@@ -163,7 +163,7 @@ namespace DTXMania2
         public static ユーザ設定 読み込む( string id )
         {
             var config = new ユーザ設定();
-            config._UserConfig = UserConfig.読み込むFromID( id );
+            config._UserConfig = UserConfig.読み込む( id );
             config._UserConfigから反映する();
             return config;
         }
