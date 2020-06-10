@@ -79,51 +79,47 @@ namespace DTXMania2.結果
                 this._フルコンボ音声再生済み = true; // 再生してようがしてまいが true
             }
 
-            D2DBatch.Draw( dc, () => {
+            var 拡大率 = new Size2F( 1.4f, 1.3f ); // 画像が小さいので少々拡大。
 
-                var 拡大率 = new Size2F( 1.4f, 1.3f ); // 画像が小さいので少々拡大。
+            var 割合表 = 現在の成績.判定別ヒット割合;
+            int 合計 = 0;
 
-                var 割合表 = 現在の成績.判定別ヒット割合;
-                int 合計 = 0;
+            float 基点X = x;
 
-                float 基点X = x;
+            x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 0 ].Value;
+            this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.PERFECT, 現在の成績.判定別ヒット数[ 判定種別.PERFECT ], 割合表[ 判定種別.PERFECT ], (float) this._パラメータアニメ.不透明度[ 0 ].Value );
+            合計 += 現在の成績.判定別ヒット数[ 判定種別.PERFECT ];
+            y += _改行幅dpx;
 
-                x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 0 ].Value;
-                this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.PERFECT, 現在の成績.判定別ヒット数[ 判定種別.PERFECT ], 割合表[ 判定種別.PERFECT ], (float) this._パラメータアニメ.不透明度[ 0 ].Value );
-                合計 += 現在の成績.判定別ヒット数[ 判定種別.PERFECT ];
-                y += _改行幅dpx;
+            x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 1 ].Value;
+            this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.GREAT, 現在の成績.判定別ヒット数[ 判定種別.GREAT ], 割合表[ 判定種別.GREAT ], (float) this._パラメータアニメ.不透明度[ 1 ].Value );
+            合計 += 現在の成績.判定別ヒット数[ 判定種別.GREAT ];
+            y += _改行幅dpx;
 
-                x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 1 ].Value;
-                this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.GREAT, 現在の成績.判定別ヒット数[ 判定種別.GREAT ], 割合表[ 判定種別.GREAT ], (float) this._パラメータアニメ.不透明度[ 1 ].Value );
-                合計 += 現在の成績.判定別ヒット数[ 判定種別.GREAT ];
-                y += _改行幅dpx;
+            x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 2 ].Value;
+            this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.GOOD, 現在の成績.判定別ヒット数[ 判定種別.GOOD ], 割合表[ 判定種別.GOOD ], (float) this._パラメータアニメ.不透明度[ 2 ].Value );
+            合計 += 現在の成績.判定別ヒット数[ 判定種別.GOOD ];
+            y += _改行幅dpx;
 
-                x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 2 ].Value;
-                this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.GOOD, 現在の成績.判定別ヒット数[ 判定種別.GOOD ], 割合表[ 判定種別.GOOD ], (float) this._パラメータアニメ.不透明度[ 2 ].Value );
-                合計 += 現在の成績.判定別ヒット数[ 判定種別.GOOD ];
-                y += _改行幅dpx;
+            x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 3 ].Value;
+            this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.OK, 現在の成績.判定別ヒット数[ 判定種別.OK ], 割合表[ 判定種別.OK ], (float) this._パラメータアニメ.不透明度[ 3 ].Value );
+            合計 += 現在の成績.判定別ヒット数[ 判定種別.OK ];
+            y += _改行幅dpx;
 
-                x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 3 ].Value;
-                this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.OK, 現在の成績.判定別ヒット数[ 判定種別.OK ], 割合表[ 判定種別.OK ], (float) this._パラメータアニメ.不透明度[ 3 ].Value );
-                合計 += 現在の成績.判定別ヒット数[ 判定種別.OK ];
-                y += _改行幅dpx;
+            x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 4 ].Value;
+            this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.MISS, 現在の成績.判定別ヒット数[ 判定種別.MISS ], 割合表[ 判定種別.MISS ], (float) this._パラメータアニメ.不透明度[ 4 ].Value );
+            合計 += 現在の成績.判定別ヒット数[ 判定種別.MISS ];
+            y += _改行幅dpx;
 
-                x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 4 ].Value;
-                this.パラメータを一行描画する( dc, x, y, 拡大率, 判定種別.MISS, 現在の成績.判定別ヒット数[ 判定種別.MISS ], 割合表[ 判定種別.MISS ], (float) this._パラメータアニメ.不透明度[ 4 ].Value );
-                合計 += 現在の成績.判定別ヒット数[ 判定種別.MISS ];
-                y += _改行幅dpx;
+            x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 5 ].Value;
+            var 矩形 = this.判定種別文字の矩形リスト[ "MaxCombo" ]!;
+            this._判定種別文字.描画する( dc, x, y, 転送元矩形: 矩形, 不透明度0to1: (float) this._パラメータアニメ.不透明度[ 5 ].Value );
 
-                x = 基点X + (float) this._パラメータアニメ.X位置オフセット[ 5 ].Value;
-                var 矩形 = this.判定種別文字の矩形リスト[ "MaxCombo" ]!;
-                this._判定種別文字.描画する( dc, x, y, 転送元矩形: 矩形, 不透明度0to1: (float) this._パラメータアニメ.不透明度[ 5 ].Value );
-
-                x += 矩形.Value.Width + 16f;
-                this.数値を描画する( dc, x, y, 拡大率, 現在の成績.MaxCombo, 4, (float) this._パラメータアニメ.不透明度[ 5 ].Value );
-                this.数値を描画する( dc, x + _dr * 拡大率.Width, y, 拡大率, (int) Math.Floor( 100.0 * 現在の成績.MaxCombo / 合計 ), 3, (float) this._パラメータアニメ.不透明度[ 5 ].Value );    // 切り捨てでいいやもう
-                this.パラメータ文字.不透明度 = (float) this._パラメータアニメ.不透明度[ 5 ].Value;
-                this.パラメータ文字.描画する( dc, x + _dp * 拡大率.Width, y, "%", 拡大率 );
-
-            } );
+            x += 矩形.Value.Width + 16f;
+            this.数値を描画する( dc, x, y, 拡大率, 現在の成績.MaxCombo, 4, (float) this._パラメータアニメ.不透明度[ 5 ].Value );
+            this.数値を描画する( dc, x + _dr * 拡大率.Width, y, 拡大率, (int) Math.Floor( 100.0 * 現在の成績.MaxCombo / 合計 ), 3, (float) this._パラメータアニメ.不透明度[ 5 ].Value );    // 切り捨てでいいやもう
+            this.パラメータ文字.不透明度 = (float) this._パラメータアニメ.不透明度[ 5 ].Value;
+            this.パラメータ文字.描画する( dc, x + _dp * 拡大率.Width, y, "%", 拡大率 );
         }
 
 

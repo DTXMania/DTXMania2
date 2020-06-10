@@ -243,14 +243,14 @@ namespace DTXMania2.曲
             }
         }
 
-        public static 画像? ノード画像を生成する( VariablePath? ノード画像ファイルの絶対パス )
+        public static 画像D2D? ノード画像を生成する( VariablePath? ノード画像ファイルの絶対パス )
         {
             if( ノード画像ファイルの絶対パス is null )
                 return null;
 
             try
             {
-                var image = new 画像( ノード画像ファイルの絶対パス.変数なしパス );
+                var image = new 画像D2D( ノード画像ファイルの絶対パス.変数なしパス );
 
                 //Log.Info( $"ノード画像を生成しました。[{ノード画像ファイルの絶対パス.変数付きパス}]" );
                 return image;

@@ -68,7 +68,7 @@ namespace DTXMania2.結果
 
                 // シーン1. 待つ
                 {
-                    double シーン期間 = 秒( 達成率更新.最初の待機時間sec / 2 );
+                    double シーン期間 = 秒( 達成率更新._最初の待機時間sec / 2 );
                     using( var 中心位置Xの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 中心位置Yの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 回転角radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -119,7 +119,7 @@ namespace DTXMania2.結果
 
                 // シーン4. 待つ
                 {
-                    double シーン期間 = 秒( 達成率更新.登場後の待機時間sec );
+                    double シーン期間 = 秒( 達成率更新._登場後の待機時間sec );
                     using( var 中心位置Xの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 中心位置Yの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 回転角radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -136,7 +136,7 @@ namespace DTXMania2.結果
 
                 // シーン5. 右へ消えていく。
                 {
-                    double シーン期間 = 秒( 達成率更新.退場アニメ時間sec );
+                    double シーン期間 = 秒( 達成率更新._退場アニメ時間sec );
                     using( var 中心位置Xの遷移 = Global.Animation.TrasitionLibrary.Linear( duration: シーン期間, finalValue: 1922.0 + 66.0 ) )
                     using( var 中心位置Yの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 回転角radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -169,7 +169,7 @@ namespace DTXMania2.結果
 
                 // シーン1. 待つ
                 {
-                    double シーン期間 = 秒( 達成率更新.最初の待機時間sec /2 );
+                    double シーン期間 = 秒( 達成率更新._最初の待機時間sec /2 );
                     using( var 中心位置Xの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 中心位置Yの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 回転角radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -220,7 +220,7 @@ namespace DTXMania2.結果
 
                 // シーン4. 待つ
                 {
-                    double シーン期間 = 秒( 達成率更新.登場後の待機時間sec );
+                    double シーン期間 = 秒( 達成率更新._登場後の待機時間sec );
                     using( var 中心位置Xの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 中心位置Yの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 回転角radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -237,7 +237,7 @@ namespace DTXMania2.結果
 
                 // シーン5. 左へ消えていく。
                 {
-                    double シーン期間 = 秒( 達成率更新.退場アニメ時間sec );
+                    double シーン期間 = 秒( 達成率更新._退場アニメ時間sec );
                     using( var 中心位置Xの遷移 = Global.Animation.TrasitionLibrary.Linear( duration: シーン期間, finalValue: 1214.0 - 66.0 ) )
                     using( var 中心位置Yの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 回転角radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -270,7 +270,7 @@ namespace DTXMania2.結果
 
                 // シーン1. 待つ
                 {
-                    double シーン期間 = 秒( 達成率更新.最初の待機時間sec / 2 );
+                    double シーン期間 = 秒( 達成率更新._最初の待機時間sec / 2 );
                     using( var 中心位置Xの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 中心位置Yの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 回転角radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -321,7 +321,7 @@ namespace DTXMania2.結果
 
                 // シーン4. 待つ
                 {
-                    double シーン期間 = 秒( 達成率更新.登場後の待機時間sec );
+                    double シーン期間 = 秒( 達成率更新._登場後の待機時間sec );
                     using( var 中心位置Xの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 中心位置Yの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 回転角radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -338,7 +338,7 @@ namespace DTXMania2.結果
 
                 // シーン5. 真ん中で細くなって消えていく。
                 {
-                    double シーン期間 = 秒( 達成率更新.退場アニメ時間sec );
+                    double シーン期間 = 秒( 達成率更新._退場アニメ時間sec );
                     using( var 中心位置Xの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 中心位置Yの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 回転角radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -397,29 +397,27 @@ namespace DTXMania2.結果
                     anim.ストーリーボード?.Schedule( start );
             }
 
+            var preTrans = dc.Transform;
+
             // 黒帯
-            D2DBatch.Draw( dc, () => {
+            foreach( var 黒帯 in this._黒帯アニメーション )
+            {
+                dc.Transform =
+                    Matrix3x2.Rotation( (float) 黒帯.回転角rad.Value ) *
+                    Matrix3x2.Translation( (float) 黒帯.中心位置X.Value, (float) 黒帯.中心位置Y.Value ) *
+                    preTrans;
 
-                var pretrans = dc.Transform;
+                using var brush = new SolidColorBrush( dc, new Color4( 0f, 0f, 0f, (float) 黒帯.不透明度.Value ) );
+                float w = (float) 黒帯.太さ.Value;
+                float h = 1600.0f;
+                var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
+                dc.FillRectangle( rc, brush );
+            }
 
-                foreach( var 黒帯 in this._黒帯アニメーション )
-                {
-                    dc.Transform =
-                        Matrix3x2.Rotation( (float) 黒帯.回転角rad.Value ) *
-                        Matrix3x2.Translation( (float) 黒帯.中心位置X.Value, (float) 黒帯.中心位置Y.Value ) *
-                        pretrans;
+            dc.Transform = preTrans;
 
-                    using var brush = new SolidColorBrush( dc, new Color4( 0f, 0f, 0f, (float) 黒帯.不透明度.Value ) );
-                    float w = (float) 黒帯.太さ.Value;
-                    float h = 1600.0f;
-                    var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
-                    dc.FillRectangle( rc, brush );
-                }
-
-            } );
-
-            this._アイコン.進行描画する( left, top );
-            this._数値.進行描画する( left + 150f, top + 48f );
+            this._アイコン.進行描画する( dc, left, top );
+            this._数値.進行描画する( dc, left + 150f, top + 48f );
             this._下線.進行描画する( dc, left + 33f, top + 198f );
         }
 
@@ -430,13 +428,13 @@ namespace DTXMania2.結果
 
         private bool _初めての進行描画 = true;
 
-        private const double 最初の待機時間sec = 1.0;
+        private const double _最初の待機時間sec = 1.0;
 
-        private const double アニメ時間sec = 0.25;
+        private const double _アニメ時間sec = 0.25;
 
-        private const double 登場後の待機時間sec = 3.0;
+        private const double _登場後の待機時間sec = 3.0;
 
-        private const double 退場アニメ時間sec = 0.1;
+        private const double _退場アニメ時間sec = 0.1;
 
         private class 黒帯 : IDisposable
         {

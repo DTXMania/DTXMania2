@@ -465,194 +465,208 @@ namespace DTXMania2
         {
             bool すべて完了 = true;
 
+            var preTrans = dc.Transform;
+
             #region " 背景の画像 "
             //----------------
             switch( this.現在のフェーズ )
             {
                 case フェーズ.クローズ:
+                {
+                    if( this._初めての進行描画 )
                     {
-                        if( this._初めての進行描画 )
-                        {
-                            this._画面BC_アイキャッチ遷移画面1_回転中.ぼかしと縮小を解除する( 0.0 );  // 全部解除してから
-                            this._画面BC_アイキャッチ遷移画面1_回転中.ぼかしと縮小を適用する();       // ゆっくり適用開始。
+                        this._画面BC_アイキャッチ遷移画面1_回転中.ぼかしと縮小を解除する( 0.0 );  // 全部解除してから
+                        this._画面BC_アイキャッチ遷移画面1_回転中.ぼかしと縮小を適用する();       // ゆっくり適用開始。
 
-                            this._初めての進行描画 = false;
+                        this._初めての進行描画 = false;
+                    }
+
+                    switch( this._クローズ割合.Value )    // 0 → 3.0
+                    {
+                        // 画面A（切り替え元画面）
+                        // 画面B（アイキャッチ遷移画面1（回転中））
+                        // 画面C（アイキャッチ画面）
+                        // ※ このメソッドの呼び出し前に、画面Aが全面描画済みであるものと想定する。
+
+                        case double 割合 when( 1.0 > 割合 ):
+                        {
+                            #region " シーン1. 画面Aを下絵に、上下端から画面Bの描画領域が増えていく。（上下の黒帯の移動に伴って）"
+                            //----------------
+                            Size2F 画面Bサイズ = this._画面BC_アイキャッチ遷移画面1_回転中.サイズ;
+                            float 画面B表示縦幅 = (float) ( 画面Bサイズ.Height * 割合 / 2.0 );    // 0 → height/2
+
+                            // 上から
+                            this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, false, new Vector4( 0f, 0f, 画面Bサイズ.Width, 画面B表示縦幅 ) );
+
+                            // 下から
+                            this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, false, new Vector4( 0f, 画面Bサイズ.Height - 画面B表示縦幅, 画面Bサイズ.Width, 画面Bサイズ.Height ) );
+                            //----------------
+                            #endregion
+
+                            break;
                         }
-
-                        switch( this._クローズ割合.Value )    // 0 → 3.0
+                        case double 割合 when( 2.0 > 割合 ):
                         {
-                            // 画面A（切り替え元画面）
-                            // 画面B（アイキャッチ遷移画面1（回転中））
-                            // 画面C（アイキャッチ画面）
-                            // ※ このメソッドの呼び出し前に、画面Aが全面描画済みであるものと想定する。
+                            #region " シーン2. 画面Bを全表示。（黒帯は回転中）"
+                            //----------------
+                            this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc );
+                            //----------------
+                            #endregion
 
-                            case double 割合 when( 1.0 > 割合 ):
-                                #region " シーン1. 画面Aを下絵に、上下端から画面Bの描画領域が増えていく。（上下の黒帯の移動に伴って）"
-                                //----------------
-                                Size2F 画面Bサイズ = this._画面BC_アイキャッチ遷移画面1_回転中.サイズ;
-                                float 画面B表示縦幅 = (float) ( 画面Bサイズ.Height * 割合 / 2.0 );    // 0 → height/2
+                            break;
+                        }
+                        case double 割合: // default
+                        {
+                            #region " シーン3. 画面Bを下絵に、中央から左右に向かって（黒帯の移動に従って）、画面Cの描画領域が広くなっていく。"
+                            //----------------
+                            this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc );    // 下絵の画面B、全表示。
 
-                                // 上から
-                                this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, false, new Vector4( 0f, 0f, 画面Bサイズ.Width, 画面B表示縦幅 ) );
+                            // 以下、画面Cを上に重ねて描画。
 
-                                // 下から
-                                this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, false, new Vector4( 0f, 画面Bサイズ.Height - 画面B表示縦幅, 画面Bサイズ.Width, 画面Bサイズ.Height ) );
-                                //----------------
-                                #endregion
-                                break;
+                            割合 = 割合 - 2.0;  // 0 → 1.0
 
-                            case double 割合 when( 2.0 > 割合 ):
-                                #region " シーン2. 画面Bを全表示。（黒帯は回転中）"
-                                //----------------
-                                this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc );
-                                //----------------
-                                #endregion
-                                break;
+                            this._斜めレイヤーパラメータ.MaskTransform =
+                                Matrix3x2.Scaling( (float) ( 割合 * 0.5 ), 1.0f ) *    // x:0 → 0.5
+                                ( ( 割合 < 0.5 ) ?
+                                    Matrix3x2.Rotation( (float) ( Math.PI / ( 5.85 - 1.85 * ( 割合 * 2 ) ) ) ) :
+                                    Matrix3x2.Rotation( (float) ( Math.PI / 4.0 ) ) // 45°
+                                ) *
+                                Matrix3x2.Translation( Global.設計画面サイズ.Width / 2.0f, Global.設計画面サイズ.Height / 2.0f ); // 画面中央固定。
 
-                            case double 割合: // default
-                                #region " シーン3. 画面Bを下絵に、中央から左右に向かって（黒帯の移動に従って）、画面Cの描画領域が広くなっていく。"
-                                //----------------
-                                this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc );    // 下絵の画面B、全表示。
+                            this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, layerParameters1: this._斜めレイヤーパラメータ );
+                            this._ロゴを描画する( dc );
+                            //----------------
+                            #endregion
 
-                                // 以下、画面Cを上に重ねて描画。
-
-                                割合 = 割合 - 2.0;  // 0 → 1.0
-
-                                this._斜めレイヤーパラメータ.MaskTransform =
-                                    Matrix3x2.Scaling( (float) ( 割合 * 0.5 ), 1.0f ) *    // x:0 → 0.5
-                                    ( ( 割合 < 0.5 ) ?
-                                        Matrix3x2.Rotation( (float) ( Math.PI / ( 5.85 - 1.85 * ( 割合 * 2 ) ) ) ) :
-                                        Matrix3x2.Rotation( (float) ( Math.PI / 4.0 ) ) // 45°
-                                    ) *
-                                    Matrix3x2.Translation( Global.設計画面サイズ.Width / 2.0f, Global.設計画面サイズ.Height / 2.0f ); // 画面中央固定。
-
-                                this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, layerParameters1: this._斜めレイヤーパラメータ );
-                                this._ロゴを描画する( dc );
-                                //----------------
-                                #endregion
-                                break;
+                            break;
                         }
                     }
+
                     break;
+                }
 
                 case フェーズ.クローズ完了:
-                    {
-                        // 画面C（アイキャッチ画面（背景＋ロゴ））
-                        this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc );
-                        this._ロゴを描画する( dc );
-                    }
-                    break;
+                {
+                    // 画面C（アイキャッチ画面（背景＋ロゴ））
+                    this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc );
+                    this._ロゴを描画する( dc );
 
+                    break;
+                }
                 case フェーズ.オープン:
+                {
+                    if( this._初めての進行描画 )
                     {
-                        if( this._初めての進行描画 )
+                        this._画面BC_アイキャッチ遷移画面1_回転中.ぼかしと縮小を適用する( 0.0 );      // 0.0秒以内 → 最初から全部適用状態。
+
+                        this._画面D_アイキャッチ遷移画面2_逆回転中.ぼかしと縮小を適用する( 0.0 );     // 全部適用してから
+                        this._画面D_アイキャッチ遷移画面2_逆回転中.ぼかしと縮小を解除する();          // ゆっくり解除開始。
+
+                        this._初めての進行描画 = false;
+                    }
+
+                    switch( this._クローズ割合.Value )    // 3.0 → 0
+                    {
+                        // 画面C（アイキャッチ画面）
+                        // 画面D（アイキャッチ遷移画面2（逆回転中））
+                        // 画面E（切り替え先画面）
+                        // ※ このメソッドの呼び出し前に、画面Eが全面描画済みであるものと想定する。
+
+                        case double 割合 when( 2.0 < 割合 ):
                         {
-                            this._画面BC_アイキャッチ遷移画面1_回転中.ぼかしと縮小を適用する( 0.0 );      // 0.0秒以内 → 最初から全部適用状態。
+                            #region " シーン3. 画面Cを下絵に、左右から中央に向かって（黒帯の移動に従って）、画面Dの描画領域が広くなっていく。"
+                            //----------------
+                            this._画面D_アイキャッチ遷移画面2_逆回転中.進行描画する( dc );    // 画面D、全表示。（画面Cじゃないので注意）
 
-                            this._画面D_アイキャッチ遷移画面2_逆回転中.ぼかしと縮小を適用する( 0.0 );     // 全部適用してから
-                            this._画面D_アイキャッチ遷移画面2_逆回転中.ぼかしと縮小を解除する();          // ゆっくり解除開始。
+                            // 以下、画面C（画面Dじゃないので注意）を左右の黒帯の間に描画。
 
-                            this._初めての進行描画 = false;
+                            割合 = 割合 - 2.0;  // 1.0 → 0
+
+                            this._斜めレイヤーパラメータ.MaskTransform =
+                                Matrix3x2.Scaling( (float) ( 割合 * 0.5 ), 1.0f ) *    // x:0.5 → 0
+                                ( ( 割合 < 0.5 ) ?
+                                    Matrix3x2.Rotation( (float) ( Math.PI / ( 5.85 - 1.85 * ( 割合 * 2 ) ) ) ) :
+                                    Matrix3x2.Rotation( (float) ( Math.PI / 4.0 ) ) // 45°
+                                ) *
+                                Matrix3x2.Translation( Global.設計画面サイズ.Width / 2.0f, Global.設計画面サイズ.Height / 2.0f ); // 画面中央固定。
+
+                            this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, layerParameters1: this._斜めレイヤーパラメータ );
+                            this._ロゴを描画する( dc );
+                            //----------------
+                            #endregion
+                         
+                            break;
                         }
-
-                        switch( this._クローズ割合.Value )    // 3.0 → 0
+                        case double 割合 when( 1.0 < 割合 ):
                         {
-                            // 画面C（アイキャッチ画面）
-                            // 画面D（アイキャッチ遷移画面2（逆回転中））
-                            // 画面E（切り替え先画面）
-                            // ※ このメソッドの呼び出し前に、画面Eが全面描画済みであるものと想定する。
+                            #region " シーン2. 画面Dを全表示。（黒帯は逆回転中）"
+                            //----------------
+                            this._画面D_アイキャッチ遷移画面2_逆回転中.進行描画する( dc );
+                            //----------------
+                            #endregion
 
-                            case double 割合 when( 2.0 < 割合 ):
-                                #region " シーン3. 画面Cを下絵に、左右から中央に向かって（黒帯の移動に従って）、画面Dの描画領域が広くなっていく。"
-                                //----------------
-                                this._画面D_アイキャッチ遷移画面2_逆回転中.進行描画する( dc );    // 画面D、全表示。（画面Cじゃないので注意）
+                            break;
+                        }
+                        case double 割合: // default
+                        {
+                            #region " シーン1. 画面Dを下絵に、中央から上下端に向かって（黒帯の移動に従って）、画面Eの描画領域が減っていく。"
+                            //----------------
+                            Size2F 画面Dサイズ = this._画面D_アイキャッチ遷移画面2_逆回転中.サイズ;
+                            float 画面D表示縦幅 = (float) ( 画面Dサイズ.Height * 割合 / 2.0 );    // height/2 → 0
 
-                                // 以下、画面C（画面Dじゃないので注意）を左右の黒帯の間に描画。
+                            // 上から
+                            this._画面D_アイキャッチ遷移画面2_逆回転中.進行描画する( dc, false, new Vector4( 0f, 0f, 画面Dサイズ.Width, 画面D表示縦幅 ) );
 
-                                割合 = 割合 - 2.0;  // 1.0 → 0
-
-                                this._斜めレイヤーパラメータ.MaskTransform =
-                                    Matrix3x2.Scaling( (float) ( 割合 * 0.5 ), 1.0f ) *    // x:0.5 → 0
-                                    ( ( 割合 < 0.5 ) ?
-                                        Matrix3x2.Rotation( (float) ( Math.PI / ( 5.85 - 1.85 * ( 割合 * 2 ) ) ) ) :
-                                        Matrix3x2.Rotation( (float) ( Math.PI / 4.0 ) ) // 45°
-                                    ) *
-                                    Matrix3x2.Translation( Global.設計画面サイズ.Width / 2.0f, Global.設計画面サイズ.Height / 2.0f ); // 画面中央固定。
-
-                                this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, layerParameters1: this._斜めレイヤーパラメータ );
-                                this._ロゴを描画する( dc );
-                                //----------------
-                                #endregion
-                                break;
-
-                            case double 割合 when( 1.0 < 割合 ):
-                                #region " シーン2. 画面Dを全表示。（黒帯は逆回転中）"
-                                //----------------
-                                this._画面D_アイキャッチ遷移画面2_逆回転中.進行描画する( dc );
-                                //----------------
-                                #endregion
-                                break;
-
-                            case double 割合: // default
-                                #region " シーン1. 画面Dを下絵に、中央から上下端に向かって（黒帯の移動に従って）、画面Eの描画領域が減っていく。"
-                                //----------------
-                                Size2F 画面Dサイズ = this._画面D_アイキャッチ遷移画面2_逆回転中.サイズ;
-                                float 画面D表示縦幅 = (float) ( 画面Dサイズ.Height * 割合 / 2.0 );    // height/2 → 0
-
-                                // 上から
-                                this._画面D_アイキャッチ遷移画面2_逆回転中.進行描画する( dc, false, new Vector4( 0f, 0f, 画面Dサイズ.Width, 画面D表示縦幅 ) );
-
-                                // 下から
-                                this._画面D_アイキャッチ遷移画面2_逆回転中.進行描画する( dc, false, new Vector4( 0f, 画面Dサイズ.Height - 画面D表示縦幅, 画面Dサイズ.Width, 画面Dサイズ.Height ) );
-                                //----------------
-                                #endregion
-                                break;
+                            // 下から
+                            this._画面D_アイキャッチ遷移画面2_逆回転中.進行描画する( dc, false, new Vector4( 0f, 画面Dサイズ.Height - 画面D表示縦幅, 画面Dサイズ.Width, 画面Dサイズ.Height ) );
+                            //----------------
+                            #endregion
+                            
+                            break;
                         }
                     }
-                    break;
 
+                    break;
+                }
                 case フェーズ.オープン完了:
-                    {
-                        // 画面E（切り替え先画面、すでに描画済みと想定）
-                    }
+                {
+                    // 画面E（切り替え先画面、すでに描画済みと想定）
                     break;
+                }
             }
             //----------------
             #endregion
 
             #region " 黒帯（全シーンで共通）"
             //----------------
-            D2DBatch.Draw( dc, () => {
+            for( int i = 0; i < 2; i++ )
+            {
+                var context = this._黒幕アニメーション[ i ];
 
-                var pretrans = dc.Transform;
+                if( context.ストーリーボード.Status != StoryboardStatus.Ready )
+                    すべて完了 = false;
 
-                for( int i = 0; i < 2; i++ )
+                if( context.ストーリーボード.Status == 描画しないStatus )
+                    continue;
+
+                dc.Transform =
+                    Matrix3x2.Rotation( (float) context.回転角rad.Value ) *
+                    Matrix3x2.Translation( (float) context.中心位置X.Value, (float) context.中心位置Y.Value ) *
+                    preTrans;
+
+                using( var brush = new SolidColorBrush( dc, new Color4( 0f, 0f, 0f, (float) context.不透明度.Value ) ) )
                 {
-                    var context = this._黒幕アニメーション[ i ];
-
-                    if( context.ストーリーボード.Status != StoryboardStatus.Ready )
-                        すべて完了 = false;
-
-                    if( context.ストーリーボード.Status == 描画しないStatus )
-                        continue;
-
-                    dc.Transform =
-                        Matrix3x2.Rotation( (float) context.回転角rad.Value ) *
-                        Matrix3x2.Translation( (float) context.中心位置X.Value, (float) context.中心位置Y.Value ) *
-                        pretrans;
-
-                    using( var brush = new SolidColorBrush( dc, new Color4( 0f, 0f, 0f, (float) context.不透明度.Value ) ) )
-                    {
-                        float w = 2800.0f;
-                        float h = (float) context.太さ.Value;
-                        var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
-                        dc.FillRectangle( rc, brush );
-                    }
+                    float w = 2800.0f;
+                    float h = (float) context.太さ.Value;
+                    var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
+                    dc.FillRectangle( rc, brush );
                 }
+            }
 
-            } );
+            dc.Transform = preTrans;
             //----------------
             #endregion
+
 
             if( すべて完了 )
             {
@@ -696,7 +710,7 @@ namespace DTXMania2
         private 黒幕[] _黒幕アニメーション = null!;
 
         private readonly 画像D2D _ロゴ;
-        private readonly RectangleF _ロゴ表示領域 = new RectangleF( ( 1920f - 730f ) / 2f, ( 1080f - 300f ) / 2f, 730f, 300f );
+        private readonly RectangleF _ロゴ表示領域 = new RectangleF( ( 1920f - 730f ) / 2f, ( 1080f - 178f ) / 2f, 730f, 178f );
 
         /// <summary>
         ///		1:全表示 ... 0:非表示

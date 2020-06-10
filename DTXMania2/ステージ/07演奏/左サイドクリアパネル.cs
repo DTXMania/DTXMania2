@@ -16,6 +16,8 @@ namespace DTXMania2.演奏
 
         public 描画可能画像 クリアパネル { get; }
 
+        public 画像D2D 背景 { get; }
+
 
 
         // 生成と終了
@@ -25,8 +27,8 @@ namespace DTXMania2.演奏
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._背景 = new 画像D2D( @"$(Images)\PlayStage\LeftSideClearPanel.png" );
-            this.クリアパネル = new 描画可能画像( this._背景.サイズ );
+            this.背景 = new 画像D2D( @"$(Images)\PlayStage\LeftSideClearPanel.png" );
+            this.クリアパネル = new 描画可能画像( this.背景.サイズ );
         }
 
         public virtual void Dispose()
@@ -34,28 +36,7 @@ namespace DTXMania2.演奏
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this.クリアパネル.Dispose();
-            this._背景.Dispose();
-        }
-
-
-
-        // クリア
-
-
-        /// <summary>
-        ///		クリアパネルにそれまで描かれていた内容を消去する。
-        /// </summary>
-        public void クリアする()
-        {
-            this.クリアパネル.画像へ描画する( ( dcp ) => {
-
-                dcp.Transform = Matrix3x2.Identity;  // 等倍描画(DPXtoDPX)
-                dcp.PrimitiveBlend = PrimitiveBlend.Copy;
-
-                dcp.Clear( new Color4( Color3.Black, 0f ) );
-                dcp.DrawBitmap( this._背景.Bitmap, opacity: 1f, interpolationMode: InterpolationMode.Linear );
-
-            } );
+            this.背景.Dispose();
         }
 
 
@@ -71,14 +52,7 @@ namespace DTXMania2.演奏
                 Matrix.RotationY( MathUtil.DegreesToRadians( -48f ) ) *
                 Matrix.Translation( Global.画面左上dpx.X + 230f, Global.画面左上dpx.Y - 530f, 0f );
 
-            this.クリアパネル.進行描画する( 変換行列 );
+            this.クリアパネル.描画する( 変換行列 );
         }
-
-
-
-        // ローカル
-
-
-        private readonly 画像D2D _背景;
     }
 }

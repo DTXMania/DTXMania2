@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using SharpDX;
+using SharpDX.Direct2D1;
 using FDK;
 using SSTFormat.v004;
 
@@ -19,7 +20,7 @@ namespace DTXMania2.演奏
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._ドラムチップ画像 = new 画像( @"$(Images)\PlayStage\DrumChip.png" );
+            this._ドラムチップ画像 = new 画像D2D( @"$(Images)\PlayStage\DrumChip.png" );
             this._ドラムチップの矩形リスト = new 矩形リスト( @"$(Images)\PlayStage\DrumChip.yaml" );
             this._ドラムチップアニメ = new LoopCounter( 0, 48, 10 );
         }
@@ -37,7 +38,7 @@ namespace DTXMania2.演奏
 
 
         /// <returns>クリアしたらtrueを返す。</returns>
-        public bool 進行描画する( ref int 描画開始チップ番号, チップの演奏状態 state, チップ chip, int index, double ヒット判定バーとの距離dpx )
+        public bool 進行描画する( DeviceContext dc, ref int 描画開始チップ番号, チップの演奏状態 state, チップ chip, int index, double ヒット判定バーとの距離dpx )
         {
             float たて中央位置dpx = (float) ( 演奏ステージ.ヒット判定位置Ydpx + ヒット判定バーとの距離dpx );
             float 消滅割合 = 0f;
@@ -107,115 +108,115 @@ namespace DTXMania2.演奏
                 switch( chip.チップ種別 )
                 {
                     case チップ種別.LeftCrash:
-                        this._単画チップを１つ描画する( 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftCymbal.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftCymbal.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.HiHat_Close:
-                        this._アニメチップを１つ描画する( 表示レーン種別.HiHat, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._アニメチップを１つ描画する( dc, 表示レーン種別.HiHat, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.HiHat_HalfOpen:
-                        this._アニメチップを１つ描画する( 表示レーン種別.HiHat, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
-                        this._単画チップを１つ描画する( 表示レーン種別.Foot, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat_HalfOpen.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._アニメチップを１つ描画する( dc, 表示レーン種別.HiHat, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.Foot, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat_HalfOpen.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
 
                     case チップ種別.HiHat_Open:
-                        this._アニメチップを１つ描画する( 表示レーン種別.HiHat, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
-                        this._単画チップを１つ描画する( 表示レーン種別.Foot, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat_Open.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._アニメチップを１つ描画する( dc, 表示レーン種別.HiHat, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.Foot, this._ドラムチップの矩形リスト[ 表示チップ種別.HiHat_Open.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
 
                     case チップ種別.HiHat_Foot:
-                        this._単画チップを１つ描画する( 表示レーン種別.Foot, this._ドラムチップの矩形リスト[ 表示チップ種別.Foot.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.Foot, this._ドラムチップの矩形リスト[ 表示チップ種別.Foot.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
 
                     case チップ種別.Snare:
-                        this._アニメチップを１つ描画する( 表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._アニメチップを１つ描画する( dc, 表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.Snare_ClosedRim:
-                        this._単画チップを１つ描画する( 表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare_ClosedRim.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare_ClosedRim.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
 
                     case チップ種別.Snare_OpenRim:
-                        this._単画チップを１つ描画する( 表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare_OpenRim.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
-                        //this._単画チップを１つ描画する( 表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare_OpenRim.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        //this._単画チップを１つ描画する( dc,表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         // → ないほうがいいかも。
                         break;
 
                     case チップ種別.Snare_Ghost:
-                        this._単画チップを１つ描画する( 表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare_Ghost.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.Snare, this._ドラムチップの矩形リスト[ 表示チップ種別.Snare_Ghost.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
 
                     case チップ種別.Bass:
-                        this._アニメチップを１つ描画する( 表示レーン種別.Bass, this._ドラムチップの矩形リスト[ 表示チップ種別.Bass.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._アニメチップを１つ描画する( dc, 表示レーン種別.Bass, this._ドラムチップの矩形リスト[ 表示チップ種別.Bass.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.LeftBass:
-                        this._アニメチップを１つ描画する( 表示レーン種別.Bass, this._ドラムチップの矩形リスト[ 表示チップ種別.Bass.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._アニメチップを１つ描画する( dc, 表示レーン種別.Bass, this._ドラムチップの矩形リスト[ 表示チップ種別.Bass.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.Tom1:
-                        this._アニメチップを１つ描画する( 表示レーン種別.Tom1, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom1.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._アニメチップを１つ描画する( dc, 表示レーン種別.Tom1, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom1.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.Tom1_Rim:
-                        this._単画チップを１つ描画する( 表示レーン種別.Tom1, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom1_Rim.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.Tom1, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom1_Rim.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
 
                     case チップ種別.Tom2:
-                        this._アニメチップを１つ描画する( 表示レーン種別.Tom2, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom2.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._アニメチップを１つ描画する( dc, 表示レーン種別.Tom2, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom2.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.Tom2_Rim:
-                        this._単画チップを１つ描画する( 表示レーン種別.Tom2, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom2_Rim.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.Tom2, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom2_Rim.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
 
                     case チップ種別.Tom3:
-                        this._アニメチップを１つ描画する( 表示レーン種別.Tom3, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom3.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._アニメチップを１つ描画する( dc, 表示レーン種別.Tom3, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom3.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.Tom3_Rim:
-                        this._単画チップを１つ描画する( 表示レーン種別.Tom3, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom3_Rim.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.Tom3, this._ドラムチップの矩形リスト[ 表示チップ種別.Tom3_Rim.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
 
                     case チップ種別.RightCrash:
-                        this._単画チップを１つ描画する( 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightCymbal.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightCymbal.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.China:
                         if( userConfig.表示レーンの左右.Chinaは左 )
-                            this._単画チップを１つ描画する( 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftChina.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                            this._単画チップを１つ描画する( dc, 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftChina.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         else
-                            this._単画チップを１つ描画する( 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightChina.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                            this._単画チップを１つ描画する( dc, 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightChina.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.Ride:
                         if( userConfig.表示レーンの左右.Rideは左 )
-                            this._単画チップを１つ描画する( 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftRide.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                            this._単画チップを１つ描画する( dc, 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftRide.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         else
-                            this._単画チップを１つ描画する( 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightRide.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                            this._単画チップを１つ描画する( dc, 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightRide.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.Ride_Cup:
                         if( userConfig.表示レーンの左右.Rideは左 )
-                            this._単画チップを１つ描画する( 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftRide_Cup.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                            this._単画チップを１つ描画する( dc, 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftRide_Cup.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         else
-                            this._単画チップを１つ描画する( 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightRide_Cup.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                            this._単画チップを１つ描画する( dc, 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightRide_Cup.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.Splash:
                         if( userConfig.表示レーンの左右.Splashは左 )
-                            this._単画チップを１つ描画する( 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftSplash.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                            this._単画チップを１つ描画する( dc, 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftSplash.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         else
-                            this._単画チップを１つ描画する( 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightSplash.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
+                            this._単画チップを１つ描画する( dc, 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightSplash.ToString() ]!.Value, たて中央位置dpx, 大きさ0to1, 消滅割合 );
                         break;
 
                     case チップ種別.LeftCymbal_Mute:
-                        this._単画チップを１つ描画する( 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftCymbal_Mute.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.LeftCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.LeftCymbal_Mute.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
 
                     case チップ種別.RightCymbal_Mute:
-                        this._単画チップを１つ描画する( 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightCymbal_Mute.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
+                        this._単画チップを１つ描画する( dc, 表示レーン種別.RightCymbal, this._ドラムチップの矩形リスト[ 表示チップ種別.RightCymbal_Mute.ToString() ]!.Value, たて中央位置dpx, 等倍, 消滅割合 );
                         break;
                 }
                 //----------------
@@ -230,7 +231,7 @@ namespace DTXMania2.演奏
         // ローカル
 
 
-        private readonly 画像 _ドラムチップ画像;
+        private readonly 画像D2D _ドラムチップ画像;
 
         private readonly 矩形リスト _ドラムチップの矩形リスト;
 
@@ -238,7 +239,7 @@ namespace DTXMania2.演奏
 
         private const float _チップの最終調整倍率 = 1.2f; // 見た感じで決めた主観的な値。
 
-        private void _単画チップを１つ描画する( 表示レーン種別 lane, RectangleF 転送元矩形, float 上位置, Size2F 大きさ0to1, float 消滅割合 )
+        private void _単画チップを１つ描画する( DeviceContext dc, 表示レーン種別 lane, RectangleF 転送元矩形, float 上位置, Size2F 大きさ0to1, float 消滅割合 )
         {
             float X倍率 = 大きさ0to1.Width;
             float Y倍率 = 大きさ0to1.Height;
@@ -253,7 +254,8 @@ namespace DTXMania2.演奏
             X倍率 *= ( 1f - 消滅割合 ) * _チップの最終調整倍率;
             Y倍率 *= ( 1f - 消滅割合 ) * _チップの最終調整倍率;
 
-            this._ドラムチップ画像.進行描画する(
+            this._ドラムチップ画像.描画する(
+                dc,
                 左位置: レーンフレーム.レーン中央位置X[ lane ] - ( 転送元矩形.Width * X倍率 / 2f ),
                 上位置: 上位置 - ( 転送元矩形.Height * Y倍率 / 2f ),
                 転送元矩形: 転送元矩形,
@@ -261,7 +263,7 @@ namespace DTXMania2.演奏
                 Y方向拡大率: Y倍率 );
         }
 
-        private void _アニメチップを１つ描画する( 表示レーン種別 lane, RectangleF 転送元矩形, float Y, Size2F 大きさ0to1, float 消滅割合 )
+        private void _アニメチップを１つ描画する( DeviceContext dc, 表示レーン種別 lane, RectangleF 転送元矩形, float Y, Size2F 大きさ0to1, float 消滅割合 )
         {
             float X倍率 = 大きさ0to1.Width;
             float Y倍率 = 大きさ0to1.Height;
@@ -279,7 +281,8 @@ namespace DTXMania2.演奏
             転送元矩形.Offset( 0f, this._ドラムチップアニメ.現在値 * 15f );   // 下端3pxは下のチップと共有する前提のデザインなので、18f-3f = 15f。
             転送元矩形.Height = チップ1枚の高さ;
 
-            this._ドラムチップ画像.進行描画する(
+            this._ドラムチップ画像.描画する(
+                dc,
                 左位置: レーンフレーム.レーン中央位置X[ lane ] - ( 転送元矩形.Width * X倍率 / 2f ),
                 上位置: Y - ( チップ1枚の高さ * Y倍率 / 2f ),
                 転送元矩形: 転送元矩形,

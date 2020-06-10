@@ -38,7 +38,7 @@ namespace DTXMania2.曲読み込み
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._舞台画像 = new 舞台画像();
-            this._注意文 = new 画像( @"$(Images)\LoadingStage\Caution.png" );
+            this._注意文 = new 画像D2D( @"$(Images)\LoadingStage\Caution.png" );
             this._曲名画像 = new 文字列画像D2D() {
                 フォント名 = "HGMaruGothicMPRO",
                 フォントサイズpt = 70f,
@@ -105,13 +105,16 @@ namespace DTXMania2.曲読み込み
                 {
                     #region " 背景画面＆アイキャッチフェードインを描画する。"
                     //----------------
-                    this._背景画面を描画する( dc );
+                    dc.BeginDraw();
 
+                    this._背景画面を描画する( dc );
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
                     {
                         // フェードインが完了したら次のフェーズへ。
                         this.現在のフェーズ = フェーズ.表示;
                     }
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -121,7 +124,9 @@ namespace DTXMania2.曲読み込み
                 {
                     #region " スコアを読み込んで完了フェーズへ。"
                     //----------------
+                    dc.BeginDraw();
                     this._背景画面を描画する( dc );
+                    dc.EndDraw();
 
                     スコアを読み込む();
 
@@ -137,7 +142,9 @@ namespace DTXMania2.曲読み込み
                 {
                     #region " 遷移終了。Appによるステージ遷移待ち。"
                     //----------------
+                    dc.BeginDraw();
                     this._背景画面を描画する( dc );
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -217,7 +224,7 @@ namespace DTXMania2.曲読み込み
 
         private readonly 舞台画像 _舞台画像;
 
-        private readonly 画像 _注意文;
+        private readonly 画像D2D _注意文;
 
         private readonly 文字列画像D2D _曲名画像;
 
@@ -250,8 +257,8 @@ namespace DTXMania2.曲読み込み
         private void _背景画面を描画する( DeviceContext dc )
         {
             this._舞台画像.進行描画する( dc );
-            this._注意文.進行描画する( 0f, 760f );
-            this._プレビュー画像.進行描画する();
+            this._注意文.描画する( dc, 0f, 760f );
+            this._プレビュー画像.進行描画する( dc );
             this._難易度.進行描画する( dc );
             this._曲名を描画する( dc );
             this._サブタイトルを描画する( dc );

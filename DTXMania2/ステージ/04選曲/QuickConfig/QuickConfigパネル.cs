@@ -40,7 +40,7 @@ namespace DTXMania2.選曲.QuickConfig
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._パネル = new 画像( @"$(Images)\SelectStage\QuickConfigPanel.png" );
+            this._パネル = new 画像D2D( @"$(Images)\SelectStage\QuickConfigPanel.png" );
 
             // 設定項目リストを構築する。
             this._設定項目リスト = new SelectableList<ラベル>();
@@ -158,9 +158,9 @@ namespace DTXMania2.選曲.QuickConfig
         // 進行と描画
 
 
-        public void 進行描画する( float 左位置, float 上位置 )
+        public void 進行描画する( DeviceContext dc, float 左位置, float 上位置 )
         {
-            var dc = Global.既定のD2D1DeviceContext;
+            var preTrans = dc.Transform;
 
             var 入力 = Global.App.ドラム入力;  // 呼び出し元でポーリング済み
 
@@ -285,7 +285,7 @@ namespace DTXMania2.選曲.QuickConfig
 
                     #region " QuickConfig パネルを描画する。"
                     //----------------
-                    this._パネル.進行描画する( 左位置, 上位置 );
+                    this._パネル.描画する( dc, 左位置, 上位置 );
 
                     for( int i = 0; i < this._設定項目リスト.Count; i++ )
                     {
@@ -297,17 +297,19 @@ namespace DTXMania2.選曲.QuickConfig
                         // 選択カーソルを描画する。
                         if( this._設定項目リスト.SelectedIndex == i )
                         {
-                            D2DBatch.Draw( dc, () => {
-                                dc.Transform = Global.拡大行列DPXtoPX;
-                                using var brush = new SolidColorBrush( dc, new SharpDX.Color( 0.6f, 0.6f, 1f, 0.4f ) );
-                                dc.FillRectangle(
-                                    new SharpDX.RectangleF(
-                                        左位置 + 左右マージン,
-                                        上位置 + 見出し行間 + 項目行間 * i,
-                                        this._パネル.サイズ.Width - 左右マージン * 2,
-                                        項目行間 ),
-                                    brush );
-                            } );
+                            dc.Transform = Global.拡大行列DPXtoPX;
+                         
+                            using var brush = new SolidColorBrush( dc, new SharpDX.Color( 0.6f, 0.6f, 1f, 0.4f ) );
+                            
+                            dc.FillRectangle(
+                                new SharpDX.RectangleF(
+                                    左位置 + 左右マージン,
+                                    上位置 + 見出し行間 + 項目行間 * i,
+                                    this._パネル.サイズ.Width - 左右マージン * 2,
+                                    項目行間 ),
+                                brush );
+
+                            dc.Transform = preTrans;
                         }
 
                         // 選択肢項目を描画する。
@@ -336,7 +338,7 @@ namespace DTXMania2.選曲.QuickConfig
         // ローカル
 
 
-        private readonly 画像 _パネル;
+        private readonly 画像D2D _パネル;
 
         private readonly SelectableList<ラベル> _設定項目リスト;
     }

@@ -6,6 +6,7 @@ using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using FDK;
 using DTXMania2.曲;
+using Windows.Graphics.Printing3D;
 
 namespace DTXMania2.選曲
 {
@@ -29,11 +30,36 @@ namespace DTXMania2.選曲
             this._数字画像 = new フォント画像D2D( @"$(Images)\ParameterFont_Large.png", @"$(Images)\ParameterFont_Large.yaml" );
             this._見出し用TextFormat = new TextFormat( Global.DWriteFactory, "Century Gothic", 16f ) { TextAlignment = TextAlignment.Trailing };
             this._説明文用TextFormat = new TextFormat( Global.DWriteFactory, "Century Gothic", 16f ) { TextAlignment = TextAlignment.Center };
+
+            this._黒透過ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( Color3.Black, 0.5f ) );
+            this._黒ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color4.Black );
+            this._白ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color4.White );
+            this._ULTIMATE色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 4 ] );
+            this._MASTER色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 3 ] );
+            this._EXTREME色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 2 ] );
+            this._ADVANCED色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 1 ] );
+            this._BASIC色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 0 ] );
+            this._難易度パネル色 = new Brush[ 5 ] {
+                this._BASIC色ブラシ,
+                this._ADVANCED色ブラシ,
+                this._EXTREME色ブラシ,
+                this._MASTER色ブラシ,
+                this._ULTIMATE色ブラシ,
+            };
         }
 
         public virtual void Dispose()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            this._BASIC色ブラシ.Dispose();
+            this._ADVANCED色ブラシ.Dispose();
+            this._EXTREME色ブラシ.Dispose();
+            this._MASTER色ブラシ.Dispose();
+            this._ULTIMATE色ブラシ.Dispose();
+            this._白ブラシ.Dispose();
+            this._黒ブラシ.Dispose();
+            this._黒透過ブラシ.Dispose();
 
             this._説明文用TextFormat.Dispose();
             this._見出し用TextFormat.Dispose();
@@ -52,13 +78,14 @@ namespace DTXMania2.選曲
         {
             var 背景領域dpx = new RectangleF( 642f, 529f, 338f, 508f );
 
+            var preBlend = dc.PrimitiveBlend;
+
             #region " 背景を描画する。"
             //----------------
-            D2DBatch.Draw( dc, () => {
-                using var _黒透過ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, 0.5f ) );
-                dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
-                dc.FillRectangle( 背景領域dpx, _黒透過ブラシ );
-            } );
+            dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
+            dc.FillRectangle( 背景領域dpx, this._黒透過ブラシ );
+            
+            dc.PrimitiveBlend = preBlend;
             //----------------
             #endregion
 
@@ -72,26 +99,8 @@ namespace DTXMania2.選曲
 
             #region " 難易度パネル（背景）を描画する。"
             //----------------
-            using var 黒ブラシ = new SolidColorBrush( dc, Color4.Black );
-            using var 白ブラシ = new SolidColorBrush( dc, Color4.White );
-            using var ULTIMATE色ブラシ = new SolidColorBrush( dc, Song.難易度色リスト[ 4 ] );
-            using var MASTER色ブラシ = new SolidColorBrush( dc, Song.難易度色リスト[ 3 ] );
-            using var EXTREME色ブラシ = new SolidColorBrush( dc, Song.難易度色リスト[ 2 ] );
-            using var ADVANCED色ブラシ = new SolidColorBrush( dc, Song.難易度色リスト[ 1 ] );
-            using var BASIC色ブラシ = new SolidColorBrush( dc, Song.難易度色リスト[ 0 ] );
-
-            var 難易度パネル色 = new Brush[ 5 ] {
-                BASIC色ブラシ,
-                ADVANCED色ブラシ,
-                EXTREME色ブラシ,
-                MASTER色ブラシ,
-                ULTIMATE色ブラシ,
-            };
-
-            D2DBatch.Draw( dc, () => {
-                for( int i = 0; i < 5; i++ )
-                    this._難易度パネルの背景を１つ描画する( dc, パネル位置リスト[ i ].X, パネル位置リスト[ i ].Y, 難易度パネル色[ i ], 黒ブラシ );
-            } );
+            for( int i = 0; i < 5; i++ )
+                this._難易度パネルの背景を１つ描画する( dc, パネル位置リスト[ i ].X, パネル位置リスト[ i ].Y, this._難易度パネル色[ i ], this._黒ブラシ );
             //----------------
             #endregion
 
@@ -133,10 +142,8 @@ namespace DTXMania2.選曲
 
             #region " 難易度パネル（テキスト、数値）を描画する。"
             //----------------
-            D2DBatch.Draw( dc, () => {
-                for( int i = 0; i < 5; i++ )
-                    this._難易度パネルのテキストを１つ描画する( dc, フォーカスノード, パネル位置リスト[ i ].X, パネル位置リスト[ i ].Y,難易度ラベルリスト[i], 難易度リスト[i], 白ブラシ );
-            } );
+            for( int i = 0; i < 5; i++ )
+                this._難易度パネルのテキストを１つ描画する( dc, フォーカスノード, パネル位置リスト[ i ].X, パネル位置リスト[ i ].Y,難易度ラベルリスト[i], 難易度リスト[i], this._白ブラシ );
             //----------------
             #endregion
 
@@ -160,48 +167,27 @@ namespace DTXMania2.選曲
 
         private void _難易度パネルの背景を１つ描画する( DeviceContext dc, float 基点X, float 基点Y, Brush 見出し背景ブラシ, Brush 数値背景ブラシ )
         {
-            D2DBatch.Draw( dc, () => {
-
-                dc.FillRectangle( new RectangleF( 基点X, 基点Y, 157f, 20f ), 見出し背景ブラシ );
-                dc.FillRectangle( new RectangleF( 基点X, 基点Y + 20f, 157f, 66f ), 数値背景ブラシ );
-
-            } );
+            dc.FillRectangle( new RectangleF( 基点X, 基点Y, 157f, 20f ), 見出し背景ブラシ );
+            dc.FillRectangle( new RectangleF( 基点X, 基点Y + 20f, 157f, 66f ), 数値背景ブラシ );
         }
 
         private void _難易度パネルのテキストを１つ描画する( DeviceContext dc, Node node, float 基点X, float 基点Y, string 難易度ラベル, double 難易度値, Brush 文字ブラシ )
         {
-            D2DBatch.Draw( dc, () => {
+            // 難易度ラベル
+            dc.DrawText( 難易度ラベル, this._見出し用TextFormat, new RectangleF( 基点X + 4f, 基点Y, 157f - 8f, 18f ), 文字ブラシ );
 
-                #region " 難易度ラベル "
-                //----------------
-                dc.DrawText( 難易度ラベル, this._見出し用TextFormat, new RectangleF( 基点X + 4f, 基点Y, 157f - 8f, 18f ), 文字ブラシ );
-                //----------------
-                #endregion
-
-                if( node is RandomSelectNode )
-                {
-                    #region " RandomNode 用説明文 "
-                    //----------------
-                    dc.DrawText( 難易度ラベル + " 付近を\nランダムに選択", this._説明文用TextFormat, new RectangleF( 基点X + 4f, 基点Y + 30f, 157f - 8f, 40f ), 文字ブラシ );
-                    //----------------
-                    #endregion
-                }
-                else if( !string.IsNullOrEmpty( 難易度ラベル ) && 0.00 != 難易度値 )
-                {
-                    #region " 難易度値 "
-                    //----------------
-                    var 難易度値文字列 = 難易度値.ToString( "0.00" ).PadLeft( 1 ); // 整数部は２桁を保証（１桁なら十の位は空白文字）
-
-                    // 小数部を描画する
-                    this._数字画像.描画する( dc, 基点X + 84f, 基点Y + 38f, 難易度値文字列[ 2.. ], new Size2F( 0.5f, 0.5f ) );
-
-                    // 整数部を描画する（'.'含む）
-                    this._数字画像.描画する( dc, 基点X + 20f, 基点Y + 20f, 難易度値文字列[ 0..2 ], new Size2F( 0.7f, 0.7f ) );
-                    //----------------
-                    #endregion
-                }
-            
-            } );
+            if( node is RandomSelectNode )
+            {
+                // RandomNode 用説明文
+                dc.DrawText( 難易度ラベル + " 付近を\nランダムに選択", this._説明文用TextFormat, new RectangleF( 基点X + 4f, 基点Y + 30f, 157f - 8f, 40f ), 文字ブラシ );
+            }
+            else if( !string.IsNullOrEmpty( 難易度ラベル ) && 0.00 != 難易度値 )
+            {
+                // 難易度値
+                var 難易度値文字列 = 難易度値.ToString( "0.00" ).PadLeft( 1 ); // 整数部は２桁を保証（１桁なら十の位は空白文字）
+                this._数字画像.描画する( dc, 基点X + 84f, 基点Y + 38f, 難易度値文字列[ 2.. ], new Size2F( 0.5f, 0.5f ) );  // 小数部
+                this._数字画像.描画する( dc, 基点X + 20f, 基点Y + 20f, 難易度値文字列[ 0..2 ], new Size2F( 0.7f, 0.7f ) ); // 整数部（'.'含む）
+            }
         }
 
 
@@ -216,5 +202,15 @@ namespace DTXMania2.選曲
         private readonly TextFormat _説明文用TextFormat;
 
         private Node? _現在表示しているノード = null;
+
+        private readonly SolidColorBrush _黒透過ブラシ;
+        private readonly SolidColorBrush _黒ブラシ;
+        private readonly SolidColorBrush _白ブラシ;
+        private readonly SolidColorBrush _ULTIMATE色ブラシ;
+        private readonly SolidColorBrush _MASTER色ブラシ;
+        private readonly SolidColorBrush _EXTREME色ブラシ;
+        private readonly SolidColorBrush _ADVANCED色ブラシ;
+        private readonly SolidColorBrush _BASIC色ブラシ;
+        private readonly Brush[] _難易度パネル色;
     }
 }

@@ -18,7 +18,7 @@ namespace DTXMania2
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._ロゴ = new 画像( @"$(Images)\TitleLogo.png" );
+            this._ロゴ = new 画像D2D( @"$(Images)\TitleLogo.png" );
 
             var dc = Global.既定のD2D1DeviceContext;
 
@@ -281,36 +281,34 @@ namespace DTXMania2
         {
             bool すべて完了 = true;
 
-            D2DBatch.Draw( dc, () => {
+            var preTrans = dc.Transform;
 
-                var pretrans = dc.Transform;
+            #region " シャッター "
+            //----------------
+            for( int i = シャッター枚数 - 1; i >= 0; i-- )
+            {
+                var context = this._シャッターアニメーション[ i ];
 
-                #region " シャッター "
-                //----------------
-                for( int i = シャッター枚数 - 1; i >= 0; i-- )
-                {
-                    var context = this._シャッターアニメーション[ i ];
+                if( context.ストーリーボード.Status != StoryboardStatus.Ready )
+                    すべて完了 = false;
 
-                    if( context.ストーリーボード.Status != StoryboardStatus.Ready )
-                        すべて完了 = false;
+                if( context.ストーリーボード.Status == 描画しないStatus )
+                    continue;
 
-                    if( context.ストーリーボード.Status == 描画しないStatus )
-                        continue;
+                dc.Transform =
+                    Matrix3x2.Rotation( context.角度rad ) *
+                    Matrix3x2.Translation( context.開き中心位置 + ( context.閉じ中心位置 - context.開き中心位置 ) * new Vector2( (float) context.開to閉割合.Value ) ) *
+                    preTrans;
+                float w = context.矩形サイズ.Width;
+                float h = context.矩形サイズ.Height;
+                var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
+                dc.FillRectangle( rc, context.ブラシ );
+                dc.DrawRectangle( rc, this._白ブラシ, 3.0f );
+            }
 
-                    dc.Transform =
-                        Matrix3x2.Rotation( context.角度rad ) *
-                        Matrix3x2.Translation( context.開き中心位置 + ( context.閉じ中心位置 - context.開き中心位置 ) * new Vector2( (float) context.開to閉割合.Value ) ) *
-                        pretrans;
-                    float w = context.矩形サイズ.Width;
-                    float h = context.矩形サイズ.Height;
-                    var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
-                    dc.FillRectangle( rc, context.ブラシ );
-                    dc.DrawRectangle( rc, this._白ブラシ, 3.0f );
-                }
-                //----------------
-                #endregion
-
-            } );
+            dc.Transform = preTrans;
+            //----------------
+            #endregion
 
             if( null != this._ロゴ不透明度 )
             {
@@ -319,15 +317,18 @@ namespace DTXMania2
                 if( this._ロゴボード.Status != StoryboardStatus.Ready )
                     すべて完了 = false;
 
-                this._ロゴ.進行描画する(
-                    this._ロゴ表示領域.Left,
-                    this._ロゴ表示領域.Top,
+                float 倍率 = this._ロゴ表示幅 / this._ロゴ.サイズ.Width;
+                this._ロゴ.描画する(
+                    dc,
+                    this._ロゴ表示位置.Width,
+                    this._ロゴ表示位置.Height,
                     不透明度0to1: (float) this._ロゴ不透明度.Value,
-                    X方向拡大率: ( this._ロゴ表示領域.Width / this._ロゴ.サイズ.Width ),
-                    Y方向拡大率: ( this._ロゴ表示領域.Height / this._ロゴ.サイズ.Height ) );
+                    X方向拡大率: 倍率,
+                    Y方向拡大率: 倍率 );
                 //----------------
                 #endregion
             }
+
 
             if( すべて完了 )
             {
@@ -384,9 +385,10 @@ namespace DTXMania2
         private readonly Brush _黒ブラシ;
         private readonly Brush _白ブラシ;
 
-        private readonly 画像 _ロゴ;
+        private readonly 画像D2D _ロゴ;
         private Variable _ロゴ不透明度 = null!;
         private Storyboard _ロゴボード = null!;
-        private readonly RectangleF _ロゴ表示領域 = new RectangleF( 1100f, 700f, 730f, 300f );
+        private readonly Size2F _ロゴ表示位置 = new Size2F( 1100f, 800f );
+        private readonly float _ロゴ表示幅 = 730f;
     }
 }

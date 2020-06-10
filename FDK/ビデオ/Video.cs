@@ -252,11 +252,15 @@ namespace FDK
             if( 描画するフレーム is null )
                 return;
 
-            D2DBatch.Draw( dc, () => {
-                dc.Transform = ( 変換行列2D ) * dc.Transform;
-                dc.PrimitiveBlend = ( this.加算合成 ) ? PrimitiveBlend.Add : PrimitiveBlend.SourceOver;
-                dc.DrawBitmap( 描画するフレーム.Bitmap, 不透明度0to1, InterpolationMode.NearestNeighbor );
-            } );
+            var preTrans = dc.Transform;
+            var preBlend = dc.PrimitiveBlend;
+
+            dc.Transform = ( 変換行列2D ) * preTrans;
+            dc.PrimitiveBlend = ( this.加算合成 ) ? PrimitiveBlend.Add : PrimitiveBlend.SourceOver;
+            dc.DrawBitmap( 描画するフレーム.Bitmap, 不透明度0to1, InterpolationMode.NearestNeighbor );
+
+            dc.PrimitiveBlend = preBlend;
+            dc.Transform = preTrans;
         }
     }
 }

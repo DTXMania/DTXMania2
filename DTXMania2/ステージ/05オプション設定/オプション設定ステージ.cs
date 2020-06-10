@@ -86,7 +86,10 @@ namespace DTXMania2.オプション設定
 
                     this._舞台画像.ぼかしと縮小を適用する( 0.5 );
                     this._パネルリスト.フェードインを開始する();
+
+                    dc.BeginDraw();
                     this._背景画面を描画する( dc );
+                    dc.EndDraw();
 
                     // 表示フェーズへ。
                     this.現在のフェーズ = フェーズ.表示;
@@ -179,7 +182,9 @@ namespace DTXMania2.オプション設定
 
                     #region " 背景画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
                     this._背景画面を描画する( dc );
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -189,7 +194,9 @@ namespace DTXMania2.オプション設定
                 {
                     #region " 背景画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
                     this._背景画面を描画する( dc );
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -226,7 +233,9 @@ namespace DTXMania2.オプション設定
                 {
                     #region " 背景画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
                     this._背景画面を描画する( dc );
+                    dc.EndDraw();
                     //----------------
                     #endregion
                     
@@ -275,7 +284,9 @@ namespace DTXMania2.オプション設定
                 {
                     #region " 背景画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
                     this._背景画面を描画する( dc );
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -296,7 +307,9 @@ namespace DTXMania2.オプション設定
                 {
                     #region " 背景画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
                     this._背景画面を描画する( dc );
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -306,16 +319,18 @@ namespace DTXMania2.オプション設定
                 {
                     #region " 背景画面＆フェードアウトを描画する。"
                     //----------------
+                    dc.BeginDraw();
+
                     this._舞台画像.進行描画する( dc );
                     this._パネルリスト.進行描画する( dc, 613f, 0f );
-
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
                     {
                         // フェードアウトが完了したら次のフェーズへ。
                         this.現在のフェーズ = フェーズ.完了;
                     }
-
                     this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 

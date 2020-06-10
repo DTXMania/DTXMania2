@@ -22,7 +22,7 @@ namespace DTXMania2.曲
         // 画像プロパティ
 
 
-        public virtual 画像? ノード画像
+        public virtual 画像D2D? ノード画像
         {
             get { lock( this._排他 ) return this._ノード画像; }
             set { lock( this._排他 ) this._ノード画像 = value; }
@@ -142,7 +142,7 @@ namespace DTXMania2.曲
         // ローカル
 
 
-        protected 画像? _ノード画像 = null;
+        protected 画像D2D? _ノード画像 = null;
 
         protected 文字列画像D2D? _タイトル文字列画像 = null;
 

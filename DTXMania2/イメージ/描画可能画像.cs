@@ -16,35 +16,26 @@ namespace DTXMania2
         /// <summary>
         ///     指定した画像ファイルから描画可能画像を作成する。
         /// </summary>
-        public 描画可能画像( VariablePath 画像ファイルパス, BindFlags bindFlags = BindFlags.ShaderResource )
-            : base( Global.D3D11Device1, Global.既定のD2D1DeviceContext, 画像ファイルパス, bindFlags | BindFlags.RenderTarget )
+        public 描画可能画像( VariablePath 画像ファイルパス, BindFlags bindFlags = BindFlags.ShaderResource | BindFlags.RenderTarget )
+            : base( Global.D3D11Device1, Global.既定のD2D1DeviceContext, 画像ファイルパス, bindFlags )
         {
         }
 
         /// <summary>
         ///     指定したサイズの、空の描画可能画像を作成する。
         /// </summary>
-        public 描画可能画像( Size2F サイズ, BindFlags bindFlags = BindFlags.ShaderResource )
-            : base( Global.D3D11Device1, Global.既定のD2D1DeviceContext, サイズ, bindFlags | BindFlags.RenderTarget )
+        public 描画可能画像( Size2F サイズ, BindFlags bindFlags = BindFlags.ShaderResource | BindFlags.RenderTarget)
+            : base( Global.D3D11Device1, Global.既定のD2D1DeviceContext, サイズ, bindFlags )
         {
-        }
-
-        /// <summary>
-        ///     この画像のメモリに対して描画を行う。
-        /// </summary>
-        /// <param name="描画アクション">実行する描画処理。</param>
-        public void 画像へ描画する( Action<SharpDX.Direct2D1.DeviceContext> 描画アクション )
-        {
-            base.画像へ描画する( Global.既定のD2D1DeviceContext, Global.既定のD2D1RenderBitmap1, 描画アクション );
         }
 
         /// <summary>
         ///		画像を描画する。
         ///	</summary>
-        public void 進行描画する( float 左位置, float 上位置, float 不透明度0to1 = 1.0f, float X方向拡大率 = 1.0f, float Y方向拡大率 = 1.0f, RectangleF? 転送元矩形 = null )
+        public void 描画する( float 左位置, float 上位置, float 不透明度0to1 = 1.0f, float X方向拡大率 = 1.0f, float Y方向拡大率 = 1.0f, RectangleF? 転送元矩形 = null )
         {
             base.描画する(
-                Global.D3D11Device1.ImmediateContext,
+                Global.既定のD3D11DeviceContext,
                 Global.設計画面サイズ,
                 Global.既定のD3D11ViewPort,
                 Global.既定のD3D11DepthStencilView,
@@ -63,10 +54,10 @@ namespace DTXMania2
         ///	</summary>
         /// <param name="ワールド行列変換">画像は原寸（<see cref="サイズ"/>）にスケーリングされており、その後にこのワールド行列が適用される。</param>
         /// <param name="転送元矩形">テクスチャ座標(値域0～1)で指定する。</param>
-        public void 進行描画する( Matrix ワールド行列変換, float 不透明度0to1 = 1f, RectangleF? 転送元矩形 = null )
+        public void 描画する( Matrix ワールド行列変換, float 不透明度0to1 = 1f, RectangleF? 転送元矩形 = null )
         {
             base.描画する(
-                Global.D3D11Device1.ImmediateContext,
+                Global.既定のD3D11DeviceContext,
                 Global.設計画面サイズ,
                 Global.既定のD3D11ViewPort,
                 Global.既定のD3D11DepthStencilView,

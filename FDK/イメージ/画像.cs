@@ -37,6 +37,16 @@ namespace FDK
         /// </summary>
         public Size2F 実サイズ { get; protected set; }
 
+        /// <summary>
+        ///     テクスチャ。
+        /// </summary>
+        public Texture2D Texture { get; protected set; } = null!;
+
+        /// <summary>
+        ///     テクスチャのシェーダーリソースビュー。
+        /// </summary>
+        public ShaderResourceView ShaderResourceView { get; protected set; } = null!;
+
 
 
         // 生成と終了
@@ -91,7 +101,7 @@ namespace FDK
         {
             //using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._ShaderResourceView?.Dispose();    // 画像の生成に失敗した場合、null のままである。
+            this.ShaderResourceView?.Dispose();    // 画像の生成に失敗した場合、null のままである。
             this.Texture?.Dispose();                // 
         }
 
@@ -224,7 +234,7 @@ namespace FDK
                 // ピクセルシェーダ
                 d3ddc.PixelShader.Set( _PixelShader );
                 d3ddc.PixelShader.SetConstantBuffers( 0, _ConstantBuffer );
-                d3ddc.PixelShader.SetShaderResources( 0, 1, this._ShaderResourceView );
+                d3ddc.PixelShader.SetShaderResources( 0, 1, this.ShaderResourceView );
                 d3ddc.PixelShader.SetSamplers( 0, 1, _SamplerState );
 
                 // 出力マージャ
@@ -246,10 +256,6 @@ namespace FDK
 
         // ローカル
 
-
-        protected Texture2D Texture = null!;
-
-        private ShaderResourceView _ShaderResourceView = null!;
 
         private ST定数バッファの転送元データ _定数バッファの転送元データ;
 
@@ -286,7 +292,7 @@ namespace FDK
             }
 
             // テクスチャのシェーダーリソースビューを生成する。
-            this._ShaderResourceView = new ShaderResourceView( d3dDevice, this.Texture );
+            this.ShaderResourceView = new ShaderResourceView( d3dDevice, this.Texture );
 
             this.サイズ = new Size2F( 画像の矩形.Width, 画像の矩形.Height );
             this.実サイズ = new Size2F( this.Texture.Description.Width, this.Texture.Description.Height );
@@ -310,7 +316,7 @@ namespace FDK
             this.Texture = new Texture2D( d3dDevice, textureDesc );
 
             // テクスチャのシェーダーリソースビューを生成する。
-            this._ShaderResourceView = new ShaderResourceView( d3dDevice, this.Texture );
+            this.ShaderResourceView = new ShaderResourceView( d3dDevice, this.Texture );
 
             this.サイズ = サイズ;
             this.実サイズ = new Size2F( this.Texture.Description.Width, this.Texture.Description.Height );

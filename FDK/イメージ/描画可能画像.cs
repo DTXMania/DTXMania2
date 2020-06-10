@@ -14,6 +14,16 @@ namespace FDK
     public class 描画可能画像 : 画像
     {
 
+        // プロパティ
+
+
+        /// <summary>
+        ///     画像のD3Dテクスチャとメモリを共有するD2Dビットマップ。
+        /// </summary>
+        public Bitmap1 Bitmap { get; protected set; } = null!;
+
+
+
         // 生成と終了
 
 
@@ -25,7 +35,7 @@ namespace FDK
         {
             //using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._Bitmap = this._作成したテクスチャとデータを共有するビットマップターゲットを作成する( d2dDeviceContext );
+            this.Bitmap = this._作成したテクスチャとデータを共有するビットマップターゲットを作成する( d2dDeviceContext );
         }
 
         /// <summary>
@@ -36,46 +46,22 @@ namespace FDK
         {
             //using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._Bitmap = this._作成したテクスチャとデータを共有するビットマップターゲットを作成する( d2dDeviceContext );
+            this.Bitmap = this._作成したテクスチャとデータを共有するビットマップターゲットを作成する( d2dDeviceContext );
         }
 
         public override void Dispose()
         {
             //using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._Bitmap.Dispose();
+            this.Bitmap.Dispose();
 
             base.Dispose();
         }
 
 
 
-        // 進行と描画
-
-
-        public void 画像へ描画する( SharpDX.Direct2D1.DeviceContext d2dDeviceContext, Bitmap1 renderBitmap1, Action<SharpDX.Direct2D1.DeviceContext> 描画アクション )
-        {
-            var dc = d2dDeviceContext;
-
-            D2DBatch.Draw( dc, () => {
-
-                dc.Target = this._Bitmap;           // 描画先
-                dc.Transform = Matrix3x2.Identity;  // 等倍描画（dpx to dpx）
-                dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
-
-                描画アクション( dc );
-
-                dc.Target = renderBitmap1;
-
-            } );
-        }
-
-
-
         // ローカル
 
-
-        private readonly Bitmap1 _Bitmap;
 
         private Bitmap1 _作成したテクスチャとデータを共有するビットマップターゲットを作成する( SharpDX.Direct2D1.DeviceContext d2dDeviceContext )
         {

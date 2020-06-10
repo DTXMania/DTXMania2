@@ -360,7 +360,7 @@ namespace DTXMania2
 
                     this.ステージ?.進行描画する();
 
-                    Global.DXGISwapChain1.Present( 1, SharpDX.DXGI.PresentFlags.None );
+                    Global.DXGISwapChain1.Present( this.システム設定.垂直帰線同期を行う ? 1 : 0, SharpDX.DXGI.PresentFlags.None );
                     //----------------
                     #endregion
 
@@ -670,7 +670,7 @@ namespace DTXMania2
 
         internal void 画面をクリアする()
         {
-            var d3ddc = Global.D3D11Device1.ImmediateContext;
+            var d3ddc = Global.既定のD3D11DeviceContext;
 
             // 既定のD3Dレンダーターゲットビューを黒でクリアする。
             d3ddc.ClearRenderTargetView( Global.既定のD3D11RenderTargetView, SharpDX.Color4.Black );

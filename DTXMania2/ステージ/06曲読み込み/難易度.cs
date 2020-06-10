@@ -45,31 +45,27 @@ namespace DTXMania2.曲読み込み
 
             // 難易度のラベルと値を描画する。
 
-            D2DBatch.Draw( dc, () => {
+            using var 見出し背景ブラシ = new SolidColorBrush( dc, Song.難易度色リスト[ Global.App.曲ツリーリスト.SelectedItem!.フォーカス難易度レベル ] );
+            using var 黒ブラシ = new SolidColorBrush( dc, Color4.Black );
+            using var 黒透過ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, 0.5f ) );
+            using var 白ブラシ = new SolidColorBrush( dc, Color4.White );
 
-                using var 見出し背景ブラシ = new SolidColorBrush( dc, Song.難易度色リスト[ Global.App.曲ツリーリスト.SelectedItem!.フォーカス難易度レベル ] );
-                using var 黒ブラシ = new SolidColorBrush( dc, Color4.Black );
-                using var 黒透過ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, 0.5f ) );
-                using var 白ブラシ = new SolidColorBrush( dc, Color4.White );
+            // 背景領域を塗りつぶす。
+            dc.FillRectangle( 見出し描画領域, 見出し背景ブラシ );
+            dc.FillRectangle( 数値描画領域, 黒ブラシ );
 
-                // 背景領域を塗りつぶす。
-                dc.FillRectangle( 見出し描画領域, 見出し背景ブラシ );
-                dc.FillRectangle( 数値描画領域, 黒ブラシ );
+            // 見出し文字列を描画する。
+            this._見出し用TextFormat.TextAlignment = TextAlignment.Trailing;
+            var 見出し文字領域 = 見出し描画領域;
+            見出し文字領域.Width -= 8f;    // 右マージン
+            dc.DrawText( Global.App.演奏譜面.難易度ラベル, this._見出し用TextFormat, 見出し文字領域, 白ブラシ );
 
-                // 見出し文字列を描画する。
-                this._見出し用TextFormat.TextAlignment = TextAlignment.Trailing;
-                var 見出し文字領域 = 見出し描画領域;
-                見出し文字領域.Width -= 8f;    // 右マージン
-                dc.DrawText( Global.App.演奏譜面.難易度ラベル, this._見出し用TextFormat, 見出し文字領域, 白ブラシ );
+            // 小数部を描画する。
+            var 数値文字列 = Global.App.演奏譜面.譜面.Level.ToString( "0.00" ).PadLeft( 1 );
+            this._数字画像.描画する( dc, 数値描画領域.X + 175f, 数値描画領域.Y, 数値文字列.Substring( 2 ), new Size2F( 2.2f, 2.2f ) );
 
-                // 小数部を描画する。
-                var 数値文字列 = Global.App.演奏譜面.譜面.Level.ToString( "0.00" ).PadLeft( 1 );
-                this._数字画像.描画する( dc, 数値描画領域.X + 175f, 数値描画領域.Y, 数値文字列.Substring( 2 ), new Size2F( 2.2f, 2.2f ) );
-
-                // 整数部と小数点を描画する。
-                this._数字画像.描画する( dc, 数値描画領域.X + 15f, 数値描画領域.Y, 数値文字列.Substring( 0, 2 ), new Size2F( 2.2f, 2.2f ) );
-
-            } );
+            // 整数部と小数点を描画する。
+            this._数字画像.描画する( dc, 数値描画領域.X + 15f, 数値描画領域.Y, 数値文字列.Substring( 0, 2 ), new Size2F( 2.2f, 2.2f ) );
         }
 
 

@@ -19,9 +19,9 @@ namespace DTXMania2.選曲
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._数字画像 = new フォント画像( @"$(Images)\ParameterFont_LargeBoldItalic.png", @"$(Images)\ParameterFont_LargeBoldItalic.yaml", 文字幅補正dpx: 0f );
-            this._スキルアイコン = new 画像( @"$(Images)\SkillIcon2.png" );
-            this._達成率アイコン = new 画像( @"$(Images)\AchivementLogo.png" );
+            this._数字画像 = new フォント画像D2D( @"$(Images)\ParameterFont_LargeBoldItalic.png", @"$(Images)\ParameterFont_LargeBoldItalic.yaml", 文字幅補正dpx: 0f );
+            this._スキルアイコン = new 画像D2D( @"$(Images)\SkillIcon2.png" );
+            this._達成率アイコン = new 画像D2D( @"$(Images)\AchivementLogo.png" );
         }
 
         public virtual void Dispose()
@@ -78,7 +78,8 @@ namespace DTXMania2.選曲
             if( null != this._達成率文字列 )
             {
                 // 達成率アイコンを描画する。
-                this._達成率アイコン.進行描画する( 
+                this._達成率アイコン.描画する(
+                    dc,
                     達成率描画領域.X, 
                     達成率描画領域.Y - 50f,
                     X方向拡大率: 0.8f,
@@ -86,7 +87,8 @@ namespace DTXMania2.選曲
 
                 // 小数部と '%' を描画する。
                 var 拡大率 = new Size2F( 0.8f, 0.8f );
-                this._数字画像.進行描画する(
+                this._数字画像.描画する(
+                    dc,
                     達成率描画領域.X + 130f + 175f,
                     達成率描画領域.Y + ( 達成率描画領域.Height * ( 1.0f - 拡大率.Height ) ),
                     this._達成率文字列[ 4.. ],
@@ -94,7 +96,8 @@ namespace DTXMania2.選曲
 
                 // 整数部と '.' を描画する。
                 拡大率 = new Size2F( 1.0f, 1.0f );
-                this._数字画像.進行描画する(
+                this._数字画像.描画する(
+                    dc,
                     達成率描画領域.X + 130f,
                     達成率描画領域.Y, 
                     this._達成率文字列[ 0..4 ],
@@ -108,7 +111,8 @@ namespace DTXMania2.選曲
             if( null != this._スキル値文字列 )
             {
                 // スキルアイコンを描画する。
-                this._スキルアイコン.進行描画する( 
+                this._スキルアイコン.描画する( 
+                    dc,
                     スキル描画領域.X,
                     スキル描画領域.Y + 10f,
                     X方向拡大率: 0.5f,
@@ -119,7 +123,8 @@ namespace DTXMania2.選曲
 
                 // 小数部を描画する。
                 var 拡大率 = new Size2F( 0.8f, 0.8f );
-                this._数字画像.進行描画する(
+                this._数字画像.描画する(
+                    dc,
                     スキル描画領域.X + 130f + 175f,
                     スキル描画領域.Y + ( スキル描画領域.Height * ( 1.0f - 拡大率.Height ) ),
                     小数部,
@@ -127,7 +132,8 @@ namespace DTXMania2.選曲
 
                 // 整数部を描画する（'.'含む）。
                 拡大率 = new Size2F( 1.0f, 1.0f );
-                this._数字画像.進行描画する(
+                this._数字画像.描画する(
+                    dc,
                     スキル描画領域.X + 130f,
                     スキル描画領域.Y,
                     整数部,
@@ -142,11 +148,11 @@ namespace DTXMania2.選曲
         // ローカル
 
 
-        private readonly フォント画像 _数字画像;
+        private readonly フォント画像D2D _数字画像;
 
-        private readonly 画像 _スキルアイコン;
+        private readonly 画像D2D _スキルアイコン;
 
-        private readonly 画像 _達成率アイコン;
+        private readonly 画像D2D _達成率アイコン;
 
         private Node? _現在表示しているノード = null;
 

@@ -93,68 +93,70 @@ namespace DTXMania2.演奏
 
             // １桁ずつ描画。
 
-            D2DBatch.Draw( dc, () => {
+            var preTrans = dc.Transform;
 
-                var pretrans = dc.Transform;
+            #region " 数字を描画。"
+            //----------------
+            {
+                var 文字の位置 = new Vector2( -( 全体のサイズ.X / 2f ), 0f );
 
-                #region " 数字を描画。"
-                //----------------
+                for( int i = 0; i < 数字.Length; i++ )
                 {
-                    var 文字の位置 = new Vector2( -( 全体のサイズ.X / 2f ), 0f );
-
-                    for( int i = 0; i < 数字.Length; i++ )
+                    if( 数字[ i ] != this._前回表示した数字[ i ] )
                     {
-                        if( 数字[ i ] != this._前回表示した数字[ i ] )
+                        // 桁アニメーション開始
+                        this._各桁のアニメ[ i ].落下開始( Global.Animation );
+
+                        // 1の位以外は、自分より上位の桁を順番に跳ねさせる。
+                        if( 3 > i )
                         {
-                            // 桁アニメーション開始
-                            this._各桁のアニメ[ i ].落下開始( Global.Animation );
-
-                            // 1の位以外は、自分より上位の桁を順番に跳ねさせる。
-                            if( 3 > i )
-                            {
-                                for( int p = ( i - 1 ); p >= 0; p-- )
-                                    this._各桁のアニメ[ p ].跳ね開始( Global.Animation, 0.05 * ( ( i - 1 ) - p + 1 ) );
-                            }
+                            for( int p = ( i - 1 ); p >= 0; p-- )
+                                this._各桁のアニメ[ p ].跳ね開始( Global.Animation, 0.05 * ( ( i - 1 ) - p + 1 ) );
                         }
-
-                        var 転送元矩形 = ( this._コンボ文字の矩形リスト[ 数字[ i ].ToString() ] )!;
-
-                        dc.Transform =
-                            Matrix3x2.Scaling( 画像矩形から表示矩形への拡大率 ) *
-                            Matrix3x2.Translation( 文字の位置.X, 文字の位置.Y + (float) ( this._各桁のアニメ[ i ].Yオフセット?.Value ?? 0.0f ) ) *
-                            Matrix3x2.Scaling( 全体の拡大率.X, 全体の拡大率.Y, center: new Vector2( 0f, 全体のサイズ.Y / 2f ) ) *
-                            Matrix3x2.Translation( 全体の中央位置 ) *
-                            pretrans;
-
-                        dc.DrawBitmap( this._コンボ文字画像.Bitmap, (float) ( this._各桁のアニメ[ i ].不透明度?.Value ?? 1.0f ), BitmapInterpolationMode.Linear, 転送元矩形.Value );
-
-                        文字の位置.X += ( 転送元矩形.Value.Width + 文字間隔補正 ) * 画像矩形から表示矩形への拡大率.X;
                     }
-                }
-                //----------------
-                #endregion
 
-                #region " Combo を描画。"
-                //----------------
-                {
-                    var 転送元矩形 = this._コンボ文字の矩形リスト[ "Combo" ]!;
-                    var 文字の位置 = new Vector2( 0f, 130f );
+                    var 転送元矩形 = ( this._コンボ文字の矩形リスト[ 数字[ i ].ToString() ] )!;
 
                     dc.Transform =
                         Matrix3x2.Scaling( 画像矩形から表示矩形への拡大率 ) *
-                        Matrix3x2.Translation( 文字の位置 ) *
-                        Matrix3x2.Scaling( 全体の拡大率 ) *
+                        Matrix3x2.Translation( 文字の位置.X, 文字の位置.Y + (float) ( this._各桁のアニメ[ i ].Yオフセット?.Value ?? 0.0f ) ) *
+                        Matrix3x2.Scaling( 全体の拡大率.X, 全体の拡大率.Y, center: new Vector2( 0f, 全体のサイズ.Y / 2f ) ) *
                         Matrix3x2.Translation( 全体の中央位置 ) *
-                        pretrans;
+                        preTrans;
 
-                    dc.DrawBitmap( this._コンボ文字画像.Bitmap, 1.0f, BitmapInterpolationMode.Linear, 転送元矩形.Value );
+                    dc.DrawBitmap( this._コンボ文字画像.Bitmap, (float) ( this._各桁のアニメ[ i ].不透明度?.Value ?? 1.0f ), BitmapInterpolationMode.Linear, 転送元矩形.Value );
+
+                    文字の位置.X += ( 転送元矩形.Value.Width + 文字間隔補正 ) * 画像矩形から表示矩形への拡大率.X;
                 }
-                //----------------
-                #endregion
 
-            } );
+                dc.Transform = preTrans;
+            }
+            //----------------
+            #endregion
+
+            #region " Combo を描画。"
+            //----------------
+            {
+                var 転送元矩形 = this._コンボ文字の矩形リスト[ "Combo" ]!;
+                var 文字の位置 = new Vector2( 0f, 130f );
+
+                dc.Transform =
+                    Matrix3x2.Scaling( 画像矩形から表示矩形への拡大率 ) *
+                    Matrix3x2.Translation( 文字の位置 ) *
+                    Matrix3x2.Scaling( 全体の拡大率 ) *
+                    Matrix3x2.Translation( 全体の中央位置 ) *
+                    preTrans;
+
+                dc.DrawBitmap( this._コンボ文字画像.Bitmap, 1.0f, BitmapInterpolationMode.Linear, 転送元矩形.Value );
+
+                dc.Transform = preTrans;
+            }
+            //----------------
+            #endregion
+
 
             // 保存
+
             this._前回表示した値 = 現在の成績.Combo;
             this._前回表示した数字 = 数字;
         }

@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using SharpDX;
 using SharpDX.Direct2D1;
+using SharpDX.Direct3D11;
 using SharpDX.DirectWrite;
+using SharpDX.DXGI;
+using SharpDX.Mathematics.Interop;
 
 namespace FDK
 {
-    /// <summary>
-    ///		DirectWrite を使った Direct2D1ビットマップ。
-    /// </summary>
-    /// <remarks>
-    ///		<see cref="表示文字列"/> メンバが更新されると、次回の描画時に新しいビットマップが生成される。
-    /// </remarks>
-    public class 文字列画像D2D : IImage, IDisposable
+    public class 文字列画像 : IImage, IDisposable
     {
 
         // プロパティ
@@ -279,14 +276,18 @@ namespace FDK
         // 生成と終了
 
 
-        public 文字列画像D2D( SharpDX.DirectWrite.Factory dwFactory, SharpDX.Direct2D1.Factory1 d2dFactory1, DeviceContext d2dDeviceContext, Size2F 設計画面サイズdpx )
+        public 文字列画像(
+            SharpDX.Direct3D11.Device1 d3dDevice1, 
+            SharpDX.DirectWrite.Factory dwFactory, 
+            SharpDX.Direct2D1.Factory1 d2dFactory1, 
+            SharpDX.Direct2D1.DeviceContext d2dDeviceContext, 
+            Size2F 設計画面サイズdpx )
         {
             //using var _ = new LogBlock( Log.現在のメソッド名 );
 
             // 必要なプロパティは呼び出し元で設定すること。
 
-            this._DWFactory = dwFactory;
-            this._Bitmap = null!;
+            this._画像 = null!;
             this._TextFormat = null!;
             this._TextLayout = null!;
             this._TextRenderer = new カスタムTextRenderer( d2dFactory1, d2dDeviceContext, Color.White, Color.Transparent );    // ビットマップの生成前に。
@@ -302,14 +303,18 @@ namespace FDK
         public virtual void Dispose()
         {
             //using var _ = new LogBlock( Log.現在のメソッド名 );
-            
+
             this._TextRenderer.Dispose();
             this._TextLayout?.Dispose();
             this._TextFormat?.Dispose();
-            this._Bitmap?.Dispose();
+            this._画像?.Dispose();
         }
 
-        public void ビットマップを生成または更新する( DeviceContext dc )
+        public void ビットマップを生成または更新する( 
+            SharpDX.DirectWrite.Factory dwFactory,
+            SharpDX.Direct2D1.Factory1 d2dFactory1,
+            SharpDX.Direct2D1.DeviceContext dc,
+            SharpDX.Direct3D11.Device1 d3dDevice1 )
         {
             float pt2px( float dpi, float pt ) => dpi * pt / 72f;
 
@@ -319,7 +324,7 @@ namespace FDK
                 //----------------
                 this._TextFormat?.Dispose();
                 this._TextFormat = new TextFormat(
-                    this._DWFactory,
+                    dwFactory,
                     this.フォント名,
                     this.フォントの太さ,
                     this.フォントスタイル,
@@ -349,7 +354,7 @@ namespace FDK
                 //----------------
                 this._TextLayout?.Dispose();
                 this._TextLayout = new TextLayout(
-                    this._DWFactory,
+                    dwFactory,
                     this.表示文字列,
                     this._TextFormat,
                     this.レイアウトサイズdpx.Width,
@@ -386,25 +391,27 @@ namespace FDK
                         this._表示文字列のサイズdpx.Height + 16f );
                 }
 
-                this._Bitmap?.Dispose();
-                this._Bitmap = new SharpDX.Direct2D1.BitmapRenderTarget( dc, CompatibleRenderTargetOptions.None, this.画像サイズdpx );
+                this._画像?.Dispose();
+                this._画像 = new 描画可能画像( d3dDevice1, dc, this.画像サイズdpx, BindFlags.ShaderResource | BindFlags.RenderTarget );
                 //----------------
                 #endregion
 
                 #region " ビットマップレンダーターゲットをクリアし、テキストを描画する。"
                 //----------------
-                var rt = this._Bitmap;
+                var surface = this._画像.Bitmap.Surface;  // 要Release
+                using var rt = new RenderTarget( d2dFactory1, surface, new RenderTargetProperties( new PixelFormat( Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied ) ) );
+                ( (IUnknown) surface ).Release();
 
-                rt.BeginDraw();
+                rt.Transform = Matrix3x2.Identity;  // 等倍
+                rt.AntialiasMode = AntialiasMode.PerPrimitive;
+                rt.TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode.Default;
 
                 using var 前景色ブラシ = new SolidColorBrush( rt, this.前景色 );
                 using var 背景色ブラシ = new SolidColorBrush( rt, this.背景色 );
 
-                rt.Clear( Color.Transparent );
+                rt.BeginDraw();
 
-                rt.AntialiasMode = AntialiasMode.PerPrimitive;
-                rt.TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode.Default;
-                rt.Transform = Matrix3x2.Identity;  // 等倍描画。(dpx to dpx)
+                rt.Clear( Color.Transparent );
 
                 switch( this.描画効果 )
                 {
@@ -444,16 +451,22 @@ namespace FDK
         // 進行と描画
 
 
-        public void 描画する( DeviceContext dc, float 左位置, float 上位置, float 不透明度0to1 = 1.0f, float X方向拡大率 = 1.0f, float Y方向拡大率 = 1.0f, Matrix? 変換行列3D = null )
-        {
-            var 変換行列2D =
-                Matrix3x2.Scaling( X方向拡大率, Y方向拡大率 ) *   // 拡大縮小
-                Matrix3x2.Translation( 左位置, 上位置 );          // 移動
-
-            this.描画する( dc, 変換行列2D, 変換行列3D, 不透明度0to1 );
-        }
-
-        public void 描画する( DeviceContext dc, Matrix3x2? 変換行列2D = null, Matrix? 変換行列3D = null, float 不透明度0to1 = 1.0f )
+        public void 描画する( 
+            SharpDX.DirectWrite.Factory dwFactory, 
+            SharpDX.Direct2D1.Factory1 d2dFactory1, 
+            SharpDX.Direct2D1.DeviceContext dc, 
+            SharpDX.Direct3D11.Device1 d3dDevice1, 
+            SharpDX.Direct3D11.DeviceContext d3dDeviceContext,
+            Size2F 設計画面サイズdpx,
+            RawViewportF[] viewports,
+            DepthStencilView depthStencilView,
+            RenderTargetView renderTargetView,
+            DepthStencilState depthStencilState,
+            float 左位置, 
+            float 上位置,
+            float 不透明度0to1 = 1.0f,
+            float X方向拡大率 = 1.0f,
+            float Y方向拡大率 = 1.0f )
         {
             if( string.IsNullOrEmpty( this.表示文字列 ) )
                 return;
@@ -462,38 +475,59 @@ namespace FDK
                 this._TextFormatを更新せよ ||
                 this._TextLayoutを更新せよ )
             {
-                this.ビットマップを生成または更新する( dc );
+                this.ビットマップを生成または更新する( dwFactory, d2dFactory1, dc, d3dDevice1 );
             }
 
-            if( null == this._Bitmap )
+            var 画面左上dpx = new Vector3( -設計画面サイズdpx.Width / 2f, +設計画面サイズdpx.Height / 2f, 0f );
+            var 変換行列 =
+                Matrix.Scaling( X方向拡大率, Y方向拡大率, 1f ) *
+                Matrix.Translation(
+                    画面左上dpx.X + ( 左位置 + X方向拡大率 * this._画像.サイズ.Width / 2f ),
+                    画面左上dpx.Y - ( 上位置 + Y方向拡大率 * this._画像.サイズ.Height / 2f ),
+                    0f );
+            
+            this._画像.描画する( d3dDeviceContext, 設計画面サイズdpx, viewports, depthStencilView, renderTargetView, depthStencilState, 変換行列, 不透明度0to1 );
+        }
+
+        public void 描画する( 
+            SharpDX.DirectWrite.Factory dwFactory, 
+            SharpDX.Direct2D1.Factory1 d2dFactory1,
+            SharpDX.Direct2D1.DeviceContext dc, 
+            SharpDX.Direct3D11.Device1 d3dDevice1,
+            SharpDX.Direct3D11.DeviceContext d3dDeviceContext,
+            Size2F 設計画面サイズdpx,
+            RawViewportF[] viewports,
+            DepthStencilView depthStencilView,
+            RenderTargetView renderTargetView,
+            DepthStencilState depthStencilState,
+            Matrix? 変換行列3D = null,
+            float 不透明度0to1 = 1.0f )
+        {
+            if( string.IsNullOrEmpty( this.表示文字列 ) )
                 return;
 
-            var preTrans = dc.Transform;
-            var preBlend = dc.PrimitiveBlend;
+            if( this._ビットマップを更新せよ ||
+                this._TextFormatを更新せよ ||
+                this._TextLayoutを更新せよ )
+            {
+                this.ビットマップを生成または更新する( dwFactory, d2dFactory1, dc, d3dDevice1 );
+            }
 
-            dc.Transform = ( 変換行列2D ?? Matrix3x2.Identity ) * preTrans;
-            dc.PrimitiveBlend = ( this.加算合成 ) ? PrimitiveBlend.Add : PrimitiveBlend.SourceOver;
-
-            using var bmp = this._Bitmap.Bitmap;
-
-            dc.DrawBitmap(
-                bitmap: bmp,
-                destinationRectangle: null,
-                opacity: 不透明度0to1,
-                interpolationMode: InterpolationMode.Linear,
-                sourceRectangle: this.転送元矩形,
-                erspectiveTransformRef: 変換行列3D );
-
-            dc.PrimitiveBlend = preBlend;
-            dc.Transform = preTrans;
+            this._画像.描画する(
+                d3dDeviceContext,
+                設計画面サイズdpx,
+                viewports,
+                depthStencilView,
+                renderTargetView,
+                depthStencilState,
+                変換行列3D ?? Matrix.Identity,
+                不透明度0to1 );
         }
 
 
 
         // ローカル
 
-
-        private readonly SharpDX.DirectWrite.Factory _DWFactory;
 
         private string _表示文字列 = "";
 
@@ -519,7 +553,7 @@ namespace FDK
 
         private TextAlignment _TextAlignment = TextAlignment.Leading;
 
-            
+
         private TextFormat _TextFormat = null!;
 
         private TextLayout _TextLayout = null!;
@@ -532,7 +566,7 @@ namespace FDK
         /// </summary>
         private Size2F _表示文字列のサイズdpx = Size2F.Zero;
 
-        private SharpDX.Direct2D1.BitmapRenderTarget _Bitmap;
+        private 描画可能画像 _画像;
 
 
         private bool _ビットマップを更新せよ;

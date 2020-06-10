@@ -19,8 +19,8 @@ namespace DTXMania2.選曲
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._BPMパネル = new 画像( @"$(Images)\SelectStage\BpmPanel.png" );
-            this._パラメータ文字 = new フォント画像( @"$(Images)\ParameterFont_Small.png", @"$(Images)\ParameterFont_Small.yaml", 文字幅補正dpx: 0f );
+            this._BPMパネル = new 画像D2D( @"$(Images)\SelectStage\BpmPanel.png" );
+            this._パラメータ文字 = new フォント画像D2D( @"$(Images)\ParameterFont_Small.png", @"$(Images)\ParameterFont_Small.yaml", 文字幅補正dpx: 0f );
         }
 
         public virtual void Dispose()
@@ -42,7 +42,7 @@ namespace DTXMania2.選曲
 
             #region " パネルを描画する。"
             //----------------
-            this._BPMパネル.進行描画する( 領域.X - 5f, 領域.Y - 4f );
+            this._BPMパネル.描画する( dc, 領域.X - 5f, 領域.Y - 4f );
             //----------------
             #endregion
 
@@ -80,12 +80,12 @@ namespace DTXMania2.選曲
                 if( 10.0 >= Math.Abs( this._最大BPM.Value - this._最小BPM.Value ) ) // 差が10以下なら同一値(A)とみなす。
                 {
                     // (A) 「最小値」だけ描画。
-                    this._パラメータ文字.進行描画する( 領域.X + 120f, 領域.Y, this._最小BPM.Value.ToString( "0" ).PadLeft( 3 ) );
+                    this._パラメータ文字.描画する( dc, 領域.X + 120f, 領域.Y, this._最小BPM.Value.ToString( "0" ).PadLeft( 3 ) );
                 }
                 else
                 {
                     // (B) 「最小～最大」を描画。
-                    this._パラメータ文字.進行描画する( 領域.X + 120f, 領域.Y, this._最小BPM.Value.ToString( "0" ) + "~" + this._最大BPM.Value.ToString( "0" ) );
+                    this._パラメータ文字.描画する( dc, 領域.X + 120f, 領域.Y, this._最小BPM.Value.ToString( "0" ) + "~" + this._最大BPM.Value.ToString( "0" ) );
                 }
             }
             //----------------
@@ -97,9 +97,9 @@ namespace DTXMania2.選曲
         // ローカル
 
 
-        private readonly 画像 _BPMパネル;
+        private readonly 画像D2D _BPMパネル;
 
-        private readonly フォント画像 _パラメータ文字;
+        private readonly フォント画像D2D _パラメータ文字;
 
         private Node? _現在表示しているノード = null;
 

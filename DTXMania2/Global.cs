@@ -105,6 +105,16 @@ namespace DTXMania2
         // スワップチェーンに依存しないグラフィックリソース
 
         public static SharpDX.Direct3D11.Device1 D3D11Device1 { get; private set; } = null!;
+        /// <summary>
+        ///     アプリは、D3D11Device1.ImmediateContext ではなくこちらを使用すること。
+        /// </summary>
+        /// <remarks>
+        ///     D3D11Device1.ImmediateContext を参照すると、内部のCOM参照カウンタを１つカウントアップする。
+        ///     これを Release するには Dispose() するしかないが、Dispose() すると、COM参照のカウントダウンだけでなく
+        ///     D3D11Device1.ImmediateContext 自体を破棄してしまう。
+        ///     従って、D3D11Device1.ImmediateContext は、最初に一度だけ参照し、最後に一度だけ Dispose() する運用にする。
+        /// </remarks>
+        public static SharpDX.Direct3D11.DeviceContext 既定のD3D11DeviceContext { get; private set; } = null!;
         public static SharpDX.DXGI.Output1 DXGIOutput1 { get; private set; } = null!;
         public static SharpDX.MediaFoundation.DXGIDeviceManager MFDXGIDeviceManager { get; private set; } = null!;
         public static SharpDX.Direct2D1.Factory1 D2D1Factory1 { get; private set; } = null!;
@@ -151,6 +161,12 @@ namespace DTXMania2
                 //if( videoDevice is null )
                 //    throw new Exception( "Direct3D11デバイスが、ID3D11VideoDevice をサポートしていません。" );
             }
+            //----------------
+            #endregion
+
+            #region " 既定のD3Dデバイスコンテキストを作成する。"
+            //----------------
+            既定のD3D11DeviceContext = D3D11Device1.ImmediateContext;
             //----------------
             #endregion
 
@@ -334,16 +350,19 @@ namespace DTXMania2
             //----------------
             #endregion
 
+            #region " 既定のD3Dデバイスコンテキストを解放する。"
+            //----------------
+            既定のD3D11DeviceContext.ClearState();
+            既定のD3D11DeviceContext.Flush();
+            既定のD3D11DeviceContext.Dispose();
+            //----------------
+            #endregion
+
             #region " D3Dデバイスを解放する。"
             //----------------
 #if DEBUG
             // ReportLiveDeviceObjects。
             // デバッガの「ネイティブデバッグを有効にする」をオンにすれば表示される。
-            using( var d3ddc = D3D11Device1.ImmediateContext )
-            {
-                d3ddc?.Flush();
-                d3ddc?.ClearState();
-            }
             using( var debug = new SharpDX.Direct3D11.DeviceDebug( D3D11Device1 ) )
             {
                 D3D11Device1.Dispose();

@@ -75,52 +75,52 @@ namespace DTXMania2
             if( 0f == check )
                 return; // 面積ゼロ
 
-            D2DBatch.Draw( dc, () => {
+            var preBlend = dc.PrimitiveBlend;
 
-                dc.PrimitiveBlend = PrimitiveBlend.Add; // 加算合成
+            dc.PrimitiveBlend = PrimitiveBlend.Add; // 加算合成
 
-                if( 0f < 幅dpx )
-                {
-                    // (A) 横方向（左→右）の枠
-                    var 矩形 = new RectangleF(
-                        開始位置dpx.X,
-                        開始位置dpx.Y - this.太さdpx / 2f,
-                        幅dpx,
-                        this.太さdpx );
+            if( 0f < 幅dpx )
+            {
+                // (A) 横方向（左→右）の枠
+                var 矩形 = new RectangleF(
+                    開始位置dpx.X,
+                    開始位置dpx.Y - this.太さdpx / 2f,
+                    幅dpx,
+                    this.太さdpx );
 
-                    this._線グラブラシ?.Dispose();
-                    this._線グラブラシ = new LinearGradientBrush(
-                        dc,
-                        new LinearGradientBrushProperties() {
-                            StartPoint = new Vector2( 矩形.Left, 矩形.Top ),
-                            EndPoint = new Vector2( 矩形.Left, 矩形.Bottom ),
-                        },
-                        this._線グラ頂点集合 );
+                this._線グラブラシ?.Dispose();
+                this._線グラブラシ = new LinearGradientBrush(
+                    dc,
+                    new LinearGradientBrushProperties() {
+                        StartPoint = new Vector2( 矩形.Left, 矩形.Top ),
+                        EndPoint = new Vector2( 矩形.Left, 矩形.Bottom ),
+                    },
+                    this._線グラ頂点集合 );
 
-                    dc.FillRectangle( 矩形, this._線グラブラシ );
-                }
-                else
-                {
-                    // (B) 縦方向（上→下）の枠
-                    var 矩形 = new RectangleF(
-                        開始位置dpx.X - this.太さdpx / 2f,
-                        開始位置dpx.Y,
-                        this.太さdpx,
-                        高さdpx );
+                dc.FillRectangle( 矩形, this._線グラブラシ );
+            }
+            else
+            {
+                // (B) 縦方向（上→下）の枠
+                var 矩形 = new RectangleF(
+                    開始位置dpx.X - this.太さdpx / 2f,
+                    開始位置dpx.Y,
+                    this.太さdpx,
+                    高さdpx );
 
-                    this._線グラブラシ?.Dispose();
-                    this._線グラブラシ = new LinearGradientBrush(
-                        dc,
-                        new LinearGradientBrushProperties() {
-                            StartPoint = new Vector2( 矩形.Left, 矩形.Top ),
-                            EndPoint = new Vector2( 矩形.Right, 矩形.Top ),
-                        },
-                        this._線グラ頂点集合 );
+                this._線グラブラシ?.Dispose();
+                this._線グラブラシ = new LinearGradientBrush(
+                    dc,
+                    new LinearGradientBrushProperties() {
+                        StartPoint = new Vector2( 矩形.Left, 矩形.Top ),
+                        EndPoint = new Vector2( 矩形.Right, 矩形.Top ),
+                    },
+                    this._線グラ頂点集合 );
 
-                    dc.FillRectangle( 矩形, this._線グラブラシ );
-                }
+                dc.FillRectangle( 矩形, this._線グラブラシ );
+            }
 
-            } );
+            dc.PrimitiveBlend = preBlend;
         }
 
 

@@ -157,7 +157,7 @@ namespace DTXMania2.曲
         /// <summary>
         ///     <see cref="ScoreDBRecord.PreImage"/> に対応する、譜面のプレビュー画像。
         /// </summary>
-        public 画像? プレビュー画像
+        public 画像D2D? プレビュー画像
         {
             get { lock( this._排他 ) return this._プレビュー画像; }
             set { lock( this._排他 ) this._プレビュー画像 = value; }
@@ -218,7 +218,7 @@ namespace DTXMania2.曲
 
         private Dictionary<表示レーン種別, int> _レーン別ノート数 = null!;
 
-        private 画像? _プレビュー画像 = null;
+        private 画像D2D? _プレビュー画像 = null;
 
         private 文字列画像D2D? _タイトル文字列画像 = null;
 

@@ -26,8 +26,8 @@ namespace DTXMania2.結果
 
             public 数値()
             {
-                this._数字画像 = new フォント画像( @"$(Images)\ParameterFont_LargeBoldItalic.png", @"$(Images)\ParameterFont_LargeBoldItalic.yaml", 文字幅補正dpx: -2f );
-                this._MAX = new 画像( @"$(Images)\ResultStage\MAX.png" );
+                this._数字画像 = new フォント画像D2D( @"$(Images)\ParameterFont_LargeBoldItalic.png", @"$(Images)\ParameterFont_LargeBoldItalic.yaml", 文字幅補正dpx: -2f );
+                this._MAX = new 画像D2D( @"$(Images)\ResultStage\MAX.png" );
                 this._MAXである = false;
             }
 
@@ -81,7 +81,7 @@ namespace DTXMania2.結果
 
                     // シーン1. 待つ
                     {
-                        double シーン期間 = 達成率.最初の待機時間sec;
+                        double シーン期間 = 達成率._最初の待機時間sec;
                         using( var 左位置dpxの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                         using( var 不透明度の遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                         using( var MAX用拡大角度radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -96,7 +96,7 @@ namespace DTXMania2.結果
 
                     // シーン2. アニメする
                     {
-                        double シーン期間 = 達成率.アニメ時間sec;
+                        double シーン期間 = 達成率._アニメ時間sec;
                         using( var 左位置dpxの遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: シーン期間 / 2, finalValue: 0.0, accelerationRatio: 0.2, decelerationRatio: 0.8 ) )
                         using( var 不透明度の遷移 = Global.Animation.TrasitionLibrary.Linear( duration: シーン期間, finalValue: 1.0 ) )
                         using( var MAX用拡大角度radの遷移 = Global.Animation.TrasitionLibrary.Linear( duration: シーン期間, finalValue: 2 * Math.PI ) )
@@ -121,7 +121,7 @@ namespace DTXMania2.結果
                 this._ストーリーボード?.Finish( 0.0 );
             }
 
-            public void 進行描画する( float left, float top )
+            public void 進行描画する( DeviceContext dc, float left, float top )
             {
                 if( this._MAXである )
                 {
@@ -131,7 +131,7 @@ namespace DTXMania2.結果
                     float 左位置dpx = left + 124f + ( ( 1.0f - 拡大率 ) * this._MAX.サイズ.Width ) / 2.0f;
                     float 上位置dpx = top + 66f + ( ( 1.0f - 拡大率 ) * this._MAX.サイズ.Height ) / 2.0f;
 
-                    this._MAX.進行描画する( 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
+                    this._MAX.描画する( dc, 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
                 }
                 else
                 {
@@ -140,10 +140,10 @@ namespace DTXMania2.結果
                     float 左位置dpx = left + (float) this._左位置dpx.Value;
 
                     // 整数部を描画する（'.'含む）
-                    this._数字画像.進行描画する( 左位置dpx, top, this._達成率文字列_整数部, new Size2F( 1.4f, 1.6f ) );
+                    this._数字画像.描画する( dc, 左位置dpx, top, this._達成率文字列_整数部, new Size2F( 1.4f, 1.6f ) );
 
                     // 小数部を描画する
-                    this._数字画像.進行描画する( 左位置dpx + 246f, top + 50f, this._達成率文字列_小数部, new Size2F( 1.0f, 1.0f ) );
+                    this._数字画像.描画する( dc, 左位置dpx + 246f, top + 50f, this._達成率文字列_小数部, new Size2F( 1.0f, 1.0f ) );
                 }
             }
 
@@ -152,9 +152,9 @@ namespace DTXMania2.結果
             // ローカル
 
 
-            private readonly フォント画像 _数字画像;
+            private readonly フォント画像D2D _数字画像;
 
-            private readonly 画像 _MAX;
+            private readonly 画像D2D _MAX;
 
             private bool _MAXである;
 

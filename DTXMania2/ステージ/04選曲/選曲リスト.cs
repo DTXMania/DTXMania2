@@ -37,14 +37,14 @@ namespace DTXMania2.選曲
             this._選択ノードの表示オフセットのストーリーボード = null;
             this._選択ノードのオフセットアニメをリセットする();
 
-            this._既定のノード画像 = new 画像( @"$(Images)\DefaultPreviewImage.png" );
-            this._現行化前のノード画像 = new 画像( @"$(Images)\PreviewImageWaitForActivation.png" );
-            this._成績アイコン = new 画像( @"$(Images)\SelectStage\RecordIcon.png" );
+            this._既定のノード画像 = new 画像D2D( @"$(Images)\DefaultPreviewImage.png" );
+            this._現行化前のノード画像 = new 画像D2D( @"$(Images)\PreviewImageWaitForActivation.png" );
+            this._成績アイコン = new 画像D2D( @"$(Images)\SelectStage\RecordIcon.png" );
             this._成績アイコンの矩形リスト = new 矩形リスト( @"$(Images)\SelectStage\RecordIcon.yaml" );
-            this._評価アイコン = new 画像( @"$(Images)\SelectStage\RatingIcon.png" );
+            this._評価アイコン = new 画像D2D( @"$(Images)\SelectStage\RatingIcon.png" );
             this._評価アイコンの矩形リスト = new 矩形リスト( @"$(Images)\SelectStage\RatingIcon.yaml" );
-            this._達成率ゲージアイコン = new 画像( @"$(Images)\AchivementIcon.png" );
-            this._達成率数字画像 = new フォント画像( @"$(Images)\ParameterFont_LargeBoldItalic.png", @"$(Images)\ParameterFont_LargeBoldItalic.yaml", 文字幅補正dpx: -2f, 不透明度: 0.5f );
+            this._達成率ゲージアイコン = new 画像D2D( @"$(Images)\AchivementIcon.png" );
+            this._達成率数字画像 = new フォント画像D2D( @"$(Images)\ParameterFont_LargeBoldItalic.png", @"$(Images)\ParameterFont_LargeBoldItalic.yaml", 文字幅補正dpx: -2f, 不透明度: 0.5f );
             this._プレビュー音声 = new プレビュー音声();
 
             this.フォーカスリストを優先して現行化する();
@@ -325,21 +325,21 @@ namespace DTXMania2.選曲
         /// </remarks>
         private int _カーソル位置 = 4;
 
-        private readonly 画像 _既定のノード画像;
+        private readonly 画像D2D _既定のノード画像;
 
-        private readonly 画像 _現行化前のノード画像;
+        private readonly 画像D2D _現行化前のノード画像;
 
-        private readonly 画像 _成績アイコン;
+        private readonly 画像D2D _成績アイコン;
 
         private readonly 矩形リスト _成績アイコンの矩形リスト;
 
-        private readonly 画像 _評価アイコン;
+        private readonly 画像D2D _評価アイコン;
 
         private readonly 矩形リスト _評価アイコンの矩形リスト;
 
-        private readonly 画像 _達成率ゲージアイコン;
+        private readonly 画像D2D _達成率ゲージアイコン;
 
-        private readonly フォント画像 _達成率数字画像;
+        private readonly フォント画像D2D _達成率数字画像;
 
         private readonly 定間隔進行 _スクロール用カウンタ;
 
@@ -385,28 +385,27 @@ namespace DTXMania2.選曲
 
             float 実数行番号 = 行番号 + this._曲リスト全体のY軸移動オフセット / 100.0f;
 
-            var ノード左上dpx = new Vector3( // テクスチャは画面中央が (0,0,0) で、Xは右がプラス方向, Yは上がプラス方向, Zは奥がプラス方向+。
+            var ノード左上dpx = new Vector2(
                 this._曲リストの基準左上隅座標dpx.X + ( 選択ノードである ? (float) ( this._選択ノードの表示オフセットdpx?.Value ?? 0f ) : 0f ),
-                this._曲リストの基準左上隅座標dpx.Y + ( 実数行番号 * _ノードの高さdpx ),
-                0f );
+                this._曲リストの基準左上隅座標dpx.Y + ( 実数行番号 * _ノードの高さdpx ) );
+
+            var preBlend = dc.PrimitiveBlend;
 
             #region " 背景 "
             //----------------
-            D2DBatch.Draw( dc, () => {
+            dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
 
-                dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
-
-                if( node is BoxNode )
+            if( node is BoxNode )
+            {
+                #region " BOXノードの背景 "
+                //----------------
+                using var brush = new SolidColorBrush( dc, new Color4( 0xffa3647c ) );
+                using var pathGeometry = new PathGeometry( Global.D2D1Factory1 );
+                using( var sink = pathGeometry.Open() )
                 {
-                    #region " BOXノードの背景 "
-                    //----------------
-                    using var brush = new SolidColorBrush( dc, new Color4( 0xffa3647c ) );
-                    using var pathGeometry = new PathGeometry( Global.D2D1Factory1 );
-                    using( var sink = pathGeometry.Open() )
-                    {
-                        sink.SetFillMode( FillMode.Winding );
-                        sink.BeginFigure( new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ), FigureBegin.Filled );     // 点1
-                        var points = new SharpDX.Mathematics.Interop.RawVector2[] {
+                    sink.SetFillMode( FillMode.Winding );
+                    sink.BeginFigure( new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ), FigureBegin.Filled );     // 点1
+                    var points = new SharpDX.Mathematics.Interop.RawVector2[] {
                             new Vector2( ノード左上dpx.X + 150f, ノード左上dpx.Y + 8f ),	                              // → 点2
                             new Vector2( ノード左上dpx.X + 170f, ノード左上dpx.Y + 18f ),                                 // → 点3
                             new Vector2( Global.設計画面サイズ.Width, ノード左上dpx.Y + 18f ),	                          // → 点4
@@ -414,25 +413,25 @@ namespace DTXMania2.選曲
                             new Vector2( ノード左上dpx.X, ノード左上dpx.Y + _ノードの高さdpx ),	                          // → 点6
                             new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ),	                                      // → 点1
                         };
-                        sink.AddLines( points );
-                        sink.EndFigure( FigureEnd.Closed );
-                        sink.Close();
-                    }
-                    dc.FillGeometry( pathGeometry, brush );
-                    //----------------
-                    #endregion
+                    sink.AddLines( points );
+                    sink.EndFigure( FigureEnd.Closed );
+                    sink.Close();
                 }
-                else if( node is BackNode || node is RandomSelectNode )
+                dc.FillGeometry( pathGeometry, brush );
+                //----------------
+                #endregion
+            }
+            else if( node is BackNode || node is RandomSelectNode )
+            {
+                #region " BACK, RandomSelectノードの背景 "
+                //----------------
+                using var brush = new SolidColorBrush( dc, Color4.Black );
+                using var pathGeometry = new PathGeometry( Global.D2D1Factory1 );
+                using( var sink = pathGeometry.Open() )
                 {
-                    #region " BACK, RandomSelectノードの背景 "
-                    //----------------
-                    using var brush = new SolidColorBrush( dc, Color4.Black );
-                    using var pathGeometry = new PathGeometry( Global.D2D1Factory1 );
-                    using( var sink = pathGeometry.Open() )
-                    {
-                        sink.SetFillMode( FillMode.Winding );
-                        sink.BeginFigure( new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ), FigureBegin.Filled ); // 点1
-                        var points = new SharpDX.Mathematics.Interop.RawVector2[] {
+                    sink.SetFillMode( FillMode.Winding );
+                    sink.BeginFigure( new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ), FigureBegin.Filled ); // 点1
+                    var points = new SharpDX.Mathematics.Interop.RawVector2[] {
                             new Vector2( ノード左上dpx.X + 150f, ノード左上dpx.Y + 8f ),	                          // → 点2
 							new Vector2( ノード左上dpx.X + 170f, ノード左上dpx.Y + 18f ),	                          // → 点3
 							new Vector2( Global.設計画面サイズ.Width, ノード左上dpx.Y + 18f ),                        // → 点4
@@ -440,25 +439,25 @@ namespace DTXMania2.選曲
 							new Vector2( ノード左上dpx.X, ノード左上dpx.Y + _ノードの高さdpx ),	                      // → 点6
 							new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ),	                                  // → 点1
 						};
-                        sink.AddLines( points );
-                        sink.EndFigure( FigureEnd.Closed );
-                        sink.Close();
-                    }
-                    dc.FillGeometry( pathGeometry, brush );
-                    //----------------
-                    #endregion
+                    sink.AddLines( points );
+                    sink.EndFigure( FigureEnd.Closed );
+                    sink.Close();
                 }
-                else
-                {
-                    #region " 既定の背景 "
-                    //----------------
-                    using var brush = new SolidColorBrush( dc, new Color4( 0f, 0f, 0f, 0.25f ) );   // 半透明の黒
-                    dc.FillRectangle( new RectangleF( ノード左上dpx.X, ノード左上dpx.Y, Global.設計画面サイズ.Width - ノード左上dpx.X, _ノードの高さdpx ), brush );
-                    //----------------
-                    #endregion
-                }
+                dc.FillGeometry( pathGeometry, brush );
+                //----------------
+                #endregion
+            }
+            else
+            {
+                #region " 既定の背景 "
+                //----------------
+                using var brush = new SolidColorBrush( dc, new Color4( 0f, 0f, 0f, 0.25f ) );   // 半透明の黒
+                dc.FillRectangle( new RectangleF( ノード左上dpx.X, ノード左上dpx.Y, Global.設計画面サイズ.Width - ノード左上dpx.X, _ノードの高さdpx ), brush );
+                //----------------
+                #endregion
+            }
 
-            } );
+            dc.PrimitiveBlend = preBlend;
             //----------------
             #endregion
 
@@ -469,24 +468,23 @@ namespace DTXMania2.選曲
                 var ノード画像 = node.現行化済み ? ( node.ノード画像 ?? this._既定のノード画像 ) : this._現行化前のノード画像;
 
                 var ノード内サムネイルオフセットdpx = new Vector3( 58f, 4f, 0f );
-                var サムネイル表示中央dpx = new Vector3(
-                    Global.画面左上dpx.X + ノード左上dpx.X + ( this._サムネイル表示サイズdpx.X / 2f ) + ノード内サムネイルオフセットdpx.X,
-                    Global.画面左上dpx.Y - ノード左上dpx.Y - ( this._サムネイル表示サイズdpx.Y / 2f ) - ノード内サムネイルオフセットdpx.Y,
-                    0f );
+                var サムネイル表示左上dpx = new Vector2(
+                    ノード左上dpx.X + ノード内サムネイルオフセットdpx.X,
+                    ノード左上dpx.Y + ノード内サムネイルオフセットdpx.Y );
 
                 if( node is BoxNode )
                 {
                     #region " BOXノードのサムネイル画像 → 普通のノードよりも少し小さく表示する（涙 "
                     //----------------
-                    var 変換行列 =
-                        Matrix.Scaling(
+                    var 変換行列2D =
+                        Matrix3x2.Scaling(
                             this._サムネイル表示サイズdpx.X / ノード画像.サイズ.Width,
-                            this._サムネイル表示サイズdpx.Y / ノード画像.サイズ.Height,
-                            0f ) *
-                        Matrix.Scaling( 0.9f ) *                            // ちょっと小さく
-                        Matrix.Translation( サムネイル表示中央dpx - 4f );   // ちょっと下へ
+                            this._サムネイル表示サイズdpx.Y / ノード画像.サイズ.Height ) *
+                        Matrix3x2.Scaling( 0.9f ) *         // ちょっと小さく
+                        Matrix3x2.Translation( サムネイル表示左上dpx ) *
+                        Matrix3x2.Translation( 0f, +12f );   // ちょっと下へ
 
-                    ノード画像.進行描画する( 変換行列 );
+                    ノード画像.描画する( dc, 変換行列2D );
                     //----------------
                     #endregion
                 }
@@ -498,14 +496,13 @@ namespace DTXMania2.選曲
                 {
                     #region " 既定のサムネイル画像 "
                     //----------------
-                    var 変換行列 =
-                        Matrix.Scaling(
+                    var 変換行列2D =
+                        Matrix3x2.Scaling(
                             this._サムネイル表示サイズdpx.X / ノード画像.サイズ.Width,
-                            this._サムネイル表示サイズdpx.Y / ノード画像.サイズ.Height,
-                            0f ) *
-                        Matrix.Translation( サムネイル表示中央dpx );
+                            this._サムネイル表示サイズdpx.Y / ノード画像.サイズ.Height ) *
+                        Matrix3x2.Translation( サムネイル表示左上dpx );
 
-                    ノード画像.進行描画する( 変換行列 );
+                    ノード画像.描画する( dc, 変換行列2D );
                     //----------------
                     #endregion
                 }
@@ -527,7 +524,8 @@ namespace DTXMania2.選曲
 
                         #region " 成績アイコン "
                         //----------------
-                        this._成績アイコン.進行描画する(
+                        this._成績アイコン.描画する(
+                            dc,
                             ノード左上dpx.X + 6f,
                             ノード左上dpx.Y + 57f,
                             転送元矩形: this._成績アイコンの矩形リスト[ 最高ランク.ToString()! ] );
@@ -536,69 +534,67 @@ namespace DTXMania2.選曲
 
                         #region " 達成率ゲージ "
                         //----------------
-                        this._達成率ゲージアイコン.進行描画する(
+                        this._達成率ゲージアイコン.描画する(
+                            dc,
                             ノード左上dpx.X + 160f,
                             ノード左上dpx.Y - 27f,
                             X方向拡大率: 0.4f,
                             Y方向拡大率: 0.4f );
 
-                        this._達成率数字画像.進行描画する(
+                        this._達成率数字画像.描画する(
+                            dc,
                             ノード左上dpx.X + 204f,
                             ノード左上dpx.Y + 4,
                             score.最高記録.Achievement.ToString( "0.00" ).PadLeft( 6 ) + '%',
                             拡大率: new Size2F( 0.3f, 0.3f ) );
 
-                        D2DBatch.Draw( dc, () => {
+                        using var ゲージ色 = new SolidColorBrush( dc, new Color( 184, 156, 231, 255 ) );
+                        using var ゲージ枠色 = new SolidColorBrush( dc, Color.White );
+                        using var ゲージ背景色 = new SolidColorBrush( dc, new Color( 0.25f, 0.25f, 0.25f, 1f ) );
+                        using var ゲージ枠ジオメトリ = new PathGeometry( Global.D2D1Factory1 );
+                        using var ゲージジオメトリ = new PathGeometry( Global.D2D1Factory1 );
 
-                            using var ゲージ色 = new SolidColorBrush( dc, new Color( 184, 156, 231, 255 ) );
-                            using var ゲージ枠色 = new SolidColorBrush( dc, Color.White );
-                            using var ゲージ背景色 = new SolidColorBrush( dc, new Color( 0.25f, 0.25f, 0.25f, 1f ) );
-                            using var ゲージ枠ジオメトリ = new PathGeometry( Global.D2D1Factory1 );
-                            using var ゲージジオメトリ = new PathGeometry( Global.D2D1Factory1 );
+                        var ゲージサイズdpx = new Size2F( 448f, 17f );
+                        var ゲージ位置 = new Vector2( ノード左上dpx.X + 310f, ノード左上dpx.Y + 10f );
 
-                            var ゲージサイズdpx = new Size2F( 448f, 17f );
-                            var ゲージ位置 = new Vector2( ノード左上dpx.X + 310f, ノード左上dpx.Y + 10f );
-
-                            using( var sink = ゲージジオメトリ.Open() )
-                            {
-                                var 割合0to1 = (float) ( 達成率 / 100.0 );
-                                var p = new Vector2[] {
+                        using( var sink = ゲージジオメトリ.Open() )
+                        {
+                            var 割合0to1 = (float) ( 達成率 / 100.0 );
+                            var p = new Vector2[] {
                                 new Vector2( ゲージ位置.X, ゲージ位置.Y ),                                                                    // 左上
                                 new Vector2( ゲージ位置.X + ゲージサイズdpx.Width * 割合0to1, ゲージ位置.Y ),                                 // 右上
                                 new Vector2( ゲージ位置.X + ゲージサイズdpx.Width * 割合0to1 - 3f, ゲージ位置.Y + ゲージサイズdpx.Height ),   // 右下
                                 new Vector2( ゲージ位置.X - 3f, ゲージ位置.Y + ゲージサイズdpx.Height ),                                      // 左下
                             };
-                                sink.SetFillMode( FillMode.Winding );
-                                sink.BeginFigure( p[ 0 ], FigureBegin.Filled );
-                                sink.AddLine( p[ 1 ] );
-                                sink.AddLine( p[ 2 ] );
-                                sink.AddLine( p[ 3 ] );
-                                sink.EndFigure( FigureEnd.Closed );
-                                sink.Close();
-                            }
-                            using( var sink = ゲージ枠ジオメトリ.Open() )
-                            {
-                                var p = new Vector2[] {
+                            sink.SetFillMode( FillMode.Winding );
+                            sink.BeginFigure( p[ 0 ], FigureBegin.Filled );
+                            sink.AddLine( p[ 1 ] );
+                            sink.AddLine( p[ 2 ] );
+                            sink.AddLine( p[ 3 ] );
+                            sink.EndFigure( FigureEnd.Closed );
+                            sink.Close();
+                        }
+                        using( var sink = ゲージ枠ジオメトリ.Open() )
+                        {
+                            var p = new Vector2[] {
                                 new Vector2( ゲージ位置.X, ゲージ位置.Y ),                                                         // 左上
                                 new Vector2( ゲージ位置.X + ゲージサイズdpx.Width, ゲージ位置.Y ),                                 // 右上
                                 new Vector2( ゲージ位置.X + ゲージサイズdpx.Width - 3f, ゲージ位置.Y + ゲージサイズdpx.Height ),   // 右下
                                 new Vector2( ゲージ位置.X - 3f, ゲージ位置.Y + ゲージサイズdpx.Height ),                           // 左下
                             };
-                                sink.SetFillMode( FillMode.Winding );
-                                sink.BeginFigure( p[ 0 ], FigureBegin.Filled );
-                                sink.AddLine( p[ 1 ] );
-                                sink.AddLine( p[ 2 ] );
-                                sink.AddLine( p[ 3 ] );
-                                sink.EndFigure( FigureEnd.Closed );
-                                sink.Close();
-                            }
+                            sink.SetFillMode( FillMode.Winding );
+                            sink.BeginFigure( p[ 0 ], FigureBegin.Filled );
+                            sink.AddLine( p[ 1 ] );
+                            sink.AddLine( p[ 2 ] );
+                            sink.AddLine( p[ 3 ] );
+                            sink.EndFigure( FigureEnd.Closed );
+                            sink.Close();
+                        }
 
-                            dc.FillGeometry( ゲージ枠ジオメトリ, ゲージ背景色 );
-                            dc.FillGeometry( ゲージジオメトリ, ゲージ色 );
-                            dc.DrawGeometry( ゲージジオメトリ, ゲージ枠色, 1f );
-                            dc.DrawGeometry( ゲージ枠ジオメトリ, ゲージ枠色, 2f );
-
-                        } );
+                        dc.FillGeometry( ゲージ枠ジオメトリ, ゲージ背景色 );
+                        dc.FillGeometry( ゲージジオメトリ, ゲージ色 );
+                        dc.DrawGeometry( ゲージジオメトリ, ゲージ枠色, 1f );
+                        dc.DrawGeometry( ゲージ枠ジオメトリ, ゲージ枠色, 2f );
                         //----------------
                         #endregion
                     }
@@ -611,7 +607,8 @@ namespace DTXMania2.選曲
 
                         if( 0 < 評価 )
                         {
-                            this._評価アイコン.進行描画する(
+                            this._評価アイコン.描画する(
+                                dc,
                                 ノード左上dpx.X + 6f,
                                 ノード左上dpx.Y + 0f,
                                 転送元矩形: this._評価アイコンの矩形リスト[ 評価.ToString() ] );

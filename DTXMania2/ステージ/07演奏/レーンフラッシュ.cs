@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using SharpDX;
+using SharpDX.Direct2D1;
 using FDK;
 
 namespace DTXMania2.演奏
@@ -19,7 +20,7 @@ namespace DTXMania2.演奏
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._レーンフラッシュ画像 = new 画像( @"$(Images)\PlayStage\LaneFlush.png" ) { 加算合成する = true };
+            this._レーンフラッシュ画像 = new 画像D2D( @"$(Images)\PlayStage\LaneFlush.png" ) { 加算合成する = true };
             this._レーンフラッシュの矩形リスト = new 矩形リスト( @"$(Images)\PlayStage\LaneFlush.yaml" );
 
             this._フラッシュ情報 = new Dictionary<表示レーン種別, Counter>() {
@@ -57,7 +58,7 @@ namespace DTXMania2.演奏
         // 進行と描画
 
 
-        public void 進行描画する()
+        public void 進行描画する( DeviceContext dc )
         {
             foreach( var laneType in this._フラッシュ情報.Keys )
             {
@@ -72,7 +73,8 @@ namespace DTXMania2.演奏
 
                 for( float y = ( レーンフレーム.領域.Bottom - フラッシュ１枚のサイズ.Height ); y > ( レーンフレーム.領域.Top - フラッシュ１枚のサイズ.Height ); y -= フラッシュ１枚のサイズ.Height - 0.5f )
                 {
-                    this._レーンフラッシュ画像.進行描画する(
+                    this._レーンフラッシュ画像.描画する(
+                        dc,
                         レーンフレーム.レーン中央位置X[ laneType ] - フラッシュ１枚のサイズ.Width * 横拡大率 / 2f,
                         y,
                         不透明度0to1: 割合 * 0.75f,   // ちょっと暗めに。
@@ -87,7 +89,7 @@ namespace DTXMania2.演奏
         // ローカル
 
 
-        private readonly 画像 _レーンフラッシュ画像;
+        private readonly 画像D2D _レーンフラッシュ画像;
 
         private readonly 矩形リスト _レーンフラッシュの矩形リスト;
 

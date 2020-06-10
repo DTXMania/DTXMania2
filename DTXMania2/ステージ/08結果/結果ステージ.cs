@@ -55,9 +55,9 @@ namespace DTXMania2.結果
             #endregion
 
             this._背景 = new 舞台画像();
-            this._既定のノード画像 = new 画像( @"$(Images)\DefaultPreviewImage.png" );
-            this._現行化前のノード画像 = new 画像( @"$(Images)\PreviewImageWaitForActivation.png" );
-            this._曲名パネル = new 画像( @"$(Images)\ResultStage\ScoreTitlePanel.png" );
+            this._既定のノード画像 = new 画像D2D( @"$(Images)\DefaultPreviewImage.png" );
+            this._現行化前のノード画像 = new 画像D2D( @"$(Images)\PreviewImageWaitForActivation.png" );
+            this._曲名パネル = new 画像D2D( @"$(Images)\ResultStage\ScoreTitlePanel.png" );
             this._曲名画像 = new 文字列画像D2D() {
                 フォント名 = "HGMaruGothicMPRO",
                 フォントサイズpt = 40f,
@@ -145,7 +145,11 @@ namespace DTXMania2.結果
                 {
                     #region " 背景画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
+
                     this._画面を描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -186,7 +190,11 @@ namespace DTXMania2.結果
                 {
                     #region " 背景画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
+
                     this._画面を描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -221,6 +229,8 @@ namespace DTXMania2.結果
                 {
                     #region " 背景画面＆フェードアウト "
                     //----------------
+                    dc.BeginDraw();
+
                     this._画面を描画する( dc );
 
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
@@ -228,6 +238,8 @@ namespace DTXMania2.結果
                         // フェードアウトが完了したら完了フェーズへ。
                         this.現在のフェーズ = フェーズ.完了;
                     }
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -248,31 +260,27 @@ namespace DTXMania2.結果
         private void _プレビュー画像を描画する( DeviceContext dc )
         {
             // 枠
-            D2DBatch.Draw( dc, () => {
-                const float 枠の太さdpx = 5f;
-                dc.FillRectangle(
-                    new RectangleF(
-                        this._プレビュー画像表示位置dpx.X - 枠の太さdpx,
-                        this._プレビュー画像表示位置dpx.Y - 枠の太さdpx,
-                        this._プレビュー画像表示サイズdpx.X + 枠の太さdpx * 2f,
-                        this._プレビュー画像表示サイズdpx.Y + 枠の太さdpx * 2f ),
-                    this._プレビュー枠ブラシ );
-            } );
+            const float 枠の太さdpx = 5f;
+            dc.FillRectangle(
+                new RectangleF(
+                    this._プレビュー画像表示位置dpx.X - 枠の太さdpx,
+                    this._プレビュー画像表示位置dpx.Y - 枠の太さdpx,
+                    this._プレビュー画像表示サイズdpx.X + 枠の太さdpx * 2f,
+                    this._プレビュー画像表示サイズdpx.Y + 枠の太さdpx * 2f ),
+                this._プレビュー枠ブラシ );
 
             // プレビュー画像
             var preimage = Global.App.演奏譜面.最高記録を現行化済み ? ( Global.App.演奏譜面.プレビュー画像 ?? this._既定のノード画像 ) : this._現行化前のノード画像;
-            
-            var 変換行列 =
-                Matrix.Scaling(
+
+            var 変換行列2D =
+                Matrix3x2.Scaling(
                     this._プレビュー画像表示サイズdpx.X / preimage.サイズ.Width,
-                    this._プレビュー画像表示サイズdpx.Y / preimage.サイズ.Height,
-                    0f ) *
-                Matrix.Translation( // テクスチャは画面中央が (0,0,0) で、Xは右がプラス方向, Yは上がプラス方向, Zは奥がプラス方向+。
-                    Global.画面左上dpx.X + this._プレビュー画像表示位置dpx.X + this._プレビュー画像表示サイズdpx.X / 2f,
-                    Global.画面左上dpx.Y - this._プレビュー画像表示位置dpx.Y - this._プレビュー画像表示サイズdpx.Y / 2f,
-                    0f );
-            
-            preimage.進行描画する( 変換行列 );
+                    this._プレビュー画像表示サイズdpx.Y / preimage.サイズ.Height ) *
+                Matrix3x2.Translation(
+                    this._プレビュー画像表示位置dpx.X,
+                    this._プレビュー画像表示位置dpx.Y );
+
+            preimage.描画する( dc, 変換行列2D );
         }
 
         private void _曲名を描画する( DeviceContext dc )
@@ -298,15 +306,13 @@ namespace DTXMania2.結果
         private void _画面を描画する( DeviceContext dc )
         {
             this._背景.進行描画する( dc );
-            D2DBatch.Draw( dc, () => {
-                dc.FillRectangle( new RectangleF( 0f, 36f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Height - 72f ), this._黒マスクブラシ );
-            } );
+            dc.FillRectangle( new RectangleF( 0f, 36f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Height - 72f ), this._黒マスクブラシ );
             this._プレビュー画像を描画する( dc );
-            this._曲名パネル.進行描画する( 660f, 796f );
+            this._曲名パネル.描画する( dc, 660f, 796f );
             this._曲名を描画する( dc );
             this._サブタイトルを描画する( dc );
             this._演奏パラメータ結果.進行描画する( dc, 1317f, 716f, this._結果 );
-            this._ランク.進行描画する( 200f, 300f, this._結果.ランク );
+            this._ランク.進行描画する( dc, 200f, 300f, this._結果.ランク );
             this._難易度.進行描画する( dc, 1341f, 208f, Global.App.演奏スコア.難易度 );
             this._曲別SKILL.進行描画する( dc, 1329f, 327f, this._結果.スキル );
             this._達成率.進行描画する( dc, 1233f, 428f, this._結果.Achievement );
@@ -322,11 +328,11 @@ namespace DTXMania2.結果
 
         private readonly 舞台画像 _背景;
 
-        private readonly 画像 _既定のノード画像;
+        private readonly 画像D2D _既定のノード画像;
 
-        private readonly 画像 _現行化前のノード画像;
+        private readonly 画像D2D _現行化前のノード画像;
 
-        private readonly 画像 _曲名パネル;
+        private readonly 画像D2D _曲名パネル;
 
         private readonly 文字列画像D2D _曲名画像;
 
@@ -348,7 +354,7 @@ namespace DTXMania2.結果
 
         private readonly SolidColorBrush _プレビュー枠ブラシ;
 
-        private 成績 _結果 = null!;
+        private readonly 成績 _結果 = null!;
 
         private readonly Vector3 _プレビュー画像表示位置dpx = new Vector3( 668f, 194f, 0f );
 

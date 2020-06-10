@@ -34,17 +34,21 @@ namespace DTXMania2.認証
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._ユーザパネル = new 画像( @"$(Images)\AuthStage\UserPanel.png" );
-            this._ユーザパネル光彩付き = new 画像( @"$(Images)\AuthStage\UserPanelWithFrame.png" );
-            this._ユーザ肩書きパネル = new 画像( @"$(Images)\AuthStage\UserSubPanel.png" );
-            this._ユーザ名 = new 文字列画像D2D() {
-                表示文字列 = "",
-                フォントサイズpt = 46f,
-                描画効果 = 文字列画像D2D.効果.縁取り,
-                縁のサイズdpx = 6f,
-                前景色 = Color4.Black,
-                背景色 = Color4.White,
-            };
+            this._ユーザパネル = new 画像D2D( @"$(Images)\AuthStage\UserPanel.png" );
+            this._ユーザパネル光彩付き = new 画像D2D( @"$(Images)\AuthStage\UserPanelWithFrame.png" );
+            this._ユーザ肩書きパネル = new 画像D2D( @"$(Images)\AuthStage\UserSubPanel.png" );
+            this._ユーザ名 = new 文字列画像D2D[ Global.App.ユーザリスト.Count ];
+            for( int i = 0; i < this._ユーザ名.Length; i++ )
+            {
+                this._ユーザ名[ i ] = new 文字列画像D2D() {
+                    表示文字列 = Global.App.ユーザリスト[ i ].名前,
+                    フォントサイズpt = 46f,
+                    描画効果 = 文字列画像D2D.効果.縁取り,
+                    縁のサイズdpx = 6f,
+                    前景色 = Color4.Black,
+                    背景色 = Color4.White,
+                };
+            }
 
             this._光彩アニメーションを開始する();
         }
@@ -53,7 +57,8 @@ namespace DTXMania2.認証
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._ユーザ名.Dispose();
+            foreach( var uname in this._ユーザ名 )
+                uname.Dispose();
             this._ユーザ肩書きパネル.Dispose();
             this._ユーザパネル光彩付き.Dispose();
             this._ユーザパネル.Dispose();
@@ -92,18 +97,16 @@ namespace DTXMania2.認証
 
             for( int i = 0; i < 表示人数; i++ )
             {
-                var user = Global.App.ユーザリスト[ i ];
-
-                // 選択中のユーザにはパネルに光彩を追加。
+                // ユーザパネル；選択中のユーザにはパネルに光彩を追加。
                 if( i == this.選択中のユーザ )
-                    this._ユーザパネル光彩付き.進行描画する( 描画位置.X, 描画位置.Y + リストの改行幅 * i, 不透明度0to1: 不透明度 );
+                    this._ユーザパネル光彩付き.描画する( dc, 描画位置.X, 描画位置.Y + リストの改行幅 * i, 不透明度0to1: 不透明度 );
+                this._ユーザパネル.描画する( dc, 描画位置.X, 描画位置.Y + リストの改行幅 * i );
 
-                this._ユーザパネル.進行描画する( 描画位置.X, 描画位置.Y + リストの改行幅 * i );
+                // ユーザ名
+                this._ユーザ名[ i ].描画する( dc, 描画位置.X + 32f, 描画位置.Y + 40f + リストの改行幅 * i );
 
-                this._ユーザ名.表示文字列 = user.名前;
-                this._ユーザ名.描画する( dc, 描画位置.X + 32f, 描画位置.Y + 40f + リストの改行幅 * i );
-
-                this._ユーザ肩書きパネル.進行描画する( 描画位置.X, 描画位置.Y + リストの改行幅 * i );
+                // 肩書き
+                this._ユーザ肩書きパネル.描画する( dc, 描画位置.X, 描画位置.Y + リストの改行幅 * i );
             }
             //----------------
             #endregion
@@ -139,13 +142,13 @@ namespace DTXMania2.認証
         // ローカル
 
 
-        private readonly 画像 _ユーザパネル;
+        private readonly 画像D2D _ユーザパネル;
 
-        private readonly 画像 _ユーザパネル光彩付き;
+        private readonly 画像D2D _ユーザパネル光彩付き;
 
-        private readonly 画像 _ユーザ肩書きパネル;
+        private readonly 画像D2D _ユーザ肩書きパネル;
 
-        private readonly 文字列画像D2D _ユーザ名;
+        private readonly 文字列画像D2D[] _ユーザ名;
 
         private LoopCounter _光彩アニメカウンタ = null!;
 

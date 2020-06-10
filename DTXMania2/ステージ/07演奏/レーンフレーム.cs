@@ -77,39 +77,35 @@ namespace DTXMania2.演奏
 
         public void 進行描画する( DeviceContext dc, int BGAの透明度, bool レーンラインを描画する = true )
         {
-            D2DBatch.Draw( dc, () => {
-
-                // レーンエリアを描画する。
+            // レーンエリアを描画する。
+            {
+                var color = Color4.Black;
+                color.Alpha *= ( 100 - BGAの透明度 ) / 100.0f;   // BGAの透明度0→100 のとき Alpha×1→×0
+                using( var laneBrush = new SolidColorBrush( dc, color ) )
                 {
-                    var color = Color4.Black;
-                    color.Alpha *= ( 100 - BGAの透明度 ) / 100.0f;   // BGAの透明度0→100 のとき Alpha×1→×0
-                    using( var laneBrush = new SolidColorBrush( dc, color ) )
+                    dc.FillRectangle( レーンフレーム.領域, laneBrush );
+                }
+            }
+
+            // レーンラインを描画する。
+
+            if( レーンラインを描画する )
+            {
+                foreach( 表示レーン種別? displayLaneType in Enum.GetValues( typeof( 表示レーン種別 ) ) )
+                {
+                    if( !displayLaneType.HasValue || displayLaneType.Value == 表示レーン種別.Unknown )
+                        continue;
+
+                    var レーンライン色 = レーン色[ displayLaneType.Value ];
+                    レーンライン色.Alpha *= ( 100 - BGAの透明度 ) / 100.0f;   // BGAの透明度0→100 のとき Alpha×1→×0
+
+                    using( var laneLineBrush = new SolidColorBrush( dc, レーンライン色 ) )
                     {
-                        dc.FillRectangle( レーンフレーム.領域, laneBrush );
+                        var rc = new RectangleF( レーン中央位置X[ displayLaneType.Value ] - 1, 0f, 3f, 領域.Height );
+                        dc.FillRectangle( rc, laneLineBrush );
                     }
                 }
-
-                // レーンラインを描画する。
-
-                if( レーンラインを描画する )
-                {
-                    foreach( 表示レーン種別? displayLaneType in Enum.GetValues( typeof( 表示レーン種別 ) ) )
-                    {
-                        if( !displayLaneType.HasValue || displayLaneType.Value == 表示レーン種別.Unknown )
-                            continue;
-
-                        var レーンライン色 = レーン色[ displayLaneType.Value ];
-                        レーンライン色.Alpha *= ( 100 - BGAの透明度 ) / 100.0f;   // BGAの透明度0→100 のとき Alpha×1→×0
-
-                        using( var laneLineBrush = new SolidColorBrush( dc, レーンライン色 ) )
-                        {
-                            var rc = new RectangleF( レーン中央位置X[ displayLaneType.Value ] - 1, 0f, 3f, 領域.Height );
-                            dc.FillRectangle( rc, laneLineBrush );
-                        }
-                    }
-                }
-
-            } );
+            }
         }
     }
 }

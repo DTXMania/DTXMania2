@@ -19,9 +19,9 @@ namespace DTXMania2.演奏
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._パネル = new 画像( @"$(Images)\PlayStage\ScoreTitlePanel.png" );
-            this._既定のノード画像 = new 画像( @"$(Images)\DefaultPreviewImage.png" );
-            this._現行化前のノード画像 = new 画像( @"$(Images)\PreviewImageWaitForActivation.png" );
+            this._パネル = new 画像D2D( @"$(Images)\PlayStage\ScoreTitlePanel.png" );
+            this._既定のノード画像 = new 画像D2D( @"$(Images)\DefaultPreviewImage.png" );
+            this._現行化前のノード画像 = new 画像D2D( @"$(Images)\PreviewImageWaitForActivation.png" );
 
             this._曲名画像 = new 文字列画像D2D() {
                 フォント名 = "HGMaruGothicMPRO",
@@ -66,8 +66,8 @@ namespace DTXMania2.演奏
 
         public void 進行描画する( DeviceContext dc )
         {
-            this._パネル.進行描画する( 1458f, 3f );
-            this._サムネイルを描画する();
+            this._パネル.描画する( dc, 1458f, 3f );
+            this._サムネイルを描画する( dc );
             this._曲名を描画する( dc );
             this._サブタイトルを描画する( dc );
         }
@@ -77,11 +77,11 @@ namespace DTXMania2.演奏
         // ローカル
 
 
-        private readonly 画像 _パネル;
+        private readonly 画像D2D _パネル;
 
-        private readonly 画像 _既定のノード画像;
+        private readonly 画像D2D _既定のノード画像;
 
-        private readonly 画像 _現行化前のノード画像;
+        private readonly 画像D2D _現行化前のノード画像;
 
         private readonly 文字列画像D2D _曲名画像;
 
@@ -95,21 +95,19 @@ namespace DTXMania2.演奏
 
         private readonly Vector2 _曲名表示サイズdpx = new Vector2( 331f - 8f - 4f, 70f - 10f );
 
-        private void _サムネイルを描画する()
+        private void _サムネイルを描画する( DeviceContext dc )
         {
             var サムネイル画像 = Global.App.演奏譜面?.プレビュー画像 ?? this._既定のノード画像;
 
-            var 変換行列 =
-                Matrix.Scaling(
+            var 変換行列2D =
+                Matrix3x2.Scaling(
                     this._サムネイル画像表示サイズdpx.X / サムネイル画像.サイズ.Width,
-                    this._サムネイル画像表示サイズdpx.Y / サムネイル画像.サイズ.Height,
-                    0f ) *
-                Matrix.Translation( // テクスチャは画面中央が (0,0,0) で、Xは右がプラス方向, Yは上がプラス方向, Zは奥がプラス方向+。
-                    Global.画面左上dpx.X + this._サムネイル画像表示位置dpx.X + this._サムネイル画像表示サイズdpx.X / 2f,
-                    Global.画面左上dpx.Y - this._サムネイル画像表示位置dpx.Y - this._サムネイル画像表示サイズdpx.Y / 2f,
-                    0f );
+                    this._サムネイル画像表示サイズdpx.Y / サムネイル画像.サイズ.Height ) *
+                Matrix3x2.Translation(
+                    this._サムネイル画像表示位置dpx.X,
+                    this._サムネイル画像表示位置dpx.Y );
 
-            サムネイル画像.進行描画する( 変換行列 );
+            サムネイル画像.描画する( dc, 変換行列2D );
         }
 
         private void _曲名を描画する( DeviceContext dc )

@@ -26,7 +26,7 @@ namespace DTXMania2.結果
 
             public 数値()
             {
-                this._数字画像 = new フォント画像( @"$(Images)\ParameterFont_Large.png", @"$(Images)\ParameterFont_Large.yaml", 文字幅補正dpx: 0f );
+                this._数字画像 = new フォント画像D2D( @"$(Images)\ParameterFont_Large.png", @"$(Images)\ParameterFont_Large.yaml", 文字幅補正dpx: 0f );
             }
 
             public void Dispose()
@@ -58,11 +58,11 @@ namespace DTXMania2.結果
                 this._左位置dpx = new Variable( Global.Animation.Manager, initialValue: +200.0 );
 
                 // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL.最初の待機時間sec ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL._最初の待機時間sec ) )
                     this._ストーリーボード.AddTransition( this._左位置dpx, 遷移 );
 
                 // 0.0 へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 曲別SKILL.アニメ時間sec / 2, finalValue: 0.0, accelerationRatio: 0.2, decelerationRatio: 0.8 ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 曲別SKILL._アニメ時間sec / 2, finalValue: 0.0, accelerationRatio: 0.2, decelerationRatio: 0.8 ) )
                     this._ストーリーボード.AddTransition( this._左位置dpx, 遷移 );
                 //----------------
                 #endregion
@@ -74,11 +74,11 @@ namespace DTXMania2.結果
                 this._不透明度 = new Variable( Global.Animation.Manager, initialValue: 0.0 );
 
                 // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL.最初の待機時間sec ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL._最初の待機時間sec ) )
                     this._ストーリーボード.AddTransition( this._不透明度, 遷移 );
 
                 // 1.0 へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Linear( duration: 曲別SKILL.アニメ時間sec, finalValue: 1.0 ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.Linear( duration: 曲別SKILL._アニメ時間sec, finalValue: 1.0 ) )
                     this._ストーリーボード.AddTransition( this._不透明度, 遷移 );
                 //----------------
                 #endregion
@@ -92,17 +92,17 @@ namespace DTXMania2.結果
                 this._ストーリーボード?.Finish( 0.1 );
             }
 
-            public void 進行描画する( float left, float top )
+            public void 進行描画する( DeviceContext dc, float left, float top )
             {
                 this._数字画像.不透明度 = (float) this._不透明度.Value;
                 
                 float 左位置dpx = left + (float) this._左位置dpx.Value;
 
                 // 整数部を描画する（'.'含む）
-                this._数字画像.進行描画する( 左位置dpx, top, this._スキル値文字列_整数部, new Size2F( 1.0f, 1.2f ) );
+                this._数字画像.描画する( dc, 左位置dpx, top, this._スキル値文字列_整数部, new Size2F( 1.0f, 1.2f ) );
 
                 // 小数部を描画する
-                this._数字画像.進行描画する( 左位置dpx + 180f, top + 17f, this._スキル値文字列_小数部, new Size2F( 1.0f, 1.0f ) );
+                this._数字画像.描画する( dc, 左位置dpx + 180f, top + 17f, this._スキル値文字列_小数部, new Size2F( 1.0f, 1.0f ) );
             }
 
 
@@ -110,7 +110,7 @@ namespace DTXMania2.結果
             // ローカル
 
 
-            private readonly フォント画像 _数字画像;
+            private readonly フォント画像D2D _数字画像;
 
             private string _スキル値文字列_小数部 = "";
 

@@ -167,6 +167,10 @@ namespace DTXMania2
 
             double 割合 = this._ぼかしと縮小割合?.Value ?? 0.0;
 
+            var preBlend = dc.PrimitiveBlend;
+
+            dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
+
             if( 黒幕付き )
             {
                 #region " (A) 黒幕付き背景画像を描画する。"
@@ -175,27 +179,21 @@ namespace DTXMania2
                 this._ガウスぼかしエフェクト黒幕付き用.StandardDeviation = (float) ( 割合 * 10.0 );       // 0～10
                 this._クリッピングエフェクト黒幕付き用.Rectangle = ( null != 表示領域 ) ? ( (Vector4) 表示領域 ) : new Vector4( 0f, 0f, this._背景黒幕付き画像.サイズ.Width, this._背景黒幕付き画像.サイズ.Height );
 
-                D2DBatch.Draw( dc, () => {
-
-                    dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
-
-                    if( layerParameters1.HasValue )
+                if( layerParameters1.HasValue )
+                {
+                    // (A-a) レイヤーパラメータの指定あり
+                    using( var layer = new Layer( dc ) )
                     {
-                        // (A-a) レイヤーパラメータの指定あり
-                        using( var layer = new Layer( dc ) )
-                        {
-                            dc.PushLayer( layerParameters1.Value, layer );
-                            dc.DrawImage( this._クリッピングエフェクト黒幕付き用 );
-                            dc.PopLayer();
-                        }
-                    }
-                    else
-                    {
-                        // (A-b) レイヤーパラメータの指定なし
+                        dc.PushLayer( layerParameters1.Value, layer );
                         dc.DrawImage( this._クリッピングエフェクト黒幕付き用 );
+                        dc.PopLayer();
                     }
-
-                } );
+                }
+                else
+                {
+                    // (A-b) レイヤーパラメータの指定なし
+                    dc.DrawImage( this._クリッピングエフェクト黒幕付き用 );
+                }
                 //----------------
                 #endregion
             }
@@ -207,30 +205,26 @@ namespace DTXMania2
                 this._ガウスぼかしエフェクト.StandardDeviation = (float) ( 割合 * 10.0 );       // 0～10
                 this._クリッピングエフェクト.Rectangle = ( null != 表示領域 ) ? ( (Vector4) 表示領域 ) : new Vector4( 0f, 0f, this._背景画像.サイズ.Width, this._背景画像.サイズ.Height );
 
-                D2DBatch.Draw( dc, () => {
-
-                    dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
-
-                    if( layerParameters1.HasValue )
+                if( layerParameters1.HasValue )
+                {
+                    // (B-a) レイヤーパラメータの指定あり
+                    using( var layer = new Layer( dc ) )
                     {
-                        // (B-a) レイヤーパラメータの指定あり
-                        using( var layer = new Layer( dc ) )
-                        {
-                            dc.PushLayer( layerParameters1.Value, layer );
-                            dc.DrawImage( this._クリッピングエフェクト );
-                            dc.PopLayer();
-                        }
-                    }
-                    else
-                    {
-                        // (B-b) レイヤーパラメータの指定なし
+                        dc.PushLayer( layerParameters1.Value, layer );
                         dc.DrawImage( this._クリッピングエフェクト );
+                        dc.PopLayer();
                     }
-
-                } );
+                }
+                else
+                {
+                    // (B-b) レイヤーパラメータの指定なし
+                    dc.DrawImage( this._クリッピングエフェクト );
+                }
                 //----------------
                 #endregion
             }
+
+            dc.PrimitiveBlend = preBlend;
         }
 
 
@@ -240,21 +234,21 @@ namespace DTXMania2
 
         private bool _初めての進行描画 = true;
 
-        private 画像D2D _背景画像;
+        private readonly 画像D2D _背景画像;            // D2D Effect を使う
 
-        private 画像D2D _背景黒幕付き画像;
+        private readonly 画像D2D _背景黒幕付き画像;    // D2D Effect を使う
 
-        private GaussianBlur _ガウスぼかしエフェクト;
+        private readonly GaussianBlur _ガウスぼかしエフェクト;
 
-        private GaussianBlur _ガウスぼかしエフェクト黒幕付き用;
+        private readonly GaussianBlur _ガウスぼかしエフェクト黒幕付き用;
 
-        private Scale _拡大エフェクト;
+        private readonly Scale _拡大エフェクト;
 
-        private Scale _拡大エフェクト黒幕付き用;
+        private readonly Scale _拡大エフェクト黒幕付き用;
 
-        private Crop _クリッピングエフェクト;
+        private readonly Crop _クリッピングエフェクト;
 
-        private Crop _クリッピングエフェクト黒幕付き用;
+        private readonly Crop _クリッピングエフェクト黒幕付き用;
 
         /// <summary>
         ///		くっきり＆拡大: 0 ～ 1 :ぼかし＆縮小

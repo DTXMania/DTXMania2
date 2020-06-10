@@ -19,8 +19,8 @@ namespace DTXMania2.演奏
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._ゲージ枠通常 = new 画像( @"$(Images)\PlayStage\ExciteGauge.png" );
-            this._ゲージ枠DANGER = new 画像( @"$(Images)\PlayStage\ExciteGauge_Danger.png" );
+            this._ゲージ枠通常 = new 画像D2D( @"$(Images)\PlayStage\ExciteGauge.png" );
+            this._ゲージ枠DANGER = new 画像D2D( @"$(Images)\PlayStage\ExciteGauge_Danger.png" );
 
             var dc = Global.既定のD2D1DeviceContext;
 
@@ -64,11 +64,11 @@ namespace DTXMania2.演奏
             //----------------
             if( 0.25 > this._ゲージ量.Value )
             {
-                this._ゲージ枠DANGER.進行描画する( 540f, 955f );
+                this._ゲージ枠DANGER.描画する( dc, 540f, 955f );
             }
             else
             {
-                this._ゲージ枠通常.進行描画する( 540f, 955f );
+                this._ゲージ枠通常.描画する( dc, 540f, 955f );
             }
             //----------------
             #endregion
@@ -96,8 +96,7 @@ namespace DTXMania2.演奏
 
             #region " ゲージの描画。"
             //----------------
-            D2DBatch.Draw( dc, () => {
-
+            {
                 var ゲージ領域 = MAXゲージ領域;
                 ゲージ領域.Width *= Math.Min( (float) this._ゲージ量.Value, 1.0f );
                 var ブラシ =
@@ -105,8 +104,7 @@ namespace DTXMania2.演奏
                     ( 1.0 <= this._ゲージ量.Value ) ? this._MAXブラシ : this._通常ブラシ;
 
                 dc.FillRectangle( ゲージ領域, ブラシ );
-
-            } );
+            }
             //----------------
             #endregion
         }
@@ -116,9 +114,9 @@ namespace DTXMania2.演奏
         // ローカル
 
 
-        private readonly 画像 _ゲージ枠通常;
+        private readonly 画像D2D _ゲージ枠通常;
 
-        private readonly 画像 _ゲージ枠DANGER;
+        private readonly 画像D2D _ゲージ枠DANGER;
 
         private readonly SolidColorBrush _通常ブラシ;    // 青
 

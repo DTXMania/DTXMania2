@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FDK;
+using SharpDX.Direct2D1;
 
 namespace DTXMania2.起動
 {
@@ -310,12 +311,16 @@ namespace DTXMania2.起動
             var dc = Global.既定のD2D1DeviceContext;
             dc.Transform = Global.拡大行列DPXtoPX;
 
+            dc.BeginDraw();
+
             #region " 文字列表示 "
             //----------------
             for( int i = 0; i < this._コンソール表示内容.Count; i++ )
                 this._コンソールフォント.描画する( dc, 0f, i * 32f, this._コンソール表示内容[ i ] );
             //----------------
             #endregion
+
+            dc.EndDraw();
         }
 
 

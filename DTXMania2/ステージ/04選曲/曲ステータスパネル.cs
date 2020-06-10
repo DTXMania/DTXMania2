@@ -20,7 +20,7 @@ namespace DTXMania2.選曲
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._背景画像 = new 画像( @"$(Images)\SelectStage\ScoreStatusPanel.png" );
+            this._背景画像 = new 画像D2D( @"$(Images)\SelectStage\ScoreStatusPanel.png" );
 
             // 色ブラシを作成。
             var dc = Global.既定のD2D1DeviceContext;
@@ -58,7 +58,7 @@ namespace DTXMania2.選曲
 
             #region " 背景を描画する。"
             //----------------
-            this._背景画像.進行描画する( 領域dpx.X, 領域dpx.Y );
+            this._背景画像.描画する( dc, 領域dpx.X, 領域dpx.Y );
             //----------------
             #endregion
 
@@ -85,11 +85,9 @@ namespace DTXMania2.選曲
 
                 if( null != map )
                 {
-                    D2DBatch.Draw( dc, () => {
+                    const float Yオフセット = +2f;
 
-                        const float Yオフセット = +2f;
-
-                        var Xオフセット = new Dictionary<表示レーン種別, float>() {
+                    var Xオフセット = new Dictionary<表示レーン種別, float>() {
                             { 表示レーン種別.LeftCymbal,   + 70f },
                             { 表示レーン種別.HiHat,        + 88f },
                             { 表示レーン種別.Foot,         +106f },
@@ -101,18 +99,16 @@ namespace DTXMania2.選曲
                             { 表示レーン種別.RightCymbal,  +214f },
                         };
 
-                        foreach( 表示レーン種別? lane in Enum.GetValues( typeof( 表示レーン種別 ) ) )
+                    foreach( 表示レーン種別? lane in Enum.GetValues( typeof( 表示レーン種別 ) ) )
+                    {
+                        if( lane.HasValue && map.ContainsKey( lane.Value ) )
                         {
-                            if( lane.HasValue && map.ContainsKey( lane.Value ) )
-                            {
-                                var rc = new RectangleF( 領域dpx.X + Xオフセット[ lane.Value ], 領域dpx.Y + Yオフセット, 6f, 405f );
-                                rc.Top = rc.Bottom - ( rc.Height * Math.Min( map[ lane.Value ], 250 ) / 250f );
+                            var rc = new RectangleF( 領域dpx.X + Xオフセット[ lane.Value ], 領域dpx.Y + Yオフセット, 6f, 405f );
+                            rc.Top = rc.Bottom - ( rc.Height * Math.Min( map[ lane.Value ], 250 ) / 250f );
 
-                                dc.FillRectangle( rc, this._色[ lane.Value ] );
-                            }
+                            dc.FillRectangle( rc, this._色[ lane.Value ] );
                         }
-
-                    } );
+                    }
                 }
             }
             //----------------
@@ -124,9 +120,9 @@ namespace DTXMania2.選曲
         // ローカル
 
 
-        private 画像 _背景画像;
+        private readonly 画像D2D _背景画像;
 
-        private Dictionary<表示レーン種別, SolidColorBrush> _色;
+        private readonly Dictionary<表示レーン種別, SolidColorBrush> _色;
 
         private Node? _現在表示しているノード = null;
     }

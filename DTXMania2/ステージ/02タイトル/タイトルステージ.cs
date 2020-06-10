@@ -36,7 +36,7 @@ namespace DTXMania2.タイトル
 
             this._舞台画像 = new 舞台画像();
             this._システム情報 = new システム情報();
-            this._タイトルロゴ = new 画像( @"$(Images)\TitleLogo.png" );
+            this._タイトルロゴ = new 画像D2D( @"$(Images)\TitleLogo.png" );
             this._帯ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0f, 0f, 0f, 0.8f ) );
             this._パッドを叩いてください = new 文字列画像D2D() {
                 表示文字列 = "パッドを叩いてください",
@@ -113,12 +113,19 @@ namespace DTXMania2.タイトル
 
                     #region " タイトル画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
+
                     this._舞台画像.進行描画する( dc );
-                    this._タイトルロゴ.進行描画する(
+
+                    dc.FillRectangle( new RectangleF( 0f, 800f, Global.設計画面サイズ.Width, 80f ), this._帯ブラシ );
+                    this._パッドを叩いてください.描画する( dc, 720f, 810f );
+
+                    this._タイトルロゴ.描画する( dc,
                         ( Global.設計画面サイズ.Width - this._タイトルロゴ.サイズ.Width ) / 2f,
                         ( Global.設計画面サイズ.Height - this._タイトルロゴ.サイズ.Height ) / 2f - 100f );
-                    this._帯メッセージを描画する( dc );
                     this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -128,11 +135,16 @@ namespace DTXMania2.タイトル
                 {
                     #region " タイトル画面＆フェードアウトを描画する。"
                     //----------------
+                    dc.BeginDraw();
+
                     this._舞台画像.進行描画する( dc );
-                    this._タイトルロゴ.進行描画する(
+                    
+                    dc.FillRectangle( new RectangleF( 0f, 800f, Global.設計画面サイズ.Width, 80f ), this._帯ブラシ );
+                    this._パッドを叩いてください.描画する( dc, 720f, 810f );
+
+                    this._タイトルロゴ.描画する( dc,
                         ( Global.設計画面サイズ.Width - this._タイトルロゴ.サイズ.Width ) / 2f,
                         ( Global.設計画面サイズ.Height - this._タイトルロゴ.サイズ.Height ) / 2f - 100f );
-                    this._帯メッセージを描画する( dc );
 
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
                     {
@@ -141,6 +153,8 @@ namespace DTXMania2.タイトル
                     }
 
                     this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -168,21 +182,10 @@ namespace DTXMania2.タイトル
 
         private readonly システム情報 _システム情報;
 
-        private readonly 画像 _タイトルロゴ;
+        private readonly 画像D2D _タイトルロゴ;
 
         private readonly Brush _帯ブラシ;
 
         private readonly 文字列画像D2D _パッドを叩いてください;
-
-        private void _帯メッセージを描画する( DeviceContext dc )
-        {
-            var 領域 = new RectangleF( 0f, 800f, Global.設計画面サイズ.Width, 80f );
-
-            D2DBatch.Draw( dc, () => {
-                dc.FillRectangle( 領域, this._帯ブラシ );
-            } );
-
-            this._パッドを叩いてください.描画する( dc, 720f, 810f );
-        }
     }
 }

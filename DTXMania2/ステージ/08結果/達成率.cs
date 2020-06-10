@@ -64,8 +64,8 @@ namespace DTXMania2.結果
                 this._初めての進行描画 = false;
             }
 
-            this._アイコン.進行描画する( left, top );
-            this._数値.進行描画する( left + 150f, top + 48f );
+            this._アイコン.進行描画する( dc, left, top );
+            this._数値.進行描画する( dc, left + 150f, top + 48f );
             this._下線.進行描画する( dc, left + 33f, top + 198f );
         }
 
@@ -76,9 +76,9 @@ namespace DTXMania2.結果
 
         private bool _初めての進行描画;
 
-        private const double 最初の待機時間sec = 1.0;
+        private const double _最初の待機時間sec = 1.0;
 
-        private const double アニメ時間sec = 0.25;
+        private const double _アニメ時間sec = 0.25;
 
         private readonly 達成率.アイコン _アイコン;
 

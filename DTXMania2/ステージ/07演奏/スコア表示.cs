@@ -28,7 +28,6 @@ namespace DTXMania2.演奏
 
             // 表示用
             this._現在表示中のスコア = 0;
-            this._前回表示したスコア = 0;
             this._前回表示した数字 = "        0";
             this._各桁のアニメ = new 各桁のアニメ[ 9 ];
             for( int i = 0; i < this._各桁のアニメ.Length; i++ )
@@ -83,35 +82,32 @@ namespace DTXMania2.演奏
             var 文字間隔補正 = -10f;
             var 文字の位置 = new Vector2( -( 全体のサイズ.X / 2f ), 0f );
 
-            D2DBatch.Draw( dc, () => {
+            var preTrans = dc.Transform;
 
-                var pretrans = dc.Transform;
+            for( int i = 0; i < 数字.Length; i++ )
+            {
+                // 前回の文字と違うなら、桁アニメーション開始。
+                if( 数字[ i ] != this._前回表示した数字[ i ] )
+                    this._各桁のアニメ[ i ].跳ね開始( am, 0.0 );
 
-                for( int i = 0; i < 数字.Length; i++ )
-                {
-                    // 前回の文字と違うなら、桁アニメーション開始。
-                    if( 数字[ i ] != this._前回表示した数字[ i ] )
-                        this._各桁のアニメ[ i ].跳ね開始( am, 0.0 );
+                var 転送元矩形 = this._スコア数字の矩形リスト[ 数字[ i ].ToString() ]!;
 
-                    var 転送元矩形 = this._スコア数字の矩形リスト[ 数字[ i ].ToString() ]!;
+                dc.Transform =
+                    Matrix3x2.Translation( 文字の位置.X, 文字の位置.Y + (float) ( this._各桁のアニメ[ i ].Yオフセット?.Value ?? 0.0f ) ) *
+                    Matrix3x2.Translation( 全体の中央位置 ) *
+                    preTrans;
 
-                    dc.Transform =
-                        //Matrix3x2.Scaling( 画像矩形から表示矩形への拡大率 ) *
-                        Matrix3x2.Translation( 文字の位置.X, 文字の位置.Y + (float) ( this._各桁のアニメ[ i ].Yオフセット?.Value ?? 0.0f ) ) *
-                        //Matrix3x2.Scaling( 全体の拡大率.X, 全体の拡大率.Y, center: new Vector2( 0f, 全体のサイズ.Y / 2f ) ) *
-                        Matrix3x2.Translation( 全体の中央位置 ) *
-                        pretrans;
+                // todo: フォント画像D2D に置き換える？
+                dc.DrawBitmap( this._スコア数字画像.Bitmap, 1f, BitmapInterpolationMode.Linear, 転送元矩形.Value );
 
-                    // todo: フォント画像 に置き換える？
-                    dc.DrawBitmap( this._スコア数字画像.Bitmap, 1f, BitmapInterpolationMode.Linear, 転送元矩形.Value );
+                文字の位置.X += ( 転送元矩形.Value.Width + 文字間隔補正 ) * 1f;// 画像矩形から表示矩形への拡大率.X;
+            }
 
-                    文字の位置.X += ( 転送元矩形.Value.Width + 文字間隔補正 ) * 1f;// 画像矩形から表示矩形への拡大率.X;
-                }
+            dc.Transform = preTrans;
 
-            } );
 
             // 更新。
-            this._前回表示したスコア = this._現在表示中のスコア;
+
             this._前回表示した数字 = 数字;
         }
 
@@ -124,11 +120,6 @@ namespace DTXMania2.演奏
         ///		<see cref="進行描画する(DeviceContext1, Vector2)"/> で更新される。
         /// </summary>
         private int _現在表示中のスコア = 0;
-
-        /// <summary>
-        ///		<see cref="進行描画する(DeviceContext1, Vector2)"/> で更新される。
-        /// </summary>
-        private int _前回表示したスコア = 0;
 
         private readonly 画像D2D _スコア数字画像;
 

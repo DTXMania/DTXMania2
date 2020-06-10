@@ -26,7 +26,7 @@ namespace DTXMania2
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._矢印画像 = new 画像( @"$(Images)\PadArraow.png" );
+            this._矢印画像 = new 画像D2D( @"$(Images)\PadArraow.png" );
             this._矢印の矩形リスト = new 矩形リスト( @"$(Images)\PadArrow.yaml" );
         }
 
@@ -42,7 +42,7 @@ namespace DTXMania2
         // 進行と描画
 
 
-        public void 描画する( 種類 type, Vector2 中央位置dpx, float 拡大率 = 1f )
+        public void 描画する( DeviceContext dc, 種類 type, Vector2 中央位置dpx, float 拡大率 = 1f )
         {
             var 矩形 = new RectangleF?();
 
@@ -66,7 +66,7 @@ namespace DTXMania2
                 Matrix.Scaling( 拡大率 ) *
                 Matrix.Translation( 左上位置dpx );
 
-            this._矢印画像.進行描画する( 変換行列, 転送元矩形: 矩形 );
+            this._矢印画像.描画する( dc, 変換行列, 転送元矩形: 矩形 );
         }
 
 
@@ -74,8 +74,8 @@ namespace DTXMania2
         // ローカル
 
 
-        private 画像 _矢印画像;
+        private readonly 画像D2D _矢印画像;
 
-        private 矩形リスト _矢印の矩形リスト;
+        private readonly 矩形リスト _矢印の矩形リスト;
     }
 }

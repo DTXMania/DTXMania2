@@ -17,7 +17,7 @@ namespace DTXMania2.曲
 
         public override string サブタイトル => this.曲.フォーカス譜面?.譜面.Artist ?? "";
 
-        public override 画像? ノード画像 => this.曲.フォーカス譜面?.プレビュー画像;
+        public override 画像D2D? ノード画像 => this.曲.フォーカス譜面?.プレビュー画像;
 
         public override 文字列画像D2D? タイトル文字列画像 => this.曲.フォーカス譜面?.タイトル文字列画像;
 

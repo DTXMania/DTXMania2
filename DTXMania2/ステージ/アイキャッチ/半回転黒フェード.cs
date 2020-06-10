@@ -18,7 +18,7 @@ namespace DTXMania2
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._ロゴ画像 = new 画像D2D( @"$(Images)\TitleLogo_Shadow.png" );
+            this._ロゴ画像 = new 画像D2D( @"$(Images)\TitleLogo.png" );
             this._黒ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color.Black );
 
             this.現在のフェーズ = フェーズ.未定;
@@ -200,164 +200,171 @@ namespace DTXMania2
             switch( this.現在のフェーズ )
             {
                 case フェーズ.クローズ:
-                    #region " *** "
-                    //----------------
+                {
                     if( this._アニメーション.ストーリーボード.Status != StoryboardStatus.Ready )
                         すべて完了 = false;
 
                     if( this._アニメーション.ストーリーボード.Status != 描画しないStatus )
                     {
-                        D2DBatch.Draw( dc, () => {
+                        var preTrans = dc.Transform;
 
-                            var pretrans = dc.Transform;
+                        #region " 背景マスク "
+                        //----------------
+                        using( var ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, (float) this._アニメーション.背景_不透明度.Value ) ) )
+                        {
+                            dc.FillRectangle( new RectangleF( 0f, 0f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Width ), ブラシ );
+                        }
+                        //----------------
+                        #endregion
 
-                            #region " 背景マスク "
-                            //----------------
-                            using( var ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, (float) this._アニメーション.背景_不透明度.Value ) ) )
-                            {
-                                dc.FillRectangle( new RectangleF( 0f, 0f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Width ), ブラシ );
-                            }
-                            //----------------
-                            #endregion
-                            #region " (2) 黒幕1（左下）"
-                            //----------------
-                            {
-                                float w = Global.設計画面サイズ.Width * 1.5f;
-                                float h = Global.設計画面サイズ.Height;
-                                var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
+                        #region " (2) 黒幕1（左下）"
+                        //----------------
+                        {
+                            float w = Global.設計画面サイズ.Width * 1.5f;
+                            float h = Global.設計画面サイズ.Height;
+                            var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
 
-                                dc.Transform =
-                                    Matrix3x2.Rotation( // 上辺中央を中心として回転
-                                        angle: (float) this._アニメーション.黒幕1左下_回転角rad.Value,
-                                        center: new Vector2( 0f, -rc.Height / 2f ) ) *
-                                    Matrix3x2.Translation(  // (基点X, H×3/4) へ移動
-                                        x: (float) this._アニメーション.黒幕1左下_基点位置X.Value,
-                                        y: Global.設計画面サイズ.Height ) *
-                                    pretrans;
-
-                                dc.FillRectangle( rc, this._黒ブラシ );
-                            }
-                            //----------------
-                            #endregion
-                            #region " (3) 黒幕2（右上）"
-                            //----------------
-                            {
-                                float w = Global.設計画面サイズ.Width * 1.5f;
-                                float h = Global.設計画面サイズ.Height;
-                                var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
-
-                                dc.Transform =
-                                    Matrix3x2.Rotation( // 下辺中央を中心として回転
-                                        angle: (float) this._アニメーション.黒幕2右上_回転角rad.Value,
-                                        center: new Vector2( 0f, rc.Height / 2f ) ) *
-                                    Matrix3x2.Translation(  // (基点X, H×1/4) へ移動
-                                        x: (float) this._アニメーション.黒幕2右上_基点位置X.Value,
-                                        y: 0f ) *
-                                    pretrans;
-
-                                dc.FillRectangle( rc, this._黒ブラシ );
-                            }
-                            //----------------
-                            #endregion
-                            #region " (4) ロゴ "
-                            //----------------
                             dc.Transform =
-                                Matrix3x2.Scaling( 639f / this._ロゴ画像.サイズ.Width, 262f / this._ロゴ画像.サイズ.Height ) *
-                                Matrix3x2.Translation( (float) this._アニメーション.ロゴ_位置X.Value, 771f ) *
-                                pretrans;
+                                Matrix3x2.Rotation( // 上辺中央を中心として回転
+                                    angle: (float) this._アニメーション.黒幕1左下_回転角rad.Value,
+                                    center: new Vector2( 0f, -rc.Height / 2f ) ) *
+                                Matrix3x2.Translation(  // (基点X, H×3/4) へ移動
+                                    x: (float) this._アニメーション.黒幕1左下_基点位置X.Value,
+                                    y: Global.設計画面サイズ.Height ) *
+                                preTrans;
 
-                            dc.DrawBitmap( this._ロゴ画像.Bitmap, (float) this._アニメーション.ロゴ_不透明度.Value, BitmapInterpolationMode.Linear );
-                            //----------------
-                            #endregion
+                            dc.FillRectangle( rc, this._黒ブラシ );
 
-                        } );
+                            dc.Transform = preTrans;
+                        }
+                        //----------------
+                        #endregion
+
+                        #region " (3) 黒幕2（右上）"
+                        //----------------
+                        {
+                            float w = Global.設計画面サイズ.Width * 1.5f;
+                            float h = Global.設計画面サイズ.Height;
+                            var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
+
+                            dc.Transform =
+                                Matrix3x2.Rotation( // 下辺中央を中心として回転
+                                    angle: (float) this._アニメーション.黒幕2右上_回転角rad.Value,
+                                    center: new Vector2( 0f, rc.Height / 2f ) ) *
+                                Matrix3x2.Translation(  // (基点X, H×1/4) へ移動
+                                    x: (float) this._アニメーション.黒幕2右上_基点位置X.Value,
+                                    y: 0f ) *
+                                preTrans;
+
+                            dc.FillRectangle( rc, this._黒ブラシ );
+
+                            dc.Transform = preTrans;
+                        }
+                        //----------------
+                        #endregion
+
+                        #region " (4) ロゴ "
+                        //----------------
+                        dc.Transform =
+                            Matrix3x2.Scaling( 640f / this._ロゴ画像.サイズ.Width, 156f / this._ロゴ画像.サイズ.Height ) *
+                            Matrix3x2.Translation( (float) this._アニメーション.ロゴ_位置X.Value, 800f ) *
+                            preTrans;
+
+                        dc.DrawBitmap( this._ロゴ画像.Bitmap, (float) this._アニメーション.ロゴ_不透明度.Value, BitmapInterpolationMode.Linear );
+
+                        dc.Transform = preTrans;
+                        //----------------
+                        #endregion
                     }
-                    //----------------
-                    #endregion
                     break;
-
+                }
                 case フェーズ.クローズ完了:
+                {
                     break;
-
+                }
                 case フェーズ.オープン:
-                    #region " *** "
-                    //----------------
+                {
                     if( this._アニメーション.ストーリーボード.Status != StoryboardStatus.Ready )
                         すべて完了 = false;
 
                     if( this._アニメーション.ストーリーボード.Status != 描画しないStatus )
                     {
-                        D2DBatch.Draw( dc, () => {
+                        var preTrans = dc.Transform;
 
-                            var pretrans = dc.Transform;
+                        #region " (1) 背景マスク "
+                        //----------------
+                        using( var ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, (float) this._アニメーション.背景_不透明度.Value ) ) )
+                        {
+                            dc.FillRectangle( new RectangleF( 0f, 0f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Width ), ブラシ );
+                        }
+                        //----------------
+                        #endregion
 
-                            #region " (1) 背景マスク "
-                            //----------------
-                            using( var ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, (float) this._アニメーション.背景_不透明度.Value ) ) )
-                            {
-                                dc.FillRectangle( new RectangleF( 0f, 0f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Width ), ブラシ );
-                            }
-                            //----------------
-                            #endregion
-                            #region " (2) 黒幕1（左下）"
-                            //----------------
-                            {
-                                float w = Global.設計画面サイズ.Width * 1.5f;
-                                float h = Global.設計画面サイズ.Height;
-                                var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
+                        #region " (2) 黒幕1（左下）"
+                        //----------------
+                        {
+                            float w = Global.設計画面サイズ.Width * 1.5f;
+                            float h = Global.設計画面サイズ.Height;
+                            var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
 
-                                dc.Transform =
-                                    Matrix3x2.Rotation( // 上辺中央を中心として回転
-                                        angle: (float) this._アニメーション.黒幕1左下_回転角rad.Value,
-                                        center: new Vector2( 0f, -rc.Height / 2f ) ) *
-                                    Matrix3x2.Translation(  // (基点X, H×3/4) へ移動
-                                        x: (float) this._アニメーション.黒幕1左下_基点位置X.Value,
-                                        y: Global.設計画面サイズ.Height ) *
-                                    pretrans;
-
-                                dc.FillRectangle( rc, this._黒ブラシ );
-                            }
-                            //----------------
-                            #endregion
-                            #region " (3) 黒幕2（右上）"
-                            //----------------
-                            {
-                                float w = Global.設計画面サイズ.Width * 1.5f;
-                                float h = Global.設計画面サイズ.Height;
-                                var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
-
-                                dc.Transform =
-                                    Matrix3x2.Rotation( // 下辺中央を中心として回転
-                                        angle: (float) this._アニメーション.黒幕2右上_回転角rad.Value,
-                                        center: new Vector2( 0f, rc.Height / 2f ) ) *
-                                    Matrix3x2.Translation(  // (基点X, H×1/4) へ移動
-                                        x: (float) this._アニメーション.黒幕2右上_基点位置X.Value,
-                                        y: 0f ) *
-                                    pretrans;
-
-                                dc.FillRectangle( rc, this._黒ブラシ );
-                            }
-                            //----------------
-                            #endregion
-                            #region " (4) ロゴ "
-                            //----------------
                             dc.Transform =
-                                Matrix3x2.Scaling( 639f / this._ロゴ画像.サイズ.Width, 262f / this._ロゴ画像.サイズ.Height ) *
-                                Matrix3x2.Translation( (float) this._アニメーション.ロゴ_位置X.Value, 771f ) *
-                                pretrans;
+                                Matrix3x2.Rotation( // 上辺中央を中心として回転
+                                    angle: (float) this._アニメーション.黒幕1左下_回転角rad.Value,
+                                    center: new Vector2( 0f, -rc.Height / 2f ) ) *
+                                Matrix3x2.Translation(  // (基点X, H×3/4) へ移動
+                                    x: (float) this._アニメーション.黒幕1左下_基点位置X.Value,
+                                    y: Global.設計画面サイズ.Height ) *
+                                preTrans;
 
-                            dc.DrawBitmap( this._ロゴ画像.Bitmap, (float) this._アニメーション.ロゴ_不透明度.Value, BitmapInterpolationMode.Linear );
-                            //----------------
-                            #endregion
+                            dc.FillRectangle( rc, this._黒ブラシ );
 
-                        } );
+                            dc.Transform = preTrans;
+                        }
+                        //----------------
+                        #endregion
+
+                        #region " (3) 黒幕2（右上）"
+                        //----------------
+                        {
+                            float w = Global.設計画面サイズ.Width * 1.5f;
+                            float h = Global.設計画面サイズ.Height;
+                            var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
+
+                            dc.Transform =
+                                Matrix3x2.Rotation( // 下辺中央を中心として回転
+                                    angle: (float) this._アニメーション.黒幕2右上_回転角rad.Value,
+                                    center: new Vector2( 0f, rc.Height / 2f ) ) *
+                                Matrix3x2.Translation(  // (基点X, H×1/4) へ移動
+                                    x: (float) this._アニメーション.黒幕2右上_基点位置X.Value,
+                                    y: 0f ) *
+                                preTrans;
+
+                            dc.FillRectangle( rc, this._黒ブラシ );
+
+                            dc.Transform = preTrans;
+                        }
+                        //----------------
+                        #endregion
+
+                        #region " (4) ロゴ "
+                        //----------------
+                        dc.Transform =
+                            Matrix3x2.Scaling( 640f / this._ロゴ画像.サイズ.Width, 156f / this._ロゴ画像.サイズ.Height ) *
+                            Matrix3x2.Translation( (float) this._アニメーション.ロゴ_位置X.Value, 800f ) *
+                            preTrans;
+
+                        dc.DrawBitmap( this._ロゴ画像.Bitmap, (float) this._アニメーション.ロゴ_不透明度.Value, BitmapInterpolationMode.Linear );
+
+                        dc.Transform = preTrans;
+                        //----------------
+                        #endregion
                     }
-                    //----------------
-                    #endregion
                     break;
-
+                }
                 case フェーズ.オープン完了:
+                {
                     break;
+                }
             }
 
             if( すべて完了 )

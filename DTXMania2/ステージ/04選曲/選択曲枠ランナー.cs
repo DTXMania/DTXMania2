@@ -19,7 +19,7 @@ namespace DTXMania2.選曲
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
             
-            this._ランナー画像 = new 画像( @"$(Images)\SelectStage\FrameRunner.png" );
+            this._ランナー画像 = new 画像D2D( @"$(Images)\SelectStage\FrameRunner.png" );
         }
 
         public virtual void Dispose()
@@ -40,7 +40,7 @@ namespace DTXMania2.選曲
             this._カウンタ = new LoopCounter( 0, 2300, 1 );
         }
 
-        public void 進行描画する()
+        public void 進行描画する( DeviceContext dc )
         {
             if( this._カウンタ is null )
                 return;
@@ -50,12 +50,14 @@ namespace DTXMania2.選曲
                 float 割合 = ( this._カウンタ.現在値 - 2000 ) / 300f;    // 0→1
 
                 // 上
-                this._ランナー画像.進行描画する(
+                this._ランナー画像.描画する(
+                    dc,
                     1920f - 割合 * ( 1920f - 1044f ),
                     485f - this._ランナー画像.サイズ.Height / 2f );
 
                 // 下
-                this._ランナー画像.進行描画する(
+                this._ランナー画像.描画する(
+                    dc,
                     1920f - 割合 * ( 1920f - 1044f ),
                     598f - this._ランナー画像.サイズ.Height / 2f );
             }
@@ -66,7 +68,7 @@ namespace DTXMania2.選曲
         // ローカル
 
 
-        private readonly 画像 _ランナー画像;
+        private readonly 画像D2D _ランナー画像;
 
         private LoopCounter? _カウンタ = null;
     }

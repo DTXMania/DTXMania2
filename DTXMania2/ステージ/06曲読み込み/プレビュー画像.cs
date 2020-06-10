@@ -5,6 +5,7 @@ using System.Linq;
 using SharpDX;
 using FDK;
 using DTXMania2.曲;
+using SharpDX.Direct2D1;
 
 namespace DTXMania2.曲読み込み
 {
@@ -18,8 +19,8 @@ namespace DTXMania2.曲読み込み
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._既定のノード画像 = new 画像( @"$(Images)\DefaultPreviewImage.png" );
-            this._現行化前のノード画像 = new 画像( @"$(Images)\PreviewImageWaitForActivation.png" );
+            this._既定のノード画像 = new 画像D2D( @"$(Images)\DefaultPreviewImage.png" );
+            this._現行化前のノード画像 = new 画像D2D( @"$(Images)\PreviewImageWaitForActivation.png" );
         }
 
         public virtual void Dispose()
@@ -35,21 +36,19 @@ namespace DTXMania2.曲読み込み
         // 進行と描画
 
 
-        public void 進行描画する()
+        public void 進行描画する( DeviceContext dc )
         {
             var ノード画像 = Global.App.演奏譜面.譜面と画像を現行化済み ? ( Global.App.演奏譜面.プレビュー画像 ?? this._既定のノード画像 ) : this._現行化前のノード画像;
 
-            var 変換行列 =
-                Matrix.Scaling(
+            var 変換行列2D =
+                Matrix3x2.Scaling(
                     this._プレビュー画像表示サイズdpx.X / ノード画像.サイズ.Width,
-                    this._プレビュー画像表示サイズdpx.Y / ノード画像.サイズ.Height,
-                    0f ) *
-                Matrix.Translation( // テクスチャは画面中央が (0,0,0) で、Xは右がプラス方向, Yは上がプラス方向, Zは奥がプラス方向+。
-                    Global.画面左上dpx.X + this._プレビュー画像表示位置dpx.X + this._プレビュー画像表示サイズdpx.X / 2f,
-                    Global.画面左上dpx.Y - this._プレビュー画像表示位置dpx.Y - this._プレビュー画像表示サイズdpx.Y / 2f,
-                    0f );
+                    this._プレビュー画像表示サイズdpx.Y / ノード画像.サイズ.Height )*
+                Matrix3x2.Translation(
+                    this._プレビュー画像表示位置dpx.X,
+                    this._プレビュー画像表示位置dpx.Y );
 
-            ノード画像.進行描画する( 変換行列 );
+            ノード画像.描画する( dc, 変換行列2D );
         }
 
 
@@ -61,8 +60,8 @@ namespace DTXMania2.曲読み込み
 
         private readonly Vector3 _プレビュー画像表示サイズdpx = new Vector3( 576f, 576f, 0f );
 
-        private readonly 画像 _既定のノード画像;
+        private readonly 画像D2D _既定のノード画像;
 
-        private readonly 画像 _現行化前のノード画像;
+        private readonly 画像D2D _現行化前のノード画像;
     }
 }

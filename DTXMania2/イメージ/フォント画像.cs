@@ -28,10 +28,10 @@ namespace DTXMania2
         /// <param name="基点のX位置">左揃えなら左端位置、右揃えなら右端位置のX座標。</param>
         /// <param name="拡大率">文字列の拡大率。null なら等倍。</param>
         /// <param name="右揃え">trueなら右揃え、falseなら左揃え。</param>
-        public void 進行描画する( float 基点のX位置, float 上位置, string 表示文字列, Size2F? 拡大率 = null, bool 右揃え = false )
+        public void 描画する( float 基点のX位置, float 上位置, string 表示文字列, Size2F? 拡大率 = null, bool 右揃え = false )
         {
             base.描画する(
-                Global.D3D11Device1.ImmediateContext,
+                Global.既定のD3D11DeviceContext,
                 Global.設計画面サイズ,
                 Global.既定のD3D11ViewPort,
                 Global.既定のD3D11DepthStencilView,

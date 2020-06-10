@@ -50,11 +50,11 @@ namespace DTXMania2.結果
                 this._長さdpx = new Variable( Global.Animation.Manager, initialValue: 0.0 );
 
                 // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 難易度.最初の待機時間sec ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 難易度._最初の待機時間sec ) )
                     this._ストーリーボード.AddTransition( this._長さdpx, 遷移 );
 
                 // 全長dpx へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 難易度.アニメ時間sec / 3, finalValue: _全長dpx, accelerationRatio: 0.8, decelerationRatio: 0.2 ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 難易度._アニメ時間sec / 3, finalValue: _全長dpx, accelerationRatio: 0.8, decelerationRatio: 0.2 ) )
                     this._ストーリーボード.AddTransition( this._長さdpx, 遷移 );
                 //----------------
                 #endregion
@@ -70,11 +70,9 @@ namespace DTXMania2.結果
 
             public void 進行描画する( DeviceContext dc, float left, float top )
             {
-                D2DBatch.Draw( dc, () => {
-                    float 長さdpx = (float) this._長さdpx.Value;
-                    using( var brush = new SolidColorBrush( dc, Color4.White ) )
-                        dc.FillRectangle( new RectangleF( left + ( _全長dpx - 長さdpx ) / 2f, top, 長さdpx, 3f ), brush );
-                } );
+                float 長さdpx = (float) this._長さdpx.Value;
+                using( var brush = new SolidColorBrush( dc, Color4.White ) )
+                    dc.FillRectangle( new RectangleF( left + ( _全長dpx - 長さdpx ) / 2f, top, 長さdpx, 3f ), brush );
             }
 
 

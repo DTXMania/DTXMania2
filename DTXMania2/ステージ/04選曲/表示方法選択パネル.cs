@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using SharpDX;
 using SharpDX.Direct2D1;
-using SharpDX.Animation;
 using FDK;
 
 namespace DTXMania2.選曲
@@ -50,7 +49,7 @@ namespace DTXMania2.選曲
             Global.App.曲ツリーリスト.SelectPrev( Loop: true );
         }
 
-        public void 進行描画する()
+        public void 進行描画する( DeviceContext dc )
         {
             // パネルを合計８枚表示する。（左隠れ１枚 ＋ 表示６枚 ＋ 右隠れ１枚）
 
@@ -63,7 +62,8 @@ namespace DTXMania2.選曲
                 var 画像 = this._パネルs[ 実パネル番号 ].画像;
 
                 const float パネル幅 = 144f;
-                画像.進行描画する(
+                画像.描画する(
+                    dc, 
                     左位置: (float) ( 768f + パネル幅 * ( i - 差分 ) ),
                     上位置: ( 3 == i ) ? 90f : 54f,            // i==3 が現在の選択パネル。他より下に描画。
                     不透明度0to1: ( 3 == i ) ? 1f : 0.5f );    //          〃　　　　　　　他より明るく描画。
@@ -78,12 +78,12 @@ namespace DTXMania2.選曲
         private class Panel : IDisposable
         {
             public VariablePath 画像の絶対パス;
-            public 画像 画像;
+            public 画像D2D 画像;
 
             public Panel( VariablePath path )
             {
                 this.画像の絶対パス = path;
-                this.画像 = new 画像( path );
+                this.画像 = new 画像D2D( path );
 
             }
             public void Dispose()
@@ -95,7 +95,7 @@ namespace DTXMania2.選曲
         /// <summary>
         ///     <see cref="App.曲ツリーリスト"/> と同じ並びであること。
         /// </summary>
-        private List<Panel> _パネルs = new List<Panel>() {
+        private readonly List<Panel> _パネルs = new List<Panel>() {
             new Panel( @"$(Images)\SelectStage\Sorting_All.png" ),
             new Panel( @"$(Images)\SelectStage\Sorting_Evaluation.png" ),
         };

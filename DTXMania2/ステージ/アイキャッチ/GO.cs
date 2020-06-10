@@ -21,9 +21,9 @@ namespace DTXMania2
             this.現在のフェーズ = フェーズ.未定;
 
             this.文字画像 = new 画像D2D[ 3 ] {
-                new 画像D2D( @"$(Images)\EyeCatch\G.png" ) { 加算合成 = true },
-                new 画像D2D( @"$(Images)\EyeCatch\O.png" ) { 加算合成 = true },
-                new 画像D2D( @"$(Images)\EyeCatch\!.png" ) { 加算合成 = true },
+                new 画像D2D( @"$(Images)\EyeCatch\G.png" ) { 加算合成する = true },
+                new 画像D2D( @"$(Images)\EyeCatch\O.png" ) { 加算合成する = true },
+                new 画像D2D( @"$(Images)\EyeCatch\!.png" ) { 加算合成する = true },
             };
 
             // Go!
@@ -863,69 +863,69 @@ namespace DTXMania2
         {
             bool すべて完了 = true;
 
-            D2DBatch.Draw( dc, () => {
+            var preTrans = dc.Transform;
 
-                var pretrans = dc.Transform;
+            #region " ぐるぐる棒 "
+            //----------------
+            for( int i = 0; i < this._ぐるぐる棒アニメーション.Length; i++ )
+            {
+                var context = this._ぐるぐる棒アニメーション[ i ];
 
-                #region " ぐるぐる棒 "
-                //----------------
-                for( int i = 0; i < this._ぐるぐる棒アニメーション.Length; i++ )
-                {
-                    var context = this._ぐるぐる棒アニメーション[ i ];
+                if( context.ストーリーボード is null || context.ストーリーボード.Status == 描画しないStatus )
+                    continue;
 
-                    if( context.ストーリーボード is null || context.ストーリーボード.Status == 描画しないStatus )
-                        continue;
+                if( context.ストーリーボード.Status != StoryboardStatus.Ready )
+                    すべて完了 = false;
 
-                    if( context.ストーリーボード.Status != StoryboardStatus.Ready )
-                        すべて完了 = false;
+                dc.Transform =
+                    Matrix3x2.Rotation( (float) context.回転角rad.Value ) *
+                    Matrix3x2.Translation( (float) context.中心位置X, (float) context.中心位置Y ) *
+                    preTrans;
 
-                    dc.Transform =
-                        Matrix3x2.Rotation( (float) context.回転角rad.Value ) *
-                        Matrix3x2.Translation( (float) context.中心位置X, (float) context.中心位置Y ) *
-                        pretrans;
+                float contextの幅 = 2800.0f;
+                float contextの高さ = (float) context.太さ.Value;
 
-                    float contextの幅 = 2800.0f;
-                    float contextの高さ = (float) context.太さ.Value;
+                var rc = ( context.辺の種類 == 辺の種類.上辺 ) ?
+                    new RectangleF( -contextの幅 / 2f, -( contextの高さ + (float) context.棒の太さ ) / 2f, contextの幅, (float) context.棒の太さ ) :   // 上辺
+                    new RectangleF( -contextの幅 / 2f, +( contextの高さ - (float) context.棒の太さ ) / 2f, contextの幅, (float) context.棒の太さ );    // 下辺
 
-                    var rc = ( context.辺の種類 == 辺の種類.上辺 ) ?
-                        new RectangleF( -contextの幅 / 2f, -( contextの高さ + (float) context.棒の太さ ) / 2f, contextの幅, (float) context.棒の太さ ) :   // 上辺
-                        new RectangleF( -contextの幅 / 2f, +( contextの高さ - (float) context.棒の太さ ) / 2f, contextの幅, (float) context.棒の太さ );    // 下辺
+                dc.FillRectangle( rc, context.ブラシ );
+            }
 
-                    dc.FillRectangle( rc, context.ブラシ );
-                }
-                //----------------
-                #endregion
+            dc.Transform = preTrans;
+            //----------------
+            #endregion
 
-                #region " フラッシュオーバー棒（[0～4]の5本）"
-                //----------------
-                for( int i = 0; i <= 4; i++ )
-                {
-                    var context = this._フラッシュオーバー棒アニメーション[ i ];
+            #region " フラッシュオーバー棒（[0～4]の5本）"
+            //----------------
+            for( int i = 0; i <= 4; i++ )
+            {
+                var context = this._フラッシュオーバー棒アニメーション[ i ];
 
-                    if( context.ストーリーボード is null || context.ストーリーボード.Status == 描画しないStatus )
-                        continue;
+                if( context.ストーリーボード is null || context.ストーリーボード.Status == 描画しないStatus )
+                    continue;
 
-                    if( context.ストーリーボード.Status != StoryboardStatus.Ready )
-                        すべて完了 = false;
+                if( context.ストーリーボード.Status != StoryboardStatus.Ready )
+                    すべて完了 = false;
 
-                    dc.Transform =
-                        Matrix3x2.Rotation( (float) context.回転角rad ) *
-                        Matrix3x2.Translation( (float) context.中心位置X, (float) context.中心位置Y ) *
-                        pretrans;
+                dc.Transform =
+                    Matrix3x2.Rotation( (float) context.回転角rad ) *
+                    Matrix3x2.Translation( (float) context.中心位置X, (float) context.中心位置Y ) *
+                    preTrans;
 
-                    float contextの幅 = 2800.0f;
-                    float contextの高さ = (float) context.太さ.Value;
+                float contextの幅 = 2800.0f;
+                float contextの高さ = (float) context.太さ.Value;
 
-                    var rc = ( context.辺の種類 == 辺の種類.上辺 ) ?
-                        new RectangleF( -contextの幅 / 2f, -( contextの高さ + (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value ) :   // 上辺
-                        new RectangleF( -contextの幅 / 2f, +( contextの高さ - (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value );    // 下辺
+                var rc = ( context.辺の種類 == 辺の種類.上辺 ) ?
+                    new RectangleF( -contextの幅 / 2f, -( contextの高さ + (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value ) :   // 上辺
+                    new RectangleF( -contextの幅 / 2f, +( contextの高さ - (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value );    // 下辺
 
-                    dc.FillRectangle( rc, context.ブラシ );
-                }
-                //----------------
-                #endregion
+                dc.FillRectangle( rc, context.ブラシ );
+            }
 
-            } );
+            dc.Transform = preTrans;
+            //----------------
+            #endregion
 
             #region " Go! "
             //----------------
@@ -937,67 +937,62 @@ namespace DTXMania2
                 if( context.ストーリーボード.Status != StoryboardStatus.Ready )
                     すべて完了 = false;
 
-                var 変換行列 =
+                var 変換行列2D =
                     Matrix3x2.Scaling( (float) context.拡大率.Value ) *
                     Matrix3x2.Translation( (float) context.中心位置X.Value, (float) context.中心位置Y.Value );
 
-                context.画像.描画する( dc, 変換行列 );
+                context.画像.描画する( dc, 変換行列2D );
             }
             //----------------
             #endregion
 
-            D2DBatch.Draw( dc, () => {
+            #region " フラッシュオーバー棒（[5]の1本）... Go! の上にかぶせる"
+            //----------------
+            {
+                var context = this._フラッシュオーバー棒アニメーション[ 5 ];
 
-                var pretrans = dc.Transform;
-
-                #region " フラッシュオーバー棒（[5]の1本）... Go! の上にかぶせる"
-                //----------------
+                if( null != context.ストーリーボード && context.ストーリーボード.Status != 描画しないStatus )
                 {
-                    var context = this._フラッシュオーバー棒アニメーション[ 5 ];
+                    if( context.ストーリーボード.Status != StoryboardStatus.Ready )
+                        すべて完了 = false;
 
-                    if( null != context.ストーリーボード && context.ストーリーボード.Status != 描画しないStatus )
-                    {
-                        if( context.ストーリーボード.Status != StoryboardStatus.Ready )
-                            すべて完了 = false;
+                    dc.Transform =
+                        Matrix3x2.Rotation( (float) context.回転角rad ) *
+                        Matrix3x2.Translation( (float) context.中心位置X, (float) context.中心位置Y ) *
+                        preTrans;
 
-                        dc.Transform =
-                            Matrix3x2.Rotation( (float) context.回転角rad ) *
-                            Matrix3x2.Translation( (float) context.中心位置X, (float) context.中心位置Y ) *
-                            pretrans;
+                    float contextの幅 = 2800.0f;
+                    float contextの高さ = (float) context.太さ.Value;
 
-                        float contextの幅 = 2800.0f;
-                        float contextの高さ = (float) context.太さ.Value;
+                    var rc = ( context.辺の種類 == 辺の種類.上辺 ) ?
+                        new RectangleF( -contextの幅 / 2f, -( contextの高さ + (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value ) :   // 上辺
+                        new RectangleF( -contextの幅 / 2f, +( contextの高さ - (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value );    // 下辺
 
-                        var rc = ( context.辺の種類 == 辺の種類.上辺 ) ?
-                            new RectangleF( -contextの幅 / 2f, -( contextの高さ + (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value ) :   // 上辺
-                            new RectangleF( -contextの幅 / 2f, +( contextの高さ - (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value );    // 下辺
+                    dc.FillRectangle( rc, context.ブラシ );
 
-                        dc.FillRectangle( rc, context.ブラシ );
-                    }
+                    dc.Transform = preTrans;
                 }
-                //----------------
-                #endregion
+            }
+            //----------------
+            #endregion
 
-                #region " フェードイン "
-                //----------------
+            #region " フェードイン "
+            //----------------
+            {
+                var context = this._フェードインアニメーション;
+
+                if( null != context.ストーリーボード && context.ストーリーボード.Status != 描画しないStatus )
                 {
-                    var context = this._フェードインアニメーション;
+                    if( context.ストーリーボード.Status != StoryboardStatus.Ready )
+                        すべて完了 = false;
 
-                    if( null != context.ストーリーボード && context.ストーリーボード.Status != 描画しないStatus )
-                    {
-                        if( context.ストーリーボード.Status != StoryboardStatus.Ready )
-                            すべて完了 = false;
-
-                        dc.Transform = pretrans;
-
-                        using( var ブラシ = new SolidColorBrush( dc, new Color4( 0.5f, 0.5f, 1f, (float) context.不透明度.Value ) ) )
-                            dc.FillRectangle( new RectangleF( 0f, 0f, 1920f, 1080f ), ブラシ );
-                    }
+                    using( var ブラシ = new SolidColorBrush( dc, new Color4( 0.5f, 0.5f, 1f, (float) context.不透明度.Value ) ) )
+                        dc.FillRectangle( new RectangleF( 0f, 0f, 1920f, 1080f ), ブラシ );
                 }
-                //----------------
-                #endregion
+            }
+            //----------------
+            #endregion
 
-            } );
 
             if( すべて完了 )
             {

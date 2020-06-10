@@ -26,7 +26,7 @@ namespace DTXMania2.結果
 
             public アイコン()
             {
-                this._アイコン画像 = new 画像( @"$(Images)\ResultStage\AchivementIcon.png" );
+                this._アイコン画像 = new 画像D2D( @"$(Images)\ResultStage\AchivementIcon.png" );
             }
 
             public void Dispose()
@@ -60,7 +60,7 @@ namespace DTXMania2.結果
 
                 // シーン1. 待つ
                 {
-                    double シーン期間 = 達成率更新.最初の待機時間sec;
+                    double シーン期間 = 達成率更新._最初の待機時間sec;
                     using( var 拡大角度radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 半径倍率の遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 不透明度の遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -73,7 +73,7 @@ namespace DTXMania2.結果
 
                 // シーン2. アニメする
                 {
-                    double シーン期間 = 達成率更新.アニメ時間sec;
+                    double シーン期間 = 達成率更新._アニメ時間sec;
                     using( var 拡大角度radの遷移 = Global.Animation.TrasitionLibrary.Linear( duration: シーン期間, finalValue: 2 * Math.PI ) )
                     using( var 半径倍率の遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: シーン期間, finalValue: 0.5, accelerationRatio: 0.1, decelerationRatio: 0.9 ) )
                     using( var 不透明度の遷移 = Global.Animation.TrasitionLibrary.Linear( duration: シーン期間, finalValue: 1.0 ) )
@@ -86,7 +86,7 @@ namespace DTXMania2.結果
 
                 // シーン3. 待つ
                 {
-                    double シーン期間 = 達成率更新.登場後の待機時間sec;
+                    double シーン期間 = 達成率更新._登場後の待機時間sec;
                     using( var 拡大角度radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 半径倍率の遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 不透明度の遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -99,7 +99,7 @@ namespace DTXMania2.結果
 
                 // シーン4. 等倍に戻る
                 {
-                    double シーン期間 = 達成率更新.退場アニメ時間sec;
+                    double シーン期間 = 達成率更新._退場アニメ時間sec;
                     using( var 拡大角度radの遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
                     using( var 半径倍率の遷移 = Global.Animation.TrasitionLibrary.Linear( duration: シーン期間, finalValue: 0.0 ) )
                     using( var 不透明度の遷移 = Global.Animation.TrasitionLibrary.Constant( duration: シーン期間 ) )
@@ -121,14 +121,14 @@ namespace DTXMania2.結果
                 this._ストーリーボード?.Finish( 0.0 );
             }
 
-            public void 進行描画する( float left, float top )
+            public void 進行描画する( DeviceContext dc, float left, float top )
             {
                 double 回転による拡大率 = Math.Abs( Math.Cos( this._拡大角度rad.Value ) );    // (0) 1 → 0 → 1（π) → 0 → 1 (2π)
                 float 拡大率 = (float) ( 1.0 + 回転による拡大率 * this._半径倍率.Value );
                 float 左位置dpx = left + ( ( 1.0f - 拡大率 ) * this._アイコン画像.サイズ.Width ) / 2.0f;
                 float 上位置dpx = top + ( ( 1.0f - 拡大率 ) * this._アイコン画像.サイズ.Height ) / 2.0f;
                 
-                this._アイコン画像.進行描画する( 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
+                this._アイコン画像.描画する( dc, 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
             }
 
 
@@ -136,7 +136,7 @@ namespace DTXMania2.結果
             // ローカル
 
 
-            private readonly 画像 _アイコン画像;
+            private readonly 画像D2D _アイコン画像;
 
             private Storyboard _ストーリーボード = null!;
 

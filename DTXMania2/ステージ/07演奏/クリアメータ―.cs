@@ -143,45 +143,41 @@ namespace DTXMania2.演奏
 
         public void 進行描画する( DeviceContext dc )
         {
-            D2DBatch.Draw( dc, () => {
+            using var 水色ブラシ = new SolidColorBrush( dc, new Color4( 0xffdd8e69 ) );
+            using var 黄色ブラシ = new SolidColorBrush( dc, new Color4( 0xff17fffe ) );
 
-                using var 水色ブラシ = new SolidColorBrush( dc, new Color4( 0xffdd8e69 ) );
-                using var 黄色ブラシ = new SolidColorBrush( dc, new Color4( 0xff17fffe ) );
-
-                const float 単位幅 = 12f;
-                var 今回のライン全体の矩形 = new RectangleF( 1357f, 108f, 10f, 768f );
-                var 過去最高のライン全体の矩形 = new RectangleF( 1371f, 108f, 6f, 768f );
+            const float 単位幅 = 12f;
+            var 今回のライン全体の矩形 = new RectangleF( 1357f, 108f, 10f, 768f );
+            var 過去最高のライン全体の矩形 = new RectangleF( 1371f, 108f, 6f, 768f );
 
 
-                // (1) 今回のクリアメータ―を描画する。
+            // (1) 今回のクリアメータ―を描画する。
 
-                for( int i = 0; i < this.カウントマップ.Length; i++ )
+            for( int i = 0; i < this.カウントマップ.Length; i++ )
+            {
+                if( 0 == this.カウントマップ[ i ] )
+                    continue;
+
+                dc.FillRectangle(
+                    new RectangleF( 今回のライン全体の矩形.Left, 今回のライン全体の矩形.Bottom - 単位幅 * ( i + 1 ), 今回のライン全体の矩形.Width, 単位幅 ),
+                    ( 2 <= this.カウントマップ[ i ] ) ? 黄色ブラシ : 水色ブラシ );
+            }
+
+
+            // (2) 過去の最高成績のクリアメータ―を描画する。
+
+            if( null != this._最高成績のカウントマップ )
+            {
+                for( int i = 0; i < this._最高成績のカウントマップ.Length; i++ )
                 {
-                    if( 0 == this.カウントマップ[ i ] )
+                    if( 0 == this._最高成績のカウントマップ[ i ] )
                         continue;
 
                     dc.FillRectangle(
-                        new RectangleF( 今回のライン全体の矩形.Left, 今回のライン全体の矩形.Bottom - 単位幅 * ( i + 1 ), 今回のライン全体の矩形.Width, 単位幅 ),
-                        ( 2 <= this.カウントマップ[ i ] ) ? 黄色ブラシ : 水色ブラシ );
+                        new RectangleF( 過去最高のライン全体の矩形.Left, 過去最高のライン全体の矩形.Bottom - 単位幅 * ( i + 1 ), 過去最高のライン全体の矩形.Width, 単位幅 ),
+                        ( 2 <= this._最高成績のカウントマップ[ i ] ) ? 黄色ブラシ : 水色ブラシ );
                 }
-
-
-                // (2) 過去の最高成績のクリアメータ―を描画する。
-
-                if( null != this._最高成績のカウントマップ )
-                {
-                    for( int i = 0; i < this._最高成績のカウントマップ.Length; i++ )
-                    {
-                        if( 0 == this._最高成績のカウントマップ[ i ] )
-                            continue;
-
-                        dc.FillRectangle(
-                            new RectangleF( 過去最高のライン全体の矩形.Left, 過去最高のライン全体の矩形.Bottom - 単位幅 * ( i + 1 ), 過去最高のライン全体の矩形.Width, 単位幅 ),
-                            ( 2 <= this._最高成績のカウントマップ[ i ] ) ? 黄色ブラシ : 水色ブラシ );
-                    }
-                }
-
-            } );
+            }
         }
 
 

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Animation;
 using FDK;
 using SSTFormat.v004;
 using DTXMania2.曲;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace DTXMania2.選曲
 {
@@ -52,9 +51,9 @@ namespace DTXMania2.選曲
             this._曲ステータスパネル = new 曲ステータスパネル();
             this._BPMパネル = new BPMパネル();
             this._曲別スキルと達成率 = new 曲別スキルと達成率();
-            this._ステージタイマー = new 画像( @"$(Images)\SelectStage\StageTimer.png" );
-            this._既定のノード画像 = new 画像( @"$(Images)\DefaultPreviewImage.png" );
-            this._現行化前のノード画像 = new 画像( @"$(Images)\PreviewImageWaitForActivation.png" );
+            this._ステージタイマー = new 画像D2D( @"$(Images)\SelectStage\StageTimer.png" );
+            this._既定のノード画像 = new 画像D2D( @"$(Images)\DefaultPreviewImage.png" );
+            this._現行化前のノード画像 = new 画像D2D( @"$(Images)\PreviewImageWaitForActivation.png" );
             this._SongNotFound = new 文字列画像D2D() {
                 表示文字列 =
                     "Song not found...\n" +
@@ -120,8 +119,9 @@ namespace DTXMania2.選曲
                 {
                     #region " 背景画面＆フェードインを描画する。"
                     //----------------
-                    this._背景画面を描画する( dc );
+                    dc.BeginDraw();
 
+                    this._背景画面を描画する( dc );
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
                     {
                         // フェードイン描画が完了したら次のフェーズへ。
@@ -130,8 +130,9 @@ namespace DTXMania2.選曲
                         if( !this._フェーズ完了 )             // まだ再開されてなければ、
                             Global.App.現行化.再開する();     // 曲ツリーの現行化タスクが一時停止していれば、再開する。
                     }
-
                     this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -320,8 +321,12 @@ namespace DTXMania2.選曲
 
                     #region " 背景画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
+
                     this._背景画面を描画する( dc );
                     this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -331,9 +336,13 @@ namespace DTXMania2.選曲
                 {
                     #region " 背景画面＆QuickConfigを描画する。"
                     //----------------
+                    dc.BeginDraw();
+
                     this._背景画面を描画する( dc );
                     this._システム情報.描画する( dc );
-                    this._QuickConfig画面.進行描画する( 568f, 68f );
+                    this._QuickConfig画面.進行描画する( dc, 568f, 68f );
+
+                    dc.EndDraw();
 
                     if( this._QuickConfig画面.現在のフェーズ == QuickConfig.QuickConfigパネル.フェーズ.完了_戻る )
                     {
@@ -357,15 +366,17 @@ namespace DTXMania2.選曲
                 {
                     #region " 背景画面＆フェードアウトを描画する。"
                     //----------------
-                    this._背景画面を描画する( dc );
+                    dc.BeginDraw();
 
+                    this._背景画面を描画する( dc );
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
                     {
                         // フェードアウト描画が完了したら次のフェーズへ。
                         this.現在のフェーズ = this._フェートアウト後のフェーズ; // フェードアウト開始時に設定済み
                     }
-
                     this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -414,7 +425,7 @@ namespace DTXMania2.選曲
 
         private readonly 曲別スキルと達成率 _曲別スキルと達成率;
 
-        private readonly 画像 _ステージタイマー;
+        private readonly 画像D2D _ステージタイマー;
 
         private QuickConfig.QuickConfigパネル _QuickConfig画面;
 
@@ -425,37 +436,37 @@ namespace DTXMania2.選曲
 
         private void _その他パネルを描画する( DeviceContext dc )
         {
-            D2DBatch.Draw( dc, () => {
+            var preBlend = dc.PrimitiveBlend;
 
-                dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
+            dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
 
-                using( var ソートタブ上色 = new SolidColorBrush( dc, new Color4( 0xFF121212 ) ) )
-                using( var ソートタブ下色 = new SolidColorBrush( dc, new Color4( 0xFF1f1f1f ) ) )
-                {
-                    // 曲リストソートタブ
-                    dc.FillRectangle( new RectangleF( 927f, 50f, 993f, 138f ), ソートタブ上色 );
-                    dc.FillRectangle( new RectangleF( 927f, 142f, 993f, 46f ), ソートタブ下色 );
-                }
+            using( var ソートタブ上色 = new SolidColorBrush( dc, new Color4( 0xFF121212 ) ) )
+            using( var ソートタブ下色 = new SolidColorBrush( dc, new Color4( 0xFF1f1f1f ) ) )
+            {
+                // 曲リストソートタブ
+                dc.FillRectangle( new RectangleF( 927f, 50f, 993f, 138f ), ソートタブ上色 );
+                dc.FillRectangle( new RectangleF( 927f, 142f, 993f, 46f ), ソートタブ下色 );
+            }
 
-                using( var 黒 = new SolidColorBrush( dc, Color4.Black ) )
-                using( var 白 = new SolidColorBrush( dc, Color4.White ) )
-                using( var 黒透過 = new SolidColorBrush( dc, new Color4( Color3.Black, 0.5f ) ) )
-                using( var 灰透過 = new SolidColorBrush( dc, new Color4( 0x80535353 ) ) )
-                {
-                    // インフォメーションバー
-                    dc.FillRectangle( new RectangleF( 0f, 0f, 1920f, 50f ), 黒 );
-                    dc.DrawLine( new Vector2( 0f, 50f ), new Vector2( 1920f, 50f ), 白, strokeWidth: 1f );
+            using( var 黒 = new SolidColorBrush( dc, Color4.Black ) )
+            using( var 白 = new SolidColorBrush( dc, Color4.White ) )
+            using( var 黒透過 = new SolidColorBrush( dc, new Color4( Color3.Black, 0.5f ) ) )
+            using( var 灰透過 = new SolidColorBrush( dc, new Color4( 0x80535353 ) ) )
+            {
+                // インフォメーションバー
+                dc.FillRectangle( new RectangleF( 0f, 0f, 1920f, 50f ), 黒 );
+                dc.DrawLine( new Vector2( 0f, 50f ), new Vector2( 1920f, 50f ), 白, strokeWidth: 1f );
 
-                    // ボトムバー
-                    dc.FillRectangle( new RectangleF( 0f, 1080f - 43f, 1920f, 1080f ), 黒 );
+                // ボトムバー
+                dc.FillRectangle( new RectangleF( 0f, 1080f - 43f, 1920f, 1080f ), 黒 );
 
-                    // プレビュー領域
-                    dc.FillRectangle( new RectangleF( 0f, 52f, 927f, 476f ), 黒透過 );
-                    dc.DrawRectangle( new RectangleF( 0f, 52f, 927f, 476f ), 灰透過, strokeWidth: 1f );
-                    dc.DrawLine( new Vector2( 1f, 442f ), new Vector2( 925f, 442f ), 灰透過, strokeWidth: 1f );
-                }
+                // プレビュー領域
+                dc.FillRectangle( new RectangleF( 0f, 52f, 927f, 476f ), 黒透過 );
+                dc.DrawRectangle( new RectangleF( 0f, 52f, 927f, 476f ), 灰透過, strokeWidth: 1f );
+                dc.DrawLine( new Vector2( 1f, 442f ), new Vector2( 925f, 442f ), 灰透過, strokeWidth: 1f );
+            }
 
-            } );
+            dc.PrimitiveBlend = preBlend;
         }
 
         private void _背景画面を描画する( DeviceContext dc )
@@ -467,8 +478,8 @@ namespace DTXMania2.選曲
                 // (A) ノードがない場合 → SongNotFound 画面
 
                 this._舞台画像.進行描画する( dc );
-                this._表示方法選択パネル.進行描画する();
-                this._ステージタイマー.進行描画する( 1689f, 37f );
+                this._表示方法選択パネル.進行描画する( dc );
+                this._ステージタイマー.描画する( dc, 1689f, 37f );
                 this._SongNotFound.描画する( dc, 1150f, 400f );
             }
             else
@@ -478,18 +489,18 @@ namespace DTXMania2.選曲
                 this._舞台画像.進行描画する( dc );
                 this._選曲リスト.進行描画する( dc );
                 this._その他パネルを描画する( dc );
-                this._表示方法選択パネル.進行描画する();
+                this._表示方法選択パネル.進行描画する( dc );
                 this._難易度と成績.進行描画する( dc, 曲ツリー.フォーカス難易度レベル, 曲ツリー.フォーカスノード! );
                 this._曲ステータスパネル.進行描画する( dc, 曲ツリー.フォーカスノード! );
-                this._プレビュー画像を描画する( 曲ツリー.フォーカスノード! );
+                this._プレビュー画像を描画する( dc, 曲ツリー.フォーカスノード! );
                 this._BPMパネル.進行描画する( dc, 曲ツリー.フォーカスノード! );
                 this._曲別スキルと達成率.進行描画する( dc, 曲ツリー.フォーカスノード! );
                 this._選択曲を囲む枠を描画する( dc );
-                this._選択曲枠ランナー.進行描画する();
+                this._選択曲枠ランナー.進行描画する( dc );
                 this._導線を描画する( dc );
-                this._ステージタイマー.進行描画する( 1689f, 37f );
+                this._ステージタイマー.描画する( dc, 1689f, 37f );
                 this._スクロールバーを描画する( dc, 曲ツリー.フォーカスリスト );
-                this._UpdatingSoglistパネル.進行描画する( 40f, 740f );
+                this._UpdatingSoglistパネル.進行描画する( dc, 40f, 740f );
             }
         }
         
@@ -510,56 +521,50 @@ namespace DTXMania2.選曲
 
             var 全矩形 = new RectangleF( 1901f, 231f, 9f, 732f );  // 枠線含まず
 
-            D2DBatch.Draw( dc, () => {
+            using var スクロールバー背景色 = new SolidColorBrush( dc, new Color4( 0.2f, 0.2f, 0.2f, 1.0f ) );
+            using var スクロールバー枠色 = new SolidColorBrush( dc, Color4.Black );
+            using var スクロールバーつまみ色 = new SolidColorBrush( dc, Color4.White );
 
-                using var スクロールバー背景色 = new SolidColorBrush( dc, new Color4( 0.2f, 0.2f, 0.2f, 1.0f ) );
-                using var スクロールバー枠色 = new SolidColorBrush( dc, Color4.Black );
-                using var スクロールバーつまみ色 = new SolidColorBrush( dc, Color4.White );
+            dc.DrawRectangle( 全矩形, スクロールバー枠色, 4f );
+            dc.FillRectangle( 全矩形, スクロールバー背景色 );
 
-                dc.DrawRectangle( 全矩形, スクロールバー枠色, 4f );
-                dc.FillRectangle( 全矩形, スクロールバー背景色 );
+            float 曲の高さ = 全矩形.Height / 曲数;
 
-                float 曲の高さ = 全矩形.Height / 曲数;
+            var つまみ矩形 = new RectangleF(
+                全矩形.Left,
+                全矩形.Top + 曲の高さ * フォーカスリスト.SelectedIndex,
+                全矩形.Width,
+                Math.Max( 2f, 曲の高さ ) );      // つまみは最小 2dpx 厚
 
-                var つまみ矩形 = new RectangleF(
-                    全矩形.Left,
-                    全矩形.Top + 曲の高さ * フォーカスリスト.SelectedIndex,
-                    全矩形.Width,
-                    Math.Max( 2f, 曲の高さ ) );      // つまみは最小 2dpx 厚
-
-                dc.FillRectangle( つまみ矩形, スクロールバーつまみ色 );
-
-            } );
+            dc.FillRectangle( つまみ矩形, スクロールバーつまみ色 );
         }
 
 
         // プレビュー画像
 
-        private readonly 画像 _既定のノード画像;
+        private readonly 画像D2D _既定のノード画像;
 
-        private readonly 画像 _現行化前のノード画像;
+        private readonly 画像D2D _現行化前のノード画像;
 
         private readonly Vector3 _プレビュー画像表示位置dpx = new Vector3( 471f, 61f, 0f );
 
         private readonly Vector3 _プレビュー画像表示サイズdpx = new Vector3( 444f, 444f, 0f );
 
-        private void _プレビュー画像を描画する( Node フォーカスノード )
+        private void _プレビュー画像を描画する( DeviceContext dc, Node フォーカスノード )
         {
-            画像 image =
+            画像D2D image =
                 ( !フォーカスノード.現行化済み ) ? this._現行化前のノード画像 :
                 ( フォーカスノード.ノード画像 is null ) ? this._既定のノード画像 : フォーカスノード.ノード画像;
 
-            var 変換行列 =
-                Matrix.Scaling(
+            var 変換行列2D =
+                Matrix3x2.Scaling(
                     this._プレビュー画像表示サイズdpx.X / image.サイズ.Width,
-                    this._プレビュー画像表示サイズdpx.Y / image.サイズ.Height,
-                    0f ) *
-                Matrix.Translation( // テクスチャは画面中央が (0,0,0) で、Xは右がプラス方向, Yは上がプラス方向, Zは奥がプラス方向+。
-                    Global.画面左上dpx.X + this._プレビュー画像表示位置dpx.X + this._プレビュー画像表示サイズdpx.X / 2f,
-                    Global.画面左上dpx.Y - this._プレビュー画像表示位置dpx.Y - this._プレビュー画像表示サイズdpx.Y / 2f,
-                    0f );
+                    this._プレビュー画像表示サイズdpx.Y / image.サイズ.Height ) *
+                Matrix3x2.Translation(
+                    this._プレビュー画像表示位置dpx.X,
+                    this._プレビュー画像表示位置dpx.Y );
 
-            image.進行描画する( 変換行列 );
+            image.描画する( dc, 変換行列2D );
         }
 
 

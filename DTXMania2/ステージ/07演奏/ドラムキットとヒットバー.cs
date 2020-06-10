@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using SharpDX;
 using FDK;
+using SharpDX.Direct2D1;
 
 namespace DTXMania2.演奏
 {
@@ -28,7 +29,7 @@ namespace DTXMania2.演奏
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
-            this._ドラムキット画像 = new 画像( @"$(Images)\PlayStage\DrumKit_and_HitBar.png" );
+            this._ドラムキット画像 = new 画像D2D( @"$(Images)\PlayStage\DrumKit_and_HitBar.png" );
 
             this._パーツ画像の矩形リスト = new Dictionary<パーツ, RectangleF>();
             this._パーツ画像の中心位置 = new Dictionary<パーツ, (float X, float Y)>();
@@ -92,7 +93,7 @@ namespace DTXMania2.演奏
         // 進行と描画
 
 
-        public void ドラムキットを進行描画する()
+        public void ドラムキットを進行描画する( DeviceContext dc )
         {
             float Bassの振動幅 = 0f; // Bass の振動は HiTom, LowTom にも影響する。
 
@@ -107,7 +108,7 @@ namespace DTXMania2.演奏
                     Bassの振動幅 = (float) ( 最大振幅 * Math.Sin( 10.0 * Math.PI * counter.現在値の割合 ) );     // 10周
                 }
 
-                this._パーツを描画する( パーツ.Bass, Y方向移動量: Bassの振動幅 );
+                this._パーツを描画する( dc, パーツ.Bass, Y方向移動量: Bassの振動幅 );
             }
             //----------------
             #endregion
@@ -124,7 +125,7 @@ namespace DTXMania2.演奏
                     振動幅 = (float) ( 最大振幅 * Math.Sin( 15.0 * Math.PI * counter.現在値の割合 ) );           // 15周
                 }
 
-                this._パーツを描画する( パーツ.LowTom, Y方向移動量: 振動幅 + Bassの振動幅 );   // Bassと連動
+                this._パーツを描画する( dc, パーツ.LowTom, Y方向移動量: 振動幅 + Bassの振動幅 );   // Bassと連動
             }
             //----------------
             #endregion
@@ -141,7 +142,7 @@ namespace DTXMania2.演奏
                     振動幅 = (float) ( 最大振幅 * Math.Sin( 15.0 * Math.PI * counter.現在値の割合 ) );           // 15周
                 }
 
-                this._パーツを描画する( パーツ.HiTom, Y方向移動量: 振動幅 + Bassの振動幅 );   // Bassと連動
+                this._パーツを描画する( dc, パーツ.HiTom, Y方向移動量: 振動幅 + Bassの振動幅 );   // Bassと連動
             }
             //----------------
             #endregion
@@ -158,7 +159,7 @@ namespace DTXMania2.演奏
                     振動幅 = (float) ( 最大振幅 * Math.Sin( 10.0 * Math.PI * counter.現在値の割合 ) );           // 10周
                 }
 
-                this._パーツを描画する( パーツ.FloorTom, Y方向移動量: 振動幅 );
+                this._パーツを描画する( dc, パーツ.FloorTom, Y方向移動量: 振動幅 );
             }
             //----------------
             #endregion
@@ -175,7 +176,7 @@ namespace DTXMania2.演奏
                     振動幅 = (float) ( 最大振幅 * Math.Sin( 17.0 * Math.PI * counter.現在値の割合 ) );           // 17周
                 }
 
-                this._パーツを描画する( パーツ.Snare, Y方向移動量: 振動幅 );
+                this._パーツを描画する( dc, パーツ.Snare, Y方向移動量: 振動幅 );
             }
             //----------------
             #endregion
@@ -192,8 +193,8 @@ namespace DTXMania2.演奏
                     振動幅 = (float) ( 最大振幅 * Math.Sin( 20.0 * Math.PI * counter.現在値の割合 ) );                                               // 20周
                 }
 
-                this._パーツを描画する( パーツ.HiHatBottom );  // Bottom は動かない。
-                this._パーツを描画する( パーツ.HiHatTop, Y方向移動量: 振動幅 - 20f * this.ハイハットの開度 );
+                this._パーツを描画する( dc, パーツ.HiHatBottom );  // Bottom は動かない。
+                this._パーツを描画する( dc, パーツ.HiHatTop, Y方向移動量: 振動幅 - 20f * this.ハイハットの開度 );
             }
             //----------------
             #endregion
@@ -210,9 +211,9 @@ namespace DTXMania2.演奏
                     振動幅 = (float) ( 最大振幅 * Math.Sin( 20.0 * Math.PI * counter.現在値の割合 ) );         // 20周
                 }
 
-                this._パーツを描画する( パーツ.RightCymbalStand ); // Standは動かない。
-                this._パーツを描画する( パーツ.RightCymbal, Y方向移動量: 振動幅 );
-                this._パーツを描画する( パーツ.RightCymbalTop, Y方向移動量: 振動幅 );
+                this._パーツを描画する( dc, パーツ.RightCymbalStand ); // Standは動かない。
+                this._パーツを描画する( dc, パーツ.RightCymbal, Y方向移動量: 振動幅 );
+                this._パーツを描画する( dc, パーツ.RightCymbalTop, Y方向移動量: 振動幅 );
             }
             //----------------
             #endregion
@@ -229,25 +230,26 @@ namespace DTXMania2.演奏
                     振動幅 = (float) ( 最大振幅 * Math.Sin( 20.0 * Math.PI * counter.現在値の割合 ) );       // 20周
                 }
 
-                this._パーツを描画する( パーツ.LeftCymbalStand );  // Standは動かない。
-                this._パーツを描画する( パーツ.LeftCymbal, Y方向移動量: 振動幅 );
-                this._パーツを描画する( パーツ.LeftCymbalTop, Y方向移動量: 振動幅 );
+                this._パーツを描画する( dc, パーツ.LeftCymbalStand );  // Standは動かない。
+                this._パーツを描画する( dc, パーツ.LeftCymbal, Y方向移動量: 振動幅 );
+                this._パーツを描画する( dc, パーツ.LeftCymbalTop, Y方向移動量: 振動幅 );
             }
             //----------------
             #endregion
         }
 
-        public void ヒットバーを進行描画する()
+        public void ヒットバーを進行描画する( DeviceContext dc )
         {
-            this._パーツを描画する( パーツ.Bar );
+            this._パーツを描画する( dc, パーツ.Bar );
         }
 
-        private void _パーツを描画する( パーツ パーツ名, float X方向移動量 = 0f, float Y方向移動量 = 0f )
+        private void _パーツを描画する( DeviceContext dc, パーツ パーツ名, float X方向移動量 = 0f, float Y方向移動量 = 0f )
         {
             var 中心位置 = this._パーツ画像の中心位置[ パーツ名 ];
             var srcRect = this._パーツ画像の矩形リスト[ パーツ名 ];
 
-            this._ドラムキット画像.進行描画する(
+            this._ドラムキット画像.描画する(
+                dc,
                 中心位置.X - srcRect.Width / 2 + X方向移動量,
                 中心位置.Y - srcRect.Height / 2 + Y方向移動量,
                 転送元矩形: srcRect );
@@ -258,7 +260,7 @@ namespace DTXMania2.演奏
         // ローカル
 
 
-        private readonly 画像 _ドラムキット画像;
+        private readonly 画像D2D _ドラムキット画像;
 
         private readonly Dictionary<パーツ, RectangleF> _パーツ画像の矩形リスト;
 

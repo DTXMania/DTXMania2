@@ -26,7 +26,7 @@ namespace DTXMania2.結果
 
             public アイコン()
             {
-                this._アイコン画像 = new 画像( @"$(Images)\ResultStage\SkillIcon.png" );
+                this._アイコン画像 = new 画像D2D( @"$(Images)\ResultStage\SkillIcon.png" );
             }
 
             public void Dispose()
@@ -55,11 +55,11 @@ namespace DTXMania2.結果
                 this._拡大角度rad = new Variable( Global.Animation.Manager, initialValue: 0.0 );
 
                 // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL.最初の待機時間sec ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL._最初の待機時間sec ) )
                     this._ストーリーボード.AddTransition( this._拡大角度rad, 遷移 );
 
                 // 2π へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Linear( duration: 曲別SKILL.アニメ時間sec, finalValue: 2 * Math.PI ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.Linear( duration: 曲別SKILL._アニメ時間sec, finalValue: 2 * Math.PI ) )
                     this._ストーリーボード.AddTransition( this._拡大角度rad, 遷移 );
                 //----------------
                 #endregion
@@ -71,11 +71,11 @@ namespace DTXMania2.結果
                 this._半径倍率 = new Variable( Global.Animation.Manager, initialValue: 1.0 );
 
                 // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL.最初の待機時間sec ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL._最初の待機時間sec ) )
                     this._ストーリーボード.AddTransition( this._半径倍率, 遷移 );
 
                 // 0.0 へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 曲別SKILL.アニメ時間sec, finalValue: 0.0, accelerationRatio: 0.1, decelerationRatio: 0.9 ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.AccelerateDecelerate( duration: 曲別SKILL._アニメ時間sec, finalValue: 0.0, accelerationRatio: 0.1, decelerationRatio: 0.9 ) )
                     this._ストーリーボード.AddTransition( this._半径倍率, 遷移 );
                 //----------------
                 #endregion
@@ -87,11 +87,11 @@ namespace DTXMania2.結果
                 this._不透明度 = new Variable( Global.Animation.Manager, initialValue: 0.0 );
 
                 // 待つ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL.最初の待機時間sec ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.Constant( duration: 曲別SKILL._最初の待機時間sec ) )
                     this._ストーリーボード.AddTransition( this._不透明度, 遷移 );
 
                 // 1.0 へ
-                using( var 遷移 = Global.Animation.TrasitionLibrary.Linear( duration: 曲別SKILL.アニメ時間sec, finalValue: 1.0 ) )
+                using( var 遷移 = Global.Animation.TrasitionLibrary.Linear( duration: 曲別SKILL._アニメ時間sec, finalValue: 1.0 ) )
                     this._ストーリーボード.AddTransition( this._不透明度, 遷移 );
                 //----------------
                 #endregion
@@ -105,14 +105,14 @@ namespace DTXMania2.結果
                 this._ストーリーボード?.Finish( 0.1 );
             }
 
-            public void 進行描画する( float left, float top )
+            public void 進行描画する( DeviceContext dc, float left, float top )
             {
                 double 回転による拡大率 = Math.Abs( Math.Cos( this._拡大角度rad.Value ) );    // (0) 1 → 0 → 1（π) → 0 → 1 (2π)
                 float 拡大率 = (float) ( 1.0 + 回転による拡大率 * this._半径倍率.Value );
                 float 左位置dpx = left + ( ( 1.0f - 拡大率 ) * this._アイコン画像.サイズ.Width ) / 2.0f;
                 float 上位置dpx = top + ( ( 1.0f - 拡大率 ) * this._アイコン画像.サイズ.Height ) / 2.0f;
                 
-                this._アイコン画像.進行描画する( 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
+                this._アイコン画像.描画する( dc, 左位置dpx, 上位置dpx, 不透明度0to1: (float) this._不透明度.Value, X方向拡大率: 拡大率, Y方向拡大率: 拡大率 );
             }
 
 
@@ -120,7 +120,7 @@ namespace DTXMania2.結果
             // ローカル
 
 
-            private readonly 画像 _アイコン画像;
+            private readonly 画像D2D _アイコン画像;
 
             private Storyboard _ストーリーボード = null!;
 

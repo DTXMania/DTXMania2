@@ -38,7 +38,7 @@ namespace DTXMania2.認証
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._舞台画像 = new 舞台画像();
-            this._ウィンドウ画像 = new 画像( @"$(Images)\AuthStage\UserSelectFrame.png" );
+            this._ウィンドウ画像 = new 画像D2D( @"$(Images)\AuthStage\UserSelectFrame.png" );
             this._プレイヤーを選択してください = new 文字列画像D2D() {
                 表示文字列 = "プレイヤーを選択してください。",
                 フォントサイズpt = 30f,
@@ -68,7 +68,7 @@ namespace DTXMania2.認証
 
             Global.App.システムサウンド.停止する( システムサウンド種別.認証ステージ_開始音 );
             Global.App.システムサウンド.停止する( システムサウンド種別.認証ステージ_ループBGM );
-            //Global.App.システムサウンド.停止する( システムサウンド種別.認証ステージ_ログイン音 );    // --> なりっぱなしでいい
+            //Global.App.システムサウンド.停止する( システムサウンド種別.認証ステージ_ログイン音 );    // --> 鳴りっぱなしでいい
         }
 
 
@@ -82,6 +82,7 @@ namespace DTXMania2.認証
             this._システム情報.FPSをカウントしプロパティを更新する();
 
             var 描画領域 = new RectangleF( 566f, 60f, 784f, 943f );
+
             var dc = Global.既定のD2D1DeviceContext;
             dc.Transform = Global.拡大行列DPXtoPX;
 
@@ -93,18 +94,20 @@ namespace DTXMania2.認証
                 {
                     #region " 認証画面＆フェードインを描画する。"
                     //----------------
+                    dc.BeginDraw();
+
                     this._舞台画像.進行描画する( dc, 黒幕付き: true );
-                    this._ウィンドウ画像.進行描画する( 描画領域.X, 描画領域.Y );
+                    this._ウィンドウ画像.描画する( dc, 描画領域.X, 描画領域.Y );
                     this._プレイヤーを選択してください.描画する( dc, 描画領域.X + 28f, 描画領域.Y + 45f );
                     this._ユーザリスト.進行描画する( dc );
-
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
                     {
                         // フェードイン描画が完了したらユーザ選択フェーズへ。
                         this.現在のフェーズ = フェーズ.ユーザ選択;
                     }
-
                     this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -158,11 +161,15 @@ namespace DTXMania2.認証
 
                     #region " 認証画面を描画する。"
                     //----------------
+                    dc.BeginDraw();
+                    
                     this._舞台画像.進行描画する( dc, 黒幕付き: true );
-                    this._ウィンドウ画像.進行描画する( 描画領域.X, 描画領域.Y );
+                    this._ウィンドウ画像.描画する( dc, 描画領域.X, 描画領域.Y );
                     this._プレイヤーを選択してください.描画する( dc, 描画領域.X + 28f, 描画領域.Y + 45f );
                     this._ユーザリスト.進行描画する( dc );
                     this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -172,15 +179,17 @@ namespace DTXMania2.認証
                 {
                     #region " 背景画面＆フェードアウトを描画する。"
                     //----------------
-                    this._舞台画像.進行描画する( dc, true );
+                    dc.BeginDraw();
 
+                    this._舞台画像.進行描画する( dc, true );
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
                     {
                         // アイキャッチが完了したら完了フェーズへ。
                         this.現在のフェーズ = フェーズ.完了;
                     }
-
                     this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -206,7 +215,7 @@ namespace DTXMania2.認証
 
         private readonly 舞台画像 _舞台画像;
 
-        private readonly 画像 _ウィンドウ画像;
+        private readonly 画像D2D _ウィンドウ画像;
 
         private readonly 文字列画像D2D _プレイヤーを選択してください;
 
