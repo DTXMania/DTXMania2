@@ -28,17 +28,17 @@ namespace DTXMania2.選曲
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._数字画像 = new フォント画像D2D( @"$(Images)\ParameterFont_Large.png", @"$(Images)\ParameterFont_Large.yaml" );
-            this._見出し用TextFormat = new TextFormat( Global.DWriteFactory, "Century Gothic", 16f ) { TextAlignment = TextAlignment.Trailing };
-            this._説明文用TextFormat = new TextFormat( Global.DWriteFactory, "Century Gothic", 16f ) { TextAlignment = TextAlignment.Center };
+            this._見出し用TextFormat = new TextFormat( Global.GraphicResources.DWriteFactory, "Century Gothic", 16f ) { TextAlignment = TextAlignment.Trailing };
+            this._説明文用TextFormat = new TextFormat( Global.GraphicResources.DWriteFactory, "Century Gothic", 16f ) { TextAlignment = TextAlignment.Center };
 
-            this._黒透過ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( Color3.Black, 0.5f ) );
-            this._黒ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color4.Black );
-            this._白ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color4.White );
-            this._ULTIMATE色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 4 ] );
-            this._MASTER色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 3 ] );
-            this._EXTREME色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 2 ] );
-            this._ADVANCED色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 1 ] );
-            this._BASIC色ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Song.難易度色リスト[ 0 ] );
+            this._黒透過ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( Color3.Black, 0.5f ) );
+            this._黒ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Color4.Black );
+            this._白ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Color4.White );
+            this._ULTIMATE色ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Song.難易度色リスト[ 4 ] );
+            this._MASTER色ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Song.難易度色リスト[ 3 ] );
+            this._EXTREME色ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Song.難易度色リスト[ 2 ] );
+            this._ADVANCED色ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Song.難易度色リスト[ 1 ] );
+            this._BASIC色ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Song.難易度色リスト[ 0 ] );
             this._難易度パネル色 = new Brush[ 5 ] {
                 this._BASIC色ブラシ,
                 this._ADVANCED色ブラシ,

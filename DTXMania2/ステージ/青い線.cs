@@ -32,7 +32,7 @@ namespace DTXMania2
             int 白色 = 0xffffff;
 
             this._線グラ頂点集合 = new GradientStopCollection(
-                Global.既定のD2D1DeviceContext,
+                Global.GraphicResources.既定のD2D1DeviceContext,
                 new GradientStop[] {
                     new GradientStop() { Position = 0.00f, Color = new Color4( new Color3( 青色 ), 0f ) },		// 完全透明
 					new GradientStop() { Position = 0.35f, Color = new Color4( new Color3( 水色 ), 1f ) },

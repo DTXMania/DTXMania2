@@ -400,18 +400,18 @@ namespace DTXMania2.選曲
                 #region " BOXノードの背景 "
                 //----------------
                 using var brush = new SolidColorBrush( dc, new Color4( 0xffa3647c ) );
-                using var pathGeometry = new PathGeometry( Global.D2D1Factory1 );
+                using var pathGeometry = new PathGeometry( Global.GraphicResources.D2D1Factory1 );
                 using( var sink = pathGeometry.Open() )
                 {
                     sink.SetFillMode( FillMode.Winding );
-                    sink.BeginFigure( new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ), FigureBegin.Filled );     // 点1
+                    sink.BeginFigure( new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ), FigureBegin.Filled );             // 点1
                     var points = new SharpDX.Mathematics.Interop.RawVector2[] {
-                            new Vector2( ノード左上dpx.X + 150f, ノード左上dpx.Y + 8f ),	                              // → 点2
-                            new Vector2( ノード左上dpx.X + 170f, ノード左上dpx.Y + 18f ),                                 // → 点3
-                            new Vector2( Global.設計画面サイズ.Width, ノード左上dpx.Y + 18f ),	                          // → 点4
-                            new Vector2( Global.設計画面サイズ.Width, ノード左上dpx.Y + _ノードの高さdpx ),               // → 点5
-                            new Vector2( ノード左上dpx.X, ノード左上dpx.Y + _ノードの高さdpx ),	                          // → 点6
-                            new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ),	                                      // → 点1
+                            new Vector2( ノード左上dpx.X + 150f, ノード左上dpx.Y + 8f ),	                                  // → 点2
+                            new Vector2( ノード左上dpx.X + 170f, ノード左上dpx.Y + 18f ),                                     // → 点3
+                            new Vector2( Global.GraphicResources.設計画面サイズ.Width, ノード左上dpx.Y + 18f ),	              // → 点4
+                            new Vector2( Global.GraphicResources.設計画面サイズ.Width, ノード左上dpx.Y + _ノードの高さdpx ),  // → 点5
+                            new Vector2( ノード左上dpx.X, ノード左上dpx.Y + _ノードの高さdpx ),	                              // → 点6
+                            new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ),	                                          // → 点1
                         };
                     sink.AddLines( points );
                     sink.EndFigure( FigureEnd.Closed );
@@ -426,7 +426,7 @@ namespace DTXMania2.選曲
                 #region " BACK, RandomSelectノードの背景 "
                 //----------------
                 using var brush = new SolidColorBrush( dc, Color4.Black );
-                using var pathGeometry = new PathGeometry( Global.D2D1Factory1 );
+                using var pathGeometry = new PathGeometry( Global.GraphicResources.D2D1Factory1 );
                 using( var sink = pathGeometry.Open() )
                 {
                     sink.SetFillMode( FillMode.Winding );
@@ -434,8 +434,8 @@ namespace DTXMania2.選曲
                     var points = new SharpDX.Mathematics.Interop.RawVector2[] {
                             new Vector2( ノード左上dpx.X + 150f, ノード左上dpx.Y + 8f ),	                          // → 点2
 							new Vector2( ノード左上dpx.X + 170f, ノード左上dpx.Y + 18f ),	                          // → 点3
-							new Vector2( Global.設計画面サイズ.Width, ノード左上dpx.Y + 18f ),                        // → 点4
-							new Vector2( Global.設計画面サイズ.Width, ノード左上dpx.Y + _ノードの高さdpx ),           // → 点5
+							new Vector2( Global.GraphicResources.設計画面サイズ.Width, ノード左上dpx.Y + 18f ),               // → 点4
+							new Vector2( Global.GraphicResources.設計画面サイズ.Width, ノード左上dpx.Y + _ノードの高さdpx ),  // → 点5
 							new Vector2( ノード左上dpx.X, ノード左上dpx.Y + _ノードの高さdpx ),	                      // → 点6
 							new Vector2( ノード左上dpx.X, ノード左上dpx.Y + 8f ),	                                  // → 点1
 						};
@@ -452,7 +452,7 @@ namespace DTXMania2.選曲
                 #region " 既定の背景 "
                 //----------------
                 using var brush = new SolidColorBrush( dc, new Color4( 0f, 0f, 0f, 0.25f ) );   // 半透明の黒
-                dc.FillRectangle( new RectangleF( ノード左上dpx.X, ノード左上dpx.Y, Global.設計画面サイズ.Width - ノード左上dpx.X, _ノードの高さdpx ), brush );
+                dc.FillRectangle( new RectangleF( ノード左上dpx.X, ノード左上dpx.Y, Global.GraphicResources.設計画面サイズ.Width - ノード左上dpx.X, _ノードの高さdpx ), brush );
                 //----------------
                 #endregion
             }
@@ -551,8 +551,8 @@ namespace DTXMania2.選曲
                         using var ゲージ色 = new SolidColorBrush( dc, new Color( 184, 156, 231, 255 ) );
                         using var ゲージ枠色 = new SolidColorBrush( dc, Color.White );
                         using var ゲージ背景色 = new SolidColorBrush( dc, new Color( 0.25f, 0.25f, 0.25f, 1f ) );
-                        using var ゲージ枠ジオメトリ = new PathGeometry( Global.D2D1Factory1 );
-                        using var ゲージジオメトリ = new PathGeometry( Global.D2D1Factory1 );
+                        using var ゲージ枠ジオメトリ = new PathGeometry( Global.GraphicResources.D2D1Factory1 );
+                        using var ゲージジオメトリ = new PathGeometry( Global.GraphicResources.D2D1Factory1 );
 
                         var ゲージサイズdpx = new Size2F( 448f, 17f );
                         var ゲージ位置 = new Vector2( ノード左上dpx.X + 310f, ノード左上dpx.Y + 10f );
@@ -628,7 +628,7 @@ namespace DTXMania2.選曲
                 var image = node.タイトル文字列画像;
 
                 // 最大幅を考慮して拡大率を決定する。
-                float 最大幅dpx = Global.設計画面サイズ.Width - ノード左上dpx.X - 170f;
+                float 最大幅dpx = Global.GraphicResources.設計画面サイズ.Width - ノード左上dpx.X - 170f;
 
                 if( null != image )
                 {
@@ -649,7 +649,7 @@ namespace DTXMania2.選曲
                 var image = node.サブタイトル文字列画像;
 
                 // 最大幅を考慮して拡大率を決定する。
-                float 最大幅dpx = Global.設計画面サイズ.Width - ノード左上dpx.X - 170f;
+                float 最大幅dpx = Global.GraphicResources.設計画面サイズ.Width - ノード左上dpx.X - 170f;
 
                 if( null != image )
                 {

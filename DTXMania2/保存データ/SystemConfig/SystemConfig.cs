@@ -64,6 +64,7 @@ namespace DTXMania2
         public VariablePath ImagesFolder { get; set; }
 
         [YamlMember( Alias = "VSyncWait" )]
+        [Obsolete( "057で廃止。" )]
         public bool 垂直帰線同期を行う = false;
 
         [YamlIgnore]
@@ -156,7 +157,6 @@ namespace DTXMania2
             this.DrumSoundsFolder = new VariablePath( @"$(ResourcesRoot)\Default\DrumSounds" );
             this.SystemSoundsFolder = new VariablePath( @"$(ResourcesRoot)\Default\SystemSounds" );
             this.ImagesFolder = new VariablePath( @"$(ResourcesRoot)\Default\Images" );
-            this.垂直帰線同期を行う = false;
 
             this.FootPedal最小値 = 0;
             this.FootPedal最大値 = 90; // VH-11 の Normal Resolution での最大値

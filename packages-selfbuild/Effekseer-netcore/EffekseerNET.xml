@@ -1,0 +1,2870 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        "EffekseerNET"
+    </assembly>
+    <members>
+        <member name="T:Effekseer.SIMD4i">
+@brief	simd class for sse
+
+</member>
+        <member name="T:Effekseer.SIMD4f">
+@brief	simd class for sse
+
+</member>
+        <member name="M:EffekseerNET.Server.Unregist(EffekseerNET.Effect)">
+@brief
+\~English	deprecated
+\~Japanese	非推奨
+
+</member>
+        <member name="M:EffekseerNET.Server.Regist(System.String,EffekseerNET.Effect)">
+@brief
+\~English	deprecated
+\~Japanese	非推奨
+
+</member>
+        <member name="M:EffekseerNET.Server.SetMaterialPath(System.String)">
+@brief
+\~English	Specify root path to load materials
+\~Japanese	素材のルートパスを設定する。
+
+</member>
+        <member name="M:EffekseerNET.Server.Update(EffekseerNET.Manager[],System.Int32,EffekseerNET.ReloadingThreadType)">
+@brief
+\~English	update a server and reload effects
+\~Japanese	サーバーを更新し、エフェクトのリロードを行う。
+@param	managers
+\~English	all managers which is playing effects.
+\~Japanese	エフェクトを再生している全てのマネージャー
+@param	managerCount
+\~English	the number of manager
+\~Japanese	マネージャーの個数
+
+</member>
+        <member name="M:EffekseerNET.Server.Update(EffekseerNET.Manager[],System.Int32)">
+@brief
+\~English	update a server and reload effects
+\~Japanese	サーバーを更新し、エフェクトのリロードを行う。
+@param	managers
+\~English	all managers which is playing effects.
+\~Japanese	エフェクトを再生している全てのマネージャー
+@param	managerCount
+\~English	the number of manager
+\~Japanese	マネージャーの個数
+
+</member>
+        <member name="M:EffekseerNET.Server.Update">
+@brief
+\~English	update a server and reload effects
+\~Japanese	サーバーを更新し、エフェクトのリロードを行う。
+@brief	managers
+\~English	all managers which is playing effects.
+\~Japanese	エフェクトを再生している全てのマネージャー
+@brief	managerCount
+\~English	the number of manager
+\~Japanese	マネージャーの個数
+
+</member>
+        <member name="M:EffekseerNET.Server.Unregister(EffekseerNET.Effect)">
+@brief
+\~English	unregister an effect
+\~Japanese	エフェクトを対象から外す。
+@param	effect
+\~English	an effect registered
+\~Japanese	登録されているエフェクト
+
+</member>
+        <member name="M:EffekseerNET.Server.Register(System.String,EffekseerNET.Effect)">
+@brief
+\~English	register an effect as a target to edit.
+\~Japanese	エフェクトを編集の対象として登録する。
+@param	key
+\~English	a key to search an effect
+\~Japanese	検索用キー
+@param	effect
+\~English	an effect to be edit
+\~Japanese	編集される対象のエフェクト
+
+</member>
+        <member name="M:EffekseerNET.Server.Stop">
+@brief
+\~English	stop a server
+\~Japanese	サーバーを終了する。
+
+</member>
+        <member name="M:EffekseerNET.Server.Start(System.UInt16)">
+@brief
+\~English	start a server
+\~Japanese	サーバーを開始する。
+
+</member>
+        <member name="M:EffekseerNET.Server.Create">
+@brief
+\~English	create a server instance
+\~Japanese	サーバーのインスタンスを生成する。
+
+</member>
+        <member name="T:EffekseerNET.Server">
+@brief
+\~English	A server to edit effect from client such an editor
+\~Japanese	エディタといったクライアントからエフェクトを編集するためのサーバー
+
+</member>
+        <member name="M:EffekseerNET.Model.Dispose">
+@brief
+\~English	Destructor
+\~Japanese	デストラクタ
+
+</member>
+        <member name="M:EffekseerNET.Model.#ctor(System.IntPtr,System.Int32)">
+@brief
+\~English	Constructor
+\~Japanese	コンストラクタ
+
+</member>
+        <member name="T:EffekseerNET.Model">
+@brief
+\~English	Model class
+\~Japanese	モデルクラス
+
+</member>
+        <member name="T:EffekseerNET.DefaultFileReader">
+@brief	標準のファイル読み込みクラス
+
+</member>
+        <member name="T:EffekseerNET.RectF">
+@brief	四角形
+
+</member>
+        <member name="M:EffekseerNET.Vector2D.#ctor(System.Single,System.Single)">
+@brief	コンストラクタ
+
+</member>
+        <member name="F:EffekseerNET.Vector2D.Y">
+@brief	Y
+
+</member>
+        <member name="F:EffekseerNET.Vector2D.X">
+@brief	X
+
+</member>
+        <member name="T:EffekseerNET.Vector2D">
+@brief	3次元ベクトル
+
+</member>
+        <member name="T:EffekseerNET.NodeRendererBasicParameter">
+@brief	\~english	Common parameters which is passed into a renderer
+		\~japanese	レンダラーに渡される共通に関するパラメーター
+
+</member>
+        <member name="T:EffekseerNET.NodeRendererDepthParameter">
+@brief	\~english	Parameters about a depth which is passed into a renderer
+		\~japanese	レンダラーに渡されるデプスに関するパラメーター
+
+</member>
+        <member name="T:EffekseerNET.MaterialParameter">
+@brief	\~english	Material parameter for shaders
+		\~japanese	シェーダー向けマテリアルパラメーター
+
+</member>
+        <member name="T:EffekseerNET.MaterialTextureParameter">
+@brief	\~english	Textures used by material
+		\~japanese	マテリアルに使用されるテクスチャ
+
+</member>
+        <member name="T:EffekseerNET.IRandObject">
+@brief	This object generates random values.
+
+</member>
+        <member name="M:EffekseerNET.EffectNode.CalculateInstanceTerm(EffekseerNET.EffectInstanceTerm)">
+@brief
+\~English	Calculate a term of instances where instances exists
+\~Japanese	インスタンスが存在する期間を計算する。
+
+</member>
+        <member name="M:EffekseerNET.EffectNode.GetEffectModelParameter">
+@brief
+\~English	Get a model parameter
+\~Japanese	モデルパラメーターを取得する。
+
+</member>
+        <member name="M:EffekseerNET.EffectNode.SetBasicRenderParameter(EffekseerNET.EffectBasicRenderParameter)">
+@brief	共通描画パラメーターを設定する。
+
+</member>
+        <member name="M:EffekseerNET.EffectNode.GetBasicRenderParameter">
+@brief	共通描画パラメーターを取得する。
+
+</member>
+        <member name="M:EffekseerNET.EffectNode.GetChild(System.Int32)">
+@brief	子のノードを取得する。
+
+</member>
+        <member name="M:EffekseerNET.EffectNode.GetChildrenCount">
+@brief	子のノードの数を取得する。
+
+</member>
+        <member name="M:EffekseerNET.EffectNode.GetGeneration">
+@brief
+\~English	Get a generation in the node tree. The generation increases by 1 as it moves a child node.
+\~Japanese	ノードツリーの世代を取得する。世代は子のノードになるにしたがって1増える。
+
+</member>
+        <member name="M:EffekseerNET.EffectNode.GetEffect">
+@brief	ノードが所属しているエフェクトを取得する。
+
+</member>
+        <member name="T:EffekseerNET.EffectNode">
+@brief	ノードインスタンス生成クラス
+@note
+エフェクトのノードの実体を生成する。
+
+</member>
+        <member name="T:EffekseerNET.EffectBasicRenderParameter">
+@brief	共通描画パラメーター
+@note
+大きく変更される可能性があります。
+
+</member>
+        <member name="T:EffekseerNET.EffectModelParameter">
+@brief
+	\~English	Model parameter
+	\~Japanese	モデルパラメーター
+@note
+	\~English	It may change greatly.
+	\~Japanese	大きく変更される可能性があります。
+
+</member>
+        <member name="F:EffekseerNET.EffectInstanceTerm.LastInstanceEndMax">
+@brief
+\~English	Maximum end time that the last instance may exist
+\~Japanese	最後のインスタンスが存在する可能性のある最大の終了時間
+
+</member>
+        <member name="F:EffekseerNET.EffectInstanceTerm.LastInstanceEndMin">
+@brief
+\~English	Minimum end time that the last instance may exist
+\~Japanese	最後のインスタンスが存在する可能性のある最小の終了時間
+
+</member>
+        <member name="F:EffekseerNET.EffectInstanceTerm.LastInstanceStartMax">
+@brief
+\~English	Maximum start time that the last instance may exist
+\~Japanese	最後のインスタンスが存在する可能性のある最大の開始時間
+
+</member>
+        <member name="F:EffekseerNET.EffectInstanceTerm.LastInstanceStartMin">
+@brief
+\~English	Minimum start time that the last instance may exist
+\~Japanese	最後のインスタンスが存在する可能性のある最小の開始時間
+
+</member>
+        <member name="F:EffekseerNET.EffectInstanceTerm.FirstInstanceEndMax">
+@brief
+\~English	Maximum end time that the first instance may exist
+\~Japanese	最初のインスタンスが存在する可能性のある最大の終了時間
+
+</member>
+        <member name="F:EffekseerNET.EffectInstanceTerm.FirstInstanceEndMin">
+@brief
+\~English	Minimum end time that the first instance may exist
+\~Japanese	最初のインスタンスが存在する可能性のある最小の終了時間
+
+</member>
+        <member name="F:EffekseerNET.EffectInstanceTerm.FirstInstanceStartMax">
+@brief
+\~English	Maximum start time that the first instance may exist
+\~Japanese	最初のインスタンスが存在する可能性のある最大の開始時間
+
+</member>
+        <member name="F:EffekseerNET.EffectInstanceTerm.FirstInstanceStartMin">
+@brief
+\~English	Minimum start time that the first instance may exist
+\~Japanese	最初のインスタンスが存在する可能性のある最小の開始時間
+
+</member>
+        <member name="T:EffekseerNET.EffectInstanceTerm">
+@brief
+\~English	Terms where instances exists
+\~Japanese	インスタンスが存在する期間
+
+</member>
+        <member name="M:EffekseerNET.Manager.ReassignCulling">
+@brief	現在存在するエフェクトのハンドルからカリングの空間を配置しなおす。
+
+</member>
+        <member name="M:EffekseerNET.Manager.CalcCulling(EffekseerNET.Matrix44,System.Boolean)">
+@brief	カリングを行い、カリングされたオブジェクトのみを描画するようにする。
+@param	cameraProjMat	カメラプロジェクション行列
+@param	isOpenGL		OpenGLによる描画か?
+
+</member>
+        <member name="M:EffekseerNET.Manager.CreateCullingWorld(System.Single,System.Single,System.Single,System.Int32)">
+@brief	エフェクトをカリングし描画負荷を減らすための空間を生成する。
+@param	xsize	X方向幅
+@param	ysize	Y方向幅
+@param	zsize	Z方向幅
+@param	layerCount	層数(大きいほどカリングの効率は上がるがメモリも大量に使用する)
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetRestInstancesCount">
+@brief
+\~English	Gets the number of remaining allocated instances.
+\~Japanese	残りの確保したインスタンス数を取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetDrawTime">
+@brief	Draw処理時間を取得。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetUpdateTime">
+@brief	Update処理時間を取得。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetCameraCullingMaskToShowAllEffects">
+@brief
+\~English	Get a camera's culling mask to show all effects
+\~Japanese	全てのエフェクトを表示するためのカメラのカリングマスクを取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.Play(EffekseerNET.Effect,EffekseerNET.Vector3D,System.Int32)">
+@brief
+\~English	Play an effect.
+\~Japanese	エフェクトを再生する。
+@param	effect
+\~English	Played effect
+\~Japanese	再生されるエフェクト
+@param	position
+\~English	Initial position
+\~Japanese	初期位置
+@param	startFrame
+\~English	A time to play from middle
+\~Japanese	途中から再生するための時間
+
+</member>
+        <member name="M:EffekseerNET.Manager.Play(EffekseerNET.Effect,EffekseerNET.Vector3D)">
+@brief
+\~English	Play an effect.
+\~Japanese	エフェクトを再生する。
+@param	effect
+\~English	Played effect
+\~Japanese	再生されるエフェクト
+@param	position
+\~English	Initial position
+\~Japanese	初期位置
+
+</member>
+        <member name="M:EffekseerNET.Manager.Play(EffekseerNET.Effect,System.Single,System.Single,System.Single)">
+@brief	再生する。
+@param	effect	[in]	エフェクト
+@param	x	[in]	X座標
+@param	y	[in]	Y座標
+@param	z	[in]	Z座標
+@return	エフェクトのインスタンスのハンドル
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawHandleFront(System.Int32,EffekseerNET.Manager.DrawParameter)">
+@brief
+\~English	Draw particles in the front of priority 0.
+\~Japanese	前面のハンドル単位の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawHandleFront(System.Int32)">
+@brief
+\~English	Draw particles in the front of priority 0.
+\~Japanese	前面のハンドル単位の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawHandleBack(System.Int32,EffekseerNET.Manager.DrawParameter)">
+@brief
+\~English	Draw particles in the back of priority 0.
+\~Japanese	背面のハンドル単位の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawHandleBack(System.Int32)">
+@brief
+\~English	Draw particles in the back of priority 0.
+\~Japanese	背面のハンドル単位の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawHandle(System.Int32,EffekseerNET.Manager.DrawParameter)">
+@brief
+\~English	Draw particles with a handle.
+\~Japanese	ハンドル単位の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawHandle(System.Int32)">
+@brief
+\~English	Draw particles with a handle.
+\~Japanese	ハンドル単位の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawFront(EffekseerNET.Manager.DrawParameter)">
+@brief
+\~English	Draw particles in the front of priority 0.
+\~Japanese	前面の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawFront">
+@brief
+\~English	Draw particles in the front of priority 0.
+\~Japanese	前面の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawBack(EffekseerNET.Manager.DrawParameter)">
+@brief
+\~English	Draw particles in the back of priority 0.
+\~Japanese	背面の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.DrawBack">
+@brief
+\~English	Draw particles in the back of priority 0.
+\~Japanese	背面の描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.Draw(EffekseerNET.Manager.DrawParameter)">
+@brief
+\~English	Draw particles.
+\~Japanese	描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.Draw">
+@brief
+\~English	Draw particles.
+\~Japanese	描画処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.UpdateHandle(System.Int32,System.Single)">
+@brief
+\~English	Update an effect by a handle.
+\~Japanese	ハンドル単位の更新を行う。
+@param	handle
+\~English	a handle.
+\~Japanese	ハンドル
+@param	deltaFrame
+\~English	passed time (1 is 1/60 seconds)
+\~Japanese	更新するフレーム数(60fps基準)
+@note
+\~English
+You need to call BeginUpdate before starting update and EndUpdate after stopping update.
+\~Japanese
+更新する前にBeginUpdate、更新し終わった後にEndUpdateを実行する必要がある。
+
+</member>
+        <member name="M:EffekseerNET.Manager.UpdateHandle(System.Int32)">
+@brief
+\~English	Update an effect by a handle.
+\~Japanese	ハンドル単位の更新を行う。
+@param	handle
+\~English	a handle.
+\~Japanese	ハンドル
+@note
+\~English
+You need to call BeginUpdate before starting update and EndUpdate after stopping update.
+\~Japanese
+更新する前にBeginUpdate、更新し終わった後にEndUpdateを実行する必要がある。
+
+</member>
+        <member name="M:EffekseerNET.Manager.EndUpdate">
+@brief
+\~English	Stop to update effects.
+\~Japanese	更新処理を終了する。
+@note
+\~English	It is not required if Update is called.
+\~Japanese	Updateを実行する際は、実行する必要はない。
+
+</member>
+        <member name="M:EffekseerNET.Manager.BeginUpdate">
+@brief
+\~English	Start to update effects.
+\~Japanese	更新処理を開始する。
+@note
+\~English	It is not required if Update is called.
+\~Japanese	Updateを実行する際は、実行する必要はない。
+
+</member>
+        <member name="M:EffekseerNET.Manager.Update(System.Single)">
+@brief
+\~English	Update all effects.
+\~Japanese	全てのエフェクトの更新処理を行う。
+@param	deltaFrame
+\~English	passed time (1 is 1/60 seconds)
+\~Japanese	更新するフレーム数(60fps基準)
+
+</member>
+        <member name="M:EffekseerNET.Manager.Update">
+@brief
+\~English	Update all effects.
+\~Japanese	全てのエフェクトの更新処理を行う。
+
+</member>
+        <member name="M:EffekseerNET.Manager.Flip">
+@brief	今までのPlay等の処理をUpdate実行時に適用するようにする。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetAutoDrawing(System.Int32,System.Boolean)">
+@brief	エフェクトがDrawで描画されるか設定する。
+		autoDrawがfalseの場合、DrawHandleで描画する必要がある。
+@param	autoDraw	[in]	自動描画フラグ
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetSpeed(System.Int32,System.Single)">
+@brief	エフェクトのインスタンスを再生スピードを設定する。
+@param	handle	[in]	インスタンスのハンドル
+@param	speed	[in]	スピード
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetSpeed(System.Int32)">
+@brief
+\~English	Get a playing speed of particle of effect.
+\~Japanese	エフェクトのパーティクルの再生スピードを取得する。
+@param	handle
+\~English	Particle's handle
+\~Japanese	パーティクルのハンドル
+@return
+\~English	Speed
+\~Japanese	スピード
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetLayer(System.Int32,System.Int32)">
+@brief
+\~English	Set a layer index
+\~Japanese	レイヤーのインデックスを設定する
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetLayer(System.Int32)">
+@brief
+\~English	Get a layer index
+\~Japanese	レイヤーのインデックスを取得する
+@note
+\~English For example, if effect's layer is 1 and CameraCullingMask's first bit is 1, this effect is shown.
+\~Japanese 例えば、エフェクトのレイヤーが0でカリングマスクの最初のビットが1のときエフェクトは表示される。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetPausedToAllEffects(System.Boolean)">
+@brief	\~English	Pause or resume all particle of effects.
+		\~Japanese	全てのエフェクトのパーティクルを一時停止、もしくは再開する。
+@param	paused \~English	Pause or resume
+				\~Japanese	一時停止、もしくは再開
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetPaused(System.Int32,System.Boolean)">
+@brief	\~English	Pause or resume a particle of effect specified.
+		\~Japanese	指定したエフェクトのパーティクルを一時停止、もしくは再開する。
+@param	handle	[in]	インスタンスのハンドル
+@param	paused	[in]	更新するか?
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetPaused(System.Int32)">
+@brief	\~English	Get status that a particle of effect specified is paused.
+		\~Japanese	指定したエフェクトのパーティクルが一時停止されているか取得する。
+@param	handle	\~English	Particle's handle
+				\~Japanese	パーティクルのハンドル
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetShown(System.Int32,System.Boolean)">
+@brief	エフェクトのインスタンスをDraw時に描画するか設定する。
+@param	handle	[in]	インスタンスのハンドル
+@param	shown	[in]	描画するか?
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetShown(System.Int32)">
+@brief	エフェクトのインスタンスに廃棄時のコールバックを設定する。
+@param	handle	[in]	インスタンスのハンドル
+@param	callback	[in]	コールバック
+
+@brief	\~English	Get status that a particle of effect specified is shown.
+		\~Japanese	指定したエフェクトのパーティクルが表示されているか取得する。
+@param	handle	\~English	Particle's handle
+				\~Japanese	パーティクルのハンドル
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetBaseMatrix(System.Int32,EffekseerNET.Matrix43)">
+@brief	エフェクトのベース行列を設定する。
+@param	handle	[in]	インスタンスのハンドル
+@param	mat		[in]	設定する行列
+@note
+エフェクト全体の表示位置を指定する行列を設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetBaseMatrix(System.Int32)">
+@brief	エフェクトのベース行列を取得する。
+@param	handle	[in]	インスタンスのハンドル
+@return	ベース行列
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetDynamicInput(System.Int32,System.Int32,System.Single)">
+@brief
+\~English specfiy a dynamic parameter, which changes effect parameters dynamically while playing
+\~Japanese 再生中にエフェクトのパラメーターを変更する動的パラメーターを設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetDynamicInput(System.Int32,System.Int32)">
+@brief
+\~English get a dynamic parameter, which changes effect parameters dynamically while playing
+\~Japanese 再生中にエフェクトのパラメーターを変更する動的パラメーターを取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetTargetLocation(System.Int32,EffekseerNET.Vector3D)">
+@brief	エフェクトのインスタンスのターゲット位置を指定する。
+@param	location	[in]	位置
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetTargetLocation(System.Int32,System.Single,System.Single,System.Single)">
+@brief	エフェクトのインスタンスのターゲット位置を指定する。
+@param	x	[in]	X座標
+@param	y	[in]	Y座標
+@param	z	[in]	Z座標
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetAllColor(System.Int32,EffekseerNET.Color)">
+@brief
+\~English	Specify the color of overall effect.
+\~Japanese	エフェクト全体の色を指定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetScale(System.Int32,System.Single,System.Single,System.Single)">
+@brief	エフェクトのインスタンスの拡大率を指定する。
+@param	handle	[in]	インスタンスのハンドル
+@param	x		[in]	X方向拡大率
+@param	y		[in]	Y方向拡大率
+@param	z		[in]	Z方向拡大率
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetRotation(System.Int32,EffekseerNET.Vector3D,System.Single)">
+@brief	エフェクトのインスタンスの任意軸周りの反時計周りの回転角度を指定する。
+@param	handle	[in]	インスタンスのハンドル
+@param	axis	[in]	軸
+@param	angle	[in]	角度(ラジアン)
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetRotation(System.Int32,System.Single,System.Single,System.Single)">
+@brief	エフェクトのインスタンスの回転角度を指定する。(ラジアン)
+
+</member>
+        <member name="M:EffekseerNET.Manager.AddLocation(System.Int32,EffekseerNET.Vector3D)">
+@brief	エフェクトのインスタンスの位置に加算する。
+@param	location	[in]	加算する値
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetLocation(System.Int32,EffekseerNET.Vector3D)">
+@brief	エフェクトのインスタンスの位置を指定する。
+@param	location	[in]	位置
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetLocation(System.Int32,System.Single,System.Single,System.Single)">
+@brief	エフェクトのインスタンスの位置を指定する。
+@param	x	[in]	X座標
+@param	y	[in]	Y座標
+@param	z	[in]	Z座標
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetLocation(System.Int32)">
+@brief	エフェクトのインスタンスの位置を取得する。
+@param	handle	[in]	インスタンスのハンドル
+@return	位置
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetMatrix(System.Int32,EffekseerNET.Matrix43)">
+@brief	エフェクトのインスタンスに変換行列を設定する。
+@param	handle	[in]	インスタンスのハンドル
+@param	mat		[in]	変換行列
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetMatrix(System.Int32)">
+@brief	エフェクトのインスタンスに設定されている行列を取得する。
+@param	handle	[in]	インスタンスのハンドル
+@return	行列
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetTotalInstanceCount">
+@brief
+\~English Get the number of instances which is used in playing effects
+\~Japanese 全てのエフェクトに使用されているインスタンス数を取得する。
+@return
+\~English The number of instances
+\~Japanese インスタンス数
+@note
+\~English
+The number of Root is included.
+This means that the number of used instances added resting resting instances is larger than the number of allocated onces by the number of root.
+\~Japanese
+Rootも個数に含まれる。つまり、Root削除をしていない限り、
+Managerに残っているインスタンス数+エフェクトに使用されているインスタンス数は、最初に確保した個数よりも存在しているRootの数の分だけ多く存在する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetInstanceCount(System.Int32)">
+@brief	エフェクトに使用されているインスタンス数を取得する。
+@param	handle	[in]	インスタンスのハンドル
+@return	インスタンス数
+@note
+Rootも個数に含まれる。つまり、Root削除をしていない限り、
+Managerに残っているインスタンス数+エフェクトに使用されているインスタンス数は存在しているRootの数だけ
+最初に確保した個数よりも多く存在する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.Exists(System.Int32)">
+@brief	エフェクトのインスタンスが存在しているか取得する。
+@param	handle	[in]	インスタンスのハンドル
+@return	存在してるか?
+
+</member>
+        <member name="M:EffekseerNET.Manager.StopRoot(EffekseerNET.Effect)">
+@brief	エフェクトのルートだけを停止する。
+@param	effect	[in]	エフェクト
+
+</member>
+        <member name="M:EffekseerNET.Manager.StopRoot(System.Int32)">
+@brief	エフェクトのルートだけを停止する。
+@param	handle	[in]	インスタンスのハンドル
+
+</member>
+        <member name="M:EffekseerNET.Manager.StopAllEffects">
+@brief	全てのエフェクトを停止する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.StopEffect(System.Int32)">
+@brief	エフェクトを停止する。
+@param	handle	[in]	インスタンスのハンドル
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetMaterialLoader(EffekseerNET.MaterialLoader)">
+@brief
+\~English specfiy a material loader
+\~Japanese マテリアルローダーを設定する。
+@param	loader
+\~English	loader
+\~Japanese ローダー
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetMaterialLoader">
+@brief
+\~English get a material loader
+\~Japanese マテリアルローダーを取得する。
+@return
+\~English	loader
+\~Japanese ローダー
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetModelLoader(EffekseerNET.ModelLoader)">
+@brief	モデル読込クラスを設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetModelLoader">
+@brief	モデル読込クラスを取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetSoundLoader(EffekseerNET.SoundLoader)">
+@brief	サウンド読込クラスを設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetSoundLoader">
+@brief	サウンド読込クラスを取得する
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetSoundPlayer(EffekseerNET.SoundPlayer)">
+@brief	サウンド再生機能を設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetSoundPlayer">
+@brief	サウンド再生機能を取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetTextureLoader(EffekseerNET.TextureLoader)">
+@brief	テクスチャ読込クラスを設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetTextureLoader">
+@brief	テクスチャ読込クラスを取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetEffectLoader(EffekseerNET.EffectLoader)">
+@brief	エフェクト読込クラスを設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetEffectLoader">
+@brief	エフェクト読込クラスを取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetSetting(EffekseerNET.Setting)">
+@brief	設定クラスを設定する。
+@param	setting	[in]	設定
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetSetting">
+@brief	設定クラスを取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetTrackRenderer(EffekseerNET.TrackRenderer)">
+@brief	軌跡描画機能を設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetTrackRenderer">
+@brief	軌跡描画機能を取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetModelRenderer(EffekseerNET.ModelRenderer)">
+@brief	モデル描画機能を設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetModelRenderer">
+@brief	モデル描画機能を取得する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.SetRingRenderer(EffekseerNET.RingRenderer)">
+@brief	リング描画機能を設定する。
+
+</member>
+        <member name="M:EffekseerNET.Manager.GetRingRenderer">
+            <summary>
+	リング描画機能を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Manager.SetRibbonRenderer(EffekseerNET.RibbonRenderer)">
+            <summary>
+	ストライプ描画機能を設定する。
+</summary>
+            <param name="renderer" />
+        </member>
+        <member name="M:EffekseerNET.Manager.GetRibbonRenderer">
+            <summary>
+	ストライプ描画機能を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Manager.SetSpriteRenderer(EffekseerNET.SpriteRenderer)">
+            <summary>
+	スプライト描画機能を設定する。
+</summary>
+            <param name="renderer" />
+        </member>
+        <member name="M:EffekseerNET.Manager.GetSpriteRenderer">
+            <summary>
+	スプライト描画機能を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Manager.SetCoordinateSystem(EffekseerNET.CoordinateSystem)">
+            <summary>
+	座標系を設定する。
+	エフェクトファイルを読み込む前に設定する必要がある。
+</summary>
+            <param name="coordinateSystem">座標系。</param>
+        </member>
+        <member name="M:EffekseerNET.Manager.GetCoordinateSystem">
+            <summary>
+	座標系を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Manager.SetRandMax(System.Int32)">
+            <summary>
+	ランダム関数を設定する。
+</summary>
+            <param name="max_" />
+        </member>
+        <member name="M:EffekseerNET.Manager.GetRandMax">
+@brief
+\~English get an allocator
+\~Japanese メモリ確保関数を取得する。
+
+\~English specify an allocator
+\~Japanese メモリ確保関数を設定する。
+
+@brief
+\~English get a deallocator
+\~Japanese メモリ破棄関数を取得する。
+
+\~English specify a deallocator
+\~Japanese メモリ破棄関数を設定する。
+
+@brief	ランダム関数を取得する。
+
+@brief	ランダム関数を設定する。
+
+<summary>
+	ランダム最大値を取得する。
+</summary><returns /></member>
+        <member name="M:EffekseerNET.Manager.Destroy">
+            <summary>
+	マネージャーを破棄する。
+	このマネージャーから生成されたエフェクトは全て強制的に破棄される。
+</summary>
+        </member>
+        <member name="M:EffekseerNET.Manager.Create(System.Int32,System.Boolean)">
+            <summary>
+	マネージャを生成する。
+</summary>
+            <param name="instance_max">最大インスタンス数。</param>
+            <param name="autoFlip">自動でスレッド間のデータを入れ替えるかどうか、を指定する。trueの場合、<see cref="!:Manager.Update" /> 時に入れ替わる。</param>
+            <returns>マネージャ。</returns>
+        </member>
+        <member name="M:EffekseerNET.Manager.Create(System.Int32)">
+            <summary>
+	マネージャを生成する。
+</summary>
+            <param name="instance_max">最大インスタンス数。</param>
+            <returns>マネージャ。</returns>
+        </member>
+        <member name="F:EffekseerNET.Manager.DrawParameter.CameraCullingMask">
+            <summary>
+	エフェクトを表示するためのビットマスク。
+	例えば、エフェクトのレイヤーが0でカリングマスクの最初のビットが1のときエフェクトは表示される。
+</summary>
+        </member>
+        <member name="T:EffekseerNET.Manager.DrawParameter">
+            <summary>
+                <see cref="!:Manager.Draw" /> と <see cref="M:EffekseerNET.Manager.DrawHandle(System.Int32)" />　に使用するパラメータ。
+</summary>
+        </member>
+        <member name="T:EffekseerNET.Manager">
+            <summary>
+	エフェクト管理クラス。
+</summary>
+        </member>
+        <member name="M:EffekseerNET.Setting.GetEffectFactoryCount">
+@brief
+\~English	Get the number of effect factory
+\~Japanese Effect Factoryの数を取得する。
+
+</member>
+        <member name="M:EffekseerNET.Setting.ClearEffectFactory">
+@brief
+\~English	clear effect factories
+\~Japanese 全てのEffect Factoryを削除する。
+
+</member>
+        <member name="M:EffekseerNET.Setting.GetEffectFactory(System.Int32)">
+@brief
+\~English	Get effect factory
+\~Japanese Effect Factoryを取得する。
+
+</member>
+        <member name="M:EffekseerNET.Setting.AddEffectFactory(EffekseerNET.EffectFactory)">
+@brief
+\~English	Add effect factory
+\~Japanese Effect factoryを追加する。
+
+</member>
+        <member name="M:EffekseerNET.Setting.SetMaterialLoader(EffekseerNET.MaterialLoader)">
+@brief
+\~English specfiy a material loader
+\~Japanese マテリアルローダーを設定する。
+@param	loader
+\~English	loader
+\~Japanese ローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.GetMaterialLoader">
+@brief
+\~English get a material loader
+\~Japanese マテリアルローダーを取得する。
+@return
+\~English	loader
+\~Japanese ローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.SetSoundLoader(EffekseerNET.SoundLoader)">
+@brief	サウンドローダーを設定する。
+@param	loader	[in]		ローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.GetSoundLoader">
+@brief	サウンドローダーを取得する。
+@return	サウンドローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.SetModelLoader(EffekseerNET.ModelLoader)">
+@brief	モデルローダーを設定する。
+@param	loader	[in]		ローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.GetModelLoader">
+@brief	モデルローダーを取得する。
+@return	モデルローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.SetTextureLoader(EffekseerNET.TextureLoader)">
+@brief	テクスチャローダーを設定する。
+@param	loader	[in]		ローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.GetTextureLoader">
+@brief	テクスチャローダーを取得する。
+@return	テクスチャローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.SetEffectLoader(EffekseerNET.EffectLoader)">
+@brief	エフェクトローダーを設定する。
+@param	loader	[in]		ローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.GetEffectLoader">
+@brief	エフェクトローダーを取得する。
+@return	エフェクトローダー
+
+</member>
+        <member name="M:EffekseerNET.Setting.SetCoordinateSystem(EffekseerNET.CoordinateSystem)">
+@brief	座標系を設定する。
+@param	coordinateSystem	[in]	座標系
+@note
+座標系を設定する。
+エフェクトファイルを読み込む前に設定する必要がある。
+
+</member>
+        <member name="M:EffekseerNET.Setting.GetCoordinateSystem">
+@brief	座標系を取得する。
+@return	座標系
+
+</member>
+        <member name="M:EffekseerNET.Setting.Create">
+@brief	設定インスタンスを生成する。
+
+</member>
+        <member name="M:EffekseerNET.Setting.Dispose">
+@brief	デストラクタ
+
+</member>
+        <member name="M:EffekseerNET.Setting.#ctor">
+@brief	コンストラクタ
+
+</member>
+        <member name="T:EffekseerNET.Setting">
+@brief	設定クラス
+@note
+EffectLoader等、ファイル読み込みに関する設定することができる。
+Managerの代わりにエフェクト読み込み時に使用することで、Managerとは独立してEffectインスタンスを生成することができる。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.GetIsResourcesLoadedAutomatically">
+\~English get whether resources are loaded automatically when a binary is loaded
+\~Japanese	バイナリを読み込んだときに自動的にリソースを読み込むか取得する。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.GetName">
+\~English get factory's name
+\~Japanese	ファクトリーの名称を取得する。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.OnUnloadingResource(EffekseerNET.Effect)">
+@brief
+\~English this method is called when unload resources
+\~Japanese	リソースを廃棄される時に、このメソッドが呼ばれる。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.OnLoadingResource(EffekseerNET.Effect,System.IntPtr,System.Int32,System.String)">
+@brief
+\~English this method is called when load resources
+\~Japanese	リソースを読み込む時に、このメソッドが呼ばれる。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.OnLoading(EffekseerNET.Effect,System.IntPtr,System.Int32,System.Single,System.String)">
+@brief
+\~English this method is called when load a effect from binary
+\~Japanese	バイナリからエフェクトを読み込む時に、このメソッドが呼ばれる。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.OnCheckIsReloadSupported">
+@brief
+\~English this method is called to check whether reloading are supported.
+\~Japanese	リロードがサポートされているか確認するためにこのメソッドが呼ばれる。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.OnCheckIsBinarySupported(System.IntPtr,System.Int32)">
+@brief
+\~English this method is called to check whether loaded binary are supported.
+\~Japanese	バイナリがサポートされているか確認するためにこのメソッドが呼ばれる。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.SetLoadingParameter(EffekseerNET.Effect,EffekseerNET.ReferenceObject)">
+@brief
+\~English set loading data
+\~Japanese	ロード用データを設定する。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.SetMaterial(EffekseerNET.Effect,System.Int32,EffekseerNET.MaterialData)">
+@brief
+\~English set material data into specified index
+\~Japanese	指定されたインデックスにマテリアルを設定する。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.SetModel(EffekseerNET.Effect,System.Int32,System.IntPtr)">
+@brief
+\~English set model data into specified index
+\~Japanese	指定されたインデックスにモデルを設定する。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.SetSound(EffekseerNET.Effect,System.Int32,System.IntPtr)">
+@brief
+\~English set sound data into specified index
+\~Japanese	指定されたインデックスに音を設定する。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.SetTexture(EffekseerNET.Effect,System.Int32,EffekseerNET.TextureType,EffekseerNET.TextureData)">
+@brief
+\~English set texture data into specified index
+\~Japanese	指定されたインデックスにテクスチャを設定する。
+
+</member>
+        <member name="M:EffekseerNET.EffectFactory.LoadBody(EffekseerNET.Effect,System.IntPtr,System.Int32,System.Single,System.String)">
+@brief
+\~English load body data(parameters of effect) from a binary
+\~Japanese	バイナリから本体(エフェクトのパラメーター)を読み込む。
+
+</member>
+        <member name="T:EffekseerNET.EffectFactory">
+@brief
+\~English A class to edit an instance of EffectParameter for supporting original format when a binary is loaded.
+\~Japanese	独自フォーマットをサポートするための、バイナリが読み込まれた時にEffectParameterのインスタンスを編集するクラス
+
+</member>
+        <member name="M:EffekseerNET.SoundLoader.Unload(System.IntPtr)">
+@brief	サウンドを破棄する。
+@param	data	[in]	サウンド
+@note
+サウンドを破棄する。
+::Effekseer::Effectのインスタンスが破棄された時に使用される。
+
+</member>
+        <member name="M:EffekseerNET.SoundLoader.Load(System.IntPtr,System.Int32)">
+@brief
+\~English	a function called when sound is loaded
+\~Japanese	サウンドが読み込まれるときに呼ばれる関数
+@param	data
+\~English	data pointer
+\~Japanese	データのポインタ
+@param	size
+\~English	the size of data
+\~Japanese	データの大きさ
+@return
+\~English	a pointer of loaded texture
+\~Japanese	読み込まれたサウンドのポインタ
+
+</member>
+        <member name="M:EffekseerNET.SoundLoader.Load(System.String)">
+@brief	サウンドを読み込む。
+@param	path	[in]	読み込み元パス
+@return	サウンドのポインタ
+@note
+サウンドを読み込む。
+::Effekseer::Effect::Create実行時に使用される。
+
+</member>
+        <member name="M:EffekseerNET.SoundLoader.Dispose">
+@brief	デストラクタ
+
+</member>
+        <member name="T:EffekseerNET.SoundLoader">
+@brief	サウンド読み込み破棄関数指定クラス
+
+</member>
+        <member name="M:EffekseerNET.EffectLoader.Unload(System.IntPtr,System.Int32)">
+@brief	エフェクトファイルを破棄する。
+@param	data	[in]	データ配列の先頭のポインタ
+@param	size	[int]	データ配列の長さ
+@note
+エフェクトファイルを破棄する。
+::Effekseer::Effect::Create実行終了時に使用される。
+
+</member>
+        <member name="M:EffekseerNET.EffectLoader.Load(System.String,System.IntPtr@,System.Int32@)">
+@brief	エフェクトファイルを読み込む。
+@param	path	[in]	読み込み元パス
+@param	data	[out]	データ配列の先頭のポインタを出力する先
+@param	size	[out]	データ配列の長さを出力する先
+@return	成否
+@note
+エフェクトファイルを読み込む。
+::Effekseer::Effect::Create実行時に使用される。
+
+</member>
+        <member name="M:EffekseerNET.EffectLoader.Dispose">
+@brief	デストラクタ
+
+</member>
+        <member name="T:EffekseerNET.EffectLoader">
+@brief	エフェクトファイル読み込み破棄関数指定クラス
+
+</member>
+        <member name="M:EffekseerNET.Effect.CalculateTerm">
+            <summary>
+	エフェクトが存在する期間を計算する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetRoot">
+            <summary>
+	Rootを取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.UnloadResources">
+            <summary>
+	画像等リソースの破棄を行う。
+</summary>
+        </member>
+        <member name="M:EffekseerNET.Effect.ReloadResources(System.IntPtr,System.Int32,System.String)">
+            <summary>
+	画像等リソースの再読み込みを行う。
+</summary>
+            <param name="data" />
+            <param name="size" />
+            <param name="materialPath" />
+        </member>
+        <member name="M:EffekseerNET.Effect.ReloadResources">
+            <summary>
+	画像等リソースの再読み込みを行う。
+</summary>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(EffekseerNET.Manager[],System.Int32,System.String,System.String,EffekseerNET.ReloadingThreadType)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="managers">マネージャの配列。</param>
+            <param name="managersCount">マネージャの個数。</param>
+            <param name="path">エフェクトのパス。</param>
+            <param name="materialPath">リソースの読み込み元。</param>
+            <param name="reloadingThreadType">リロードの関数が呼ばれるスレッド。</param>
+            <returns>結果。</returns>
+            <remarks>
+                <see cref="T:EffekseerNET.Setting" /> を用いてエフェクトを生成したときに、<see cref="T:EffekseerNET.Manager" /> を指定することで対象の <see cref="T:EffekseerNET.Manager" /> 内のエフェクトのリロードを行う。
+	もし、<paramref name="reloadingThreadType" /> が <see cref="!:ReloadingThreadType.RenderThread" /> の場合、新規のリソースは読み込まれず、古いリソースは破棄されない。
+</remarks>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(EffekseerNET.Manager[],System.Int32,System.String,System.String)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="managers">マネージャの配列。</param>
+            <param name="managersCount">マネージャの個数。</param>
+            <param name="path">エフェクトのパス。</param>
+            <param name="materialPath">リソースの読み込み元。</param>
+            <returns>結果。</returns>
+            <remarks>
+                <see cref="T:EffekseerNET.Setting" /> を用いてエフェクトを生成したときに、<see cref="T:EffekseerNET.Manager" /> を指定することで対象の <see cref="T:EffekseerNET.Manager" /> 内のエフェクトのリロードを行う。
+</remarks>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(EffekseerNET.Manager[],System.Int32,System.String)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="managers">マネージャの配列。</param>
+            <param name="managersCount">マネージャの個数。</param>
+            <param name="path">エフェクトのパス。</param>
+            <returns>結果。</returns>
+            <remarks>
+                <see cref="T:EffekseerNET.Setting" /> を用いてエフェクトを生成したときに、<see cref="T:EffekseerNET.Manager" /> を指定することで対象の <see cref="T:EffekseerNET.Manager" /> 内のエフェクトのリロードを行う。
+	もし、<paramref name="reloadingThreadType" /> が <see cref="!:ReloadingThreadType.RenderThread" /> の場合、新規のリソースは読み込まれず、古いリソースは破棄されない。
+</remarks>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(EffekseerNET.Manager[],System.Int32,System.IntPtr,System.Int32,System.String,EffekseerNET.ReloadingThreadType)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="managers">マネージャの配列。</param>
+            <param name="managersCount">マネージャの個数。</param>
+            <param name="data">エフェクトのデータ。</param>
+            <param name="size">エフェクトのデータサイズ。</param>
+            <param name="materialPath">リソースの読み込み元。</param>
+            <param name="reloadingThreadType">リロードの関数が呼ばれるスレッド。</param>
+            <returns>結果</returns>
+            <remarks>
+                <see cref="T:EffekseerNET.Setting" /> を用いてエフェクトを生成したときに、<see cref="T:EffekseerNET.Manager" /> を指定することで対象の <see cref="T:EffekseerNET.Manager" /> 内のエフェクトのリロードを行う。
+	もし、<paramref name="reloadingThreadType" /> が <see cref="!:ReloadingThreadType.RenderThread" /> の場合、新規のリソースは読み込まれず、古いリソースは破棄されない。
+</remarks>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(EffekseerNET.Manager[],System.Int32,System.IntPtr,System.Int32,System.String)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="managers">マネージャの配列。</param>
+            <param name="managersCount">マネージャの個数。</param>
+            <param name="data">エフェクトのデータ。</param>
+            <param name="size">エフェクトのデータサイズ。</param>
+            <param name="materialPath">リソースの読み込み元。</param>
+            <returns>結果</returns>
+            <remarks>
+                <see cref="T:EffekseerNET.Setting" /> を用いてエフェクトを生成したときに、<see cref="T:EffekseerNET.Manager" /> を指定することで対象の <see cref="T:EffekseerNET.Manager" /> 内のエフェクトのリロードを行う。
+</remarks>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(EffekseerNET.Manager[],System.Int32,System.IntPtr,System.Int32)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="managers">マネージャの配列。</param>
+            <param name="managersCount">マネージャの個数。</param>
+            <param name="data">エフェクトのデータ。</param>
+            <param name="size">エフェクトのデータサイズ。</param>
+            <returns>結果</returns>
+            <remarks>
+                <see cref="T:EffekseerNET.Setting" /> を用いてエフェクトを生成したときに、<see cref="T:EffekseerNET.Manager" /> を指定することで対象の <see cref="T:EffekseerNET.Manager" /> 内のエフェクトのリロードを行う。
+	もし、<paramref name="reloadingThreadType" /> が <see cref="!:ReloadingThreadType.RenderThread" /> の場合、新規のリソースは読み込まれず、古いリソースは破棄されない。
+</remarks>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(System.String,System.String,EffekseerNET.ReloadingThreadType)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="path">エフェクトのパス。</param>
+            <param name="materialPath">リソースの読み込み元。</param>
+            <param name="reloadingThreadType">リロードの関数が呼ばれるスレッド。</param>
+            <returns>結果。</returns>
+            <remarks>もし、<paramref name="reloadingThreadType" /> が <see cref="!:ReloadingThreadType.RenderThread" /> の場合、新規のリソースは読み込まれず、古いリソースは破棄されない。</remarks>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(System.String)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="path">エフェクトのパス。</param>
+            <returns>結果。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(System.IntPtr,System.Int32,System.String,EffekseerNET.ReloadingThreadType)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="data">エフェクトのデータ。</param>
+            <param name="size">エフェクトのデータサイズ。</param>
+            <param name="materialPath">リソースの読み込み元。</param>
+            <param name="reloadingThreadType">リロードの関数が呼ばれるスレッド。</param>
+            <returns />
+            <remarks>もし、<paramref name="reloadingThreadType" /> が <see cref="!:ReloadingThreadType.RenderThread" /> の場合、新規のリソースは読み込まれず、古いリソースは破棄されない。</remarks>
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(System.IntPtr,System.Int32,System.String)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="data">エフェクトのデータ。</param>
+            <param name="size">エフェクトのデータサイズ。</param>
+            <param name="materialPath">リソースの読み込み元。</param>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.Reload(System.IntPtr,System.Int32)">
+            <summary>
+	エフェクトのリロードを行う。
+</summary>
+            <param name="data">エフェクトのデータ。</param>
+            <param name="size">エフェクトのデータサイズ。</param>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.SetMaterial(System.Int32,EffekseerNET.MaterialData)">
+            <summary>
+	指定されたインデックスにマテリアルを設定する。
+</summary>
+            <param name="index" />
+            <param name="data" />
+        </member>
+        <member name="M:EffekseerNET.Effect.SetModel(System.Int32,System.IntPtr)">
+            <summary>
+	指定されたインデックスにモデルを設定する。
+</summary>
+            <param name="index" />
+            <param name="data" />
+        </member>
+        <member name="M:EffekseerNET.Effect.SetSound(System.Int32,System.IntPtr)">
+            <summary>
+	指定されたインデックスに音を設定する。
+</summary>
+            <param name="index" />
+            <param name="data" />
+        </member>
+        <member name="M:EffekseerNET.Effect.SetTexture(System.Int32,EffekseerNET.TextureType,EffekseerNET.TextureData)">
+            <summary>
+	指定されたインデックスにテクスチャを設定する。
+</summary>
+            <param name="index" />
+            <param name="type" />
+            <param name="data" />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetMaterialPath(System.Int32)">
+            <summary>
+	マテリアルのパスを取得する。
+</summary>
+            <param name="n" />
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetMaterialCount">
+            <summary>
+	格納されているマテリアルのポインタの個数を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetMaterial(System.Int32)">
+            <summary>
+	格納されているマテリアルのポインタを取得する。
+</summary>
+            <param name="n" />
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetModelPath(System.Int32)">
+            <summary>
+	モデルのパスを取得する。
+</summary>
+            <param name="n" />
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetModelCount">
+            <summary>
+	格納されているモデルのポインタの個数を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetModel(System.Int32)">
+            <summary>
+	格納されているモデルのポインタを取得する。
+</summary>
+            <param name="n" />
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetWavePath(System.Int32)">
+            <summary>
+	音波形のパスを取得する。
+</summary>
+            <param name="n" />
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetWaveCount">
+            <summary>
+	格納されている音波形のポインタの個数を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetWave(System.Int32)">
+            <summary>
+	格納されている音波形のポインタを取得する。
+</summary>
+            <param name="n" />
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetDistortionImagePath(System.Int32)">
+            <summary>
+	歪み画像のパスを取得する。
+</summary>
+            <param name="n" />
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetDistortionImageCount">
+            <summary>
+	格納されている歪み画像のポインタの個数を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetDistortionImage(System.Int32)">
+            <summary>
+	格納されている歪み画像のポインタを取得する。
+</summary>
+            <param name="n">画像のインデックス。</param>
+            <returns>画像のポインタ。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.GetNormalImagePath(System.Int32)">
+            <summary>
+	法線画像のパスを取得する。
+</summary>
+            <param name="n">画像のインデックス。</param>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetNormalImageCount">
+            <summary>
+	格納されている法線画像のポインタの個数を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetNormalImage(System.Int32)">
+            <summary>
+	格納されている法線画像のポインタを取得する。
+</summary>
+            <param name="n">画像のインデックス。</param>
+            <returns>画像のポインタ。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.GetColorImagePath(System.Int32)">
+            <summary>
+	色画像のパスを取得する。
+</summary>
+            <param name="n">画像のインデックス。</param>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetColorImageCount">
+            <summary>
+	格納されている画像のポインタの個数を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetColorImage(System.Int32)">
+            <summary>
+	格納されている色画像のポインタを取得する。
+</summary>
+            <param name="n">画像のインデックス。</param>
+            <returns>色画像のポインタ。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.GetLoadingParameter">
+            <summary>
+	EffectFactoryによって指定されたロード用パラメーターを取得する。EffectFactoryを使用しない限り、このパラメーターは使用しない。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetVersion">
+            <summary>
+	エフェクトデータのバージョン取得
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetMaginification">
+            <summary>
+	読み込み時と出力時の拡大率をかけた拡大率を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetSetting">
+            <summary>
+	設定を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.SetName(System.String)">
+            <summary>
+	エフェクトの名前を設定する。
+</summary>
+            <param name="name" />
+        </member>
+        <member name="M:EffekseerNET.Effect.GetName">
+            <summary>
+	エフェクトの名前を取得する。
+</summary>
+            <returns>エフェクトの名前。もしファイルからエフェクトを読み込んだ場合、名前は拡張子を除いたファイル名である。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.CreateEffectLoader(EffekseerNET.FileInterface)">
+            <summary>
+	標準のエフェクト読み込みインスタンスを生成する。
+</summary>
+            <param name="fileInterface" />
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.CreateEffectLoader">
+            <summary>
+	標準のエフェクト読み込みインスタンスを生成する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Setting,System.String,System.Single,System.String)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="setting">設定クラス。</param>
+            <param name="path">読み込み元のパス。</param>
+            <param name="magnification">読み込み時の拡大率。</param>
+            <param name="materialPath">素材ロード時の基準パス。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Setting,System.String,System.Single)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="setting">設定クラス。</param>
+            <param name="path">読み込み元のパス。</param>
+            <param name="magnification">読み込み時の拡大率。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Setting,System.String)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="setting">設定クラス。</param>
+            <param name="path">読み込み元のパス。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Setting,System.IntPtr,System.Int32,System.Single,System.String)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="setting">設定クラス。</param>
+            <param name="data">データ配列の先頭のポインタ。</param>
+            <param name="size">データ配列の長さ。</param>
+            <param name="magnification">読み込み時の拡大率。</param>
+            <param name="materialPath">素材ロード時の基準パス。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Setting,System.IntPtr,System.Int32,System.Single)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="setting">設定クラス。</param>
+            <param name="data">データ配列の先頭のポインタ。</param>
+            <param name="size">データ配列の長さ。</param>
+            <param name="magnification">読み込み時の拡大率。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Setting,System.IntPtr,System.Int32)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="setting">設定クラス。</param>
+            <param name="data">データ配列の先頭のポインタ。</param>
+            <param name="size">データ配列の長さ。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Manager,System.String,System.Single,System.String)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="manager">管理クラス。</param>
+            <param name="path">読み込み元のパス。</param>
+            <param name="magnification">読み込み時の拡大率。</param>
+            <param name="materialPath">素材ロード時の基準パス。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Manager,System.String,System.Single)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="manager">管理クラス。</param>
+            <param name="path">読み込み元のパス。</param>
+            <param name="magnification">読み込み時の拡大率。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Manager,System.String)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="manager">管理クラス。</param>
+            <param name="path">読み込み元のパス。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Manager,System.IntPtr,System.Int32,System.Single,System.String)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="manager">管理クラス。</param>
+            <param name="data">データ配列の先頭のポインタ。</param>
+            <param name="size">データ配列の長さ。</param>
+            <param name="magnification">読み込み時の拡大率。</param>
+            <param name="materialPath">素材ロード時の基準パス。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Manager,System.IntPtr,System.Int32,System.Single)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="manager">管理クラス。</param>
+            <param name="data">データ配列の先頭のポインタ。</param>
+            <param name="size">データ配列の長さ。</param>
+            <param name="magnification">読み込み時の拡大率。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="M:EffekseerNET.Effect.Create(EffekseerNET.Manager,System.IntPtr,System.Int32)">
+            <summary>
+	エフェクトを生成する。
+</summary>
+            <param name="manager">管理クラス。</param>
+            <param name="data">データ配列の先頭のポインタ。</param>
+            <param name="size">データ配列の長さ。</param>
+            <returns>エフェクト。失敗した場合はnullを返す。</returns>
+        </member>
+        <member name="T:EffekseerNET.Effect">
+            <summary>
+	エフェクトパラメータークラス。
+</summary>
+        </member>
+        <member name="F:EffekseerNET.EffectTerm.TermMax">
+@brief
+\~English	Maximum end time that the effect may exist
+\~Japanese	エフェクトが存在する可能性のある最大の終了時間
+
+</member>
+        <member name="F:EffekseerNET.EffectTerm.TermMin">
+@brief
+\~English	Minimum end time that the effect may exist
+\~Japanese	エフェクトが存在する可能性のある最小の終了時間
+
+</member>
+        <member name="T:EffekseerNET.EffectTerm">
+@brief
+\~English	Terms where an effect exists
+\~Japanese	エフェクトが存在する期間
+
+</member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.DeleteProxyTexture(EffekseerNET.TextureData)">
+            <summary>
+	代替のテクスチャを削除する。
+</summary>
+            <param name="data" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateProxyTexture(EffekseerRendererNET.ProxyTextureType)">
+            <summary>
+	代替のテクスチャを生成する
+</summary>
+            <param name="type" />
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetBackgroundTexture(EffekseerNET.TextureData)">
+            <summary>
+	背景のテクスチャを設定する。
+	設定されたテクスチャはレンダラーによって削除されない。この関数はDirectX9、DirectX11以外で使用できる。
+</summary>
+            <param name="textureData" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetCommandList(EffekseerRendererNET.CommandList)">
+            <summary>
+	描画に使用するコマンドリストを設定する。この関数はDirectX9、DirectX11、OpenGL以外で使用できる。
+</summary>
+            <param name="commandList" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetTime(System.Single)">
+            <summary>
+	現在の時間(秒)を設定する。
+</summary>
+            <param name="time" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetTime">
+            <summary>
+	現在の時間(秒)を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetBackgroundTextureUVStyle(EffekseerRendererNET.UVStyle)">
+            <summary>
+	パーティクルを描画するときの背景のUVの状態を設定する。
+</summary>
+            <param name="style" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetBackgroundTextureUVStyle">
+            <summary>
+	パーティクルを描画するときの背景のUVの状態を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetTextureUVStyle(EffekseerRendererNET.UVStyle)">
+            <summary>
+	パーティクルを描画するときのUVの状態を設定する。
+</summary>
+            <param name="style" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetTextureUVStyle">
+            <summary>
+	パーティクルを描画するときのUVの状態を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetRenderMode(EffekseerNET.RenderMode)">
+            <summary>
+	描画モードを設定する。
+</summary>
+            <param name="renderMode" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetRenderMode">
+            <summary>
+	描画モードを取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.ResetDrawVertexCount">
+            <summary>
+	描画された頂点数をリセットする。
+</summary>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.ResetDrawCallCount">
+            <summary>
+	ドローコールの回数をリセットする。
+</summary>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetDrawVertexCount">
+            <summary>
+	描画された頂点数をリセットする。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetDrawCallCount">
+            <summary>
+	ドローコールの回数を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetDistortingCallback(EffekseerRendererNET.DistortingCallback)">
+            <summary>
+	背景を歪ませるエフェクトが描画される前に呼ばれるコールバックを設定する。
+</summary>
+            <param name="callback" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetDistortingCallback">
+            <summary>
+	背景を歪ませるエフェクトが描画される前に呼ばれるコールバックを取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.ResetRenderState">
+            <summary>
+	レンダーステートを強制的にリセットする。
+</summary>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateMaterialLoader(EffekseerNET.FileInterface)">
+            <summary>
+	標準のマテリアル読み込みクラスを生成する。
+</summary>
+            <param name="fileInterface" />
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateMaterialLoader">
+            <summary>
+	標準のマテリアル読み込みクラスを生成する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateModelLoader(EffekseerNET.FileInterface)">
+            <summary>
+	標準のモデル読み込みクラスを生成する。
+</summary>
+            <param name="fileInterface" />
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateModelLoader">
+            <summary>
+	標準のモデル読み込みクラスを生成する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateTextureLoader(EffekseerNET.FileInterface)">
+            <summary>
+	標準のテクスチャ読み込みクラスを生成する。
+</summary>
+            <param name="fileInterface" />
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateTextureLoader">
+            <summary>
+	標準のテクスチャ読み込みクラスを生成する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateTrackRenderer">
+            <summary>
+	軌跡レンダラーを生成する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateModelRenderer">
+            <summary>
+	モデルレンダラーを生成する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateRingRenderer">
+            <summary>
+	リングレンダラーを生成する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateRibbonRenderer">
+            <summary>
+	リボンレンダラーを生成する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.CreateSpriteRenderer">
+            <summary>
+	スプライトレンダラーを生成する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetCameraParameter(EffekseerNET.Vector3D,EffekseerNET.Vector3D)">
+            <summary>
+	カメラの前方方向と位置を手動で設定する。
+</summary>
+            <param name="front">右手系の場合、注視点から視点への方向。左手系の場合、視点から注視点への方向。</param>
+            <param name="position" />
+            <remarks>
+	これらは、カメラ行列をもとに自動的に設定されます。いくつかのプラットフォームでは失敗します。
+</remarks>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetCameraPosition">
+            <summary>
+	カメラの位置を取得する。
+</summary>
+            <returns />
+            <remarks>内部コードを理解せずに使用することは推奨されません。</remarks>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetCameraFrontDirection">
+            <summary>
+	カメラの前方方向を取得する。
+</summary>
+            <returns />
+            <remarks>内部コードを理解せずに使用することは推奨されません。</remarks>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetCameraProjectionMatrix">
+            <summary>
+	カメラ射影変換行列を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetCameraMatrix(EffekseerNET.Matrix44)">
+            <summary>
+	カメラ行列を設定する。
+</summary>
+            <param name="mat" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetCameraMatrix">
+            <summary>
+	カメラ行列を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetProjectionMatrix(EffekseerNET.Matrix44)">
+            <summary>
+	射影変換行列を設定する。
+</summary>
+            <param name="mat" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetProjectionMatrix">
+            <summary>
+	射影変換行列を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetSquareMaxCount">
+            <summary>
+	最大描画スプライト数を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetLightAmbientColor(EffekseerNET.Color)">
+            <summary>
+	環境光の色を設定する。
+</summary>
+            <param name="color" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetLightAmbientColor">
+            <summary>
+	環境光の色を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetLightColor(EffekseerNET.Color)">
+            <summary>
+	ライトの色を設定する。
+</summary>
+            <param name="color" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetLightColor">
+            <summary>
+	ライトの色を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetLightDirection(EffekseerNET.Vector3D)">
+            <summary>
+	ライトの方向を設定する。
+</summary>
+            <param name="direction" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetLightDirection">
+            <summary>
+	ライトの方向を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.EndRendering">
+            <summary>
+	描画を終了する時に実行する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.BeginRendering">
+            <summary>
+	描画を開始する時に実行する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetRestorationOfStatesFlag(System.Boolean)">
+            <summary>
+	ステートを復帰するかどうかのフラグを設定する。
+</summary>
+            <param name="flag" />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.Destroy">
+            <summary>
+	このインスタンスを破棄する。
+</summary>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.OnResetDevice">
+            <summary>
+	デバイスがリセットされた時に実行する。
+</summary>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.OnLostDevice">
+            <summary>
+	デバイスロストが発生した時に実行する。
+</summary>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.SetBackground(System.IntPtr)">
+            <summary>
+	背景を設定する。
+</summary>
+            <param name="background">ID3D11ShaderResourceView へのポインタ。</param>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.GetBackground">
+            <summary>
+	背景を取得する。
+</summary>
+            <returns />
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.Create(System.IntPtr,System.IntPtr,System.Int32,EffekseerRendererDX11NET.Renderer.Comparison,System.Boolean)">
+            <summary>
+	インスタンスを生成する。
+</summary>
+            <param name="device">ID3D11Device へのポインタ。</param>
+            <param name="context">ID3D11DeviceContext へのポインタ。</param>
+            <param name="squareMaxCount">最大描画スプライト数。</param>
+            <param name="depthFunc">奥行きの計算方法。</param>
+            <param name="isMSAAEnabled">MSAAを有効にするならtrue。</param>
+            <returns>インスタンス。</returns>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.Create(System.IntPtr,System.IntPtr,System.Int32,System.Boolean)">
+            <summary>
+	インスタンスを生成する。
+</summary>
+            <param name="device">ID3D11Device へのポインタ。</param>
+            <param name="context">ID3D11DeviceContext へのポインタ。</param>
+            <param name="squareMaxCount">最大描画スプライト数。</param>
+            <param name="isMSAAEnabled">MSAAを有効にするならtrue。</param>
+            <returns>インスタンス。</returns>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.Create(System.IntPtr,System.IntPtr,System.Int32,EffekseerRendererDX11NET.Renderer.Comparison)">
+            <summary>
+	インスタンスを生成する。
+</summary>
+            <param name="device">ID3D11Device へのポインタ。</param>
+            <param name="context">ID3D11DeviceContext へのポインタ。</param>
+            <param name="squareMaxCount">最大描画スプライト数。</param>
+            <param name="depthFunc">奥行きの計算方法。</param>
+            <returns>インスタンス。</returns>
+        </member>
+        <member name="M:EffekseerRendererDX11NET.Renderer.Create(System.IntPtr,System.IntPtr,System.Int32)">
+            <summary>
+	インスタンスを生成する。
+</summary>
+            <param name="device">ID3D11Device へのポインタ。</param>
+            <param name="context">ID3D11DeviceContext へのポインタ。</param>
+            <param name="squareMaxCount">最大描画スプライト数。</param>
+            <returns>インスタンス。</returns>
+        </member>
+        <member name="T:EffekseerRendererDX11NET.Renderer">
+            <summary>
+	描画クラス。(DirectX11)
+</summary>
+        </member>
+        <member name="M:EffekseerRendererNET.RendererBase.DeleteProxyTexture(EffekseerNET.TextureData)">
+@brief
+\~English	Delete a proxy texture
+\~Japanese	代替のテクスチャを削除する
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateProxyTexture(EffekseerRendererNET.ProxyTextureType)">
+@brief
+\~English	Create a proxy texture
+\~Japanese	代替のテクスチャを生成する
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetBackgroundTexture(EffekseerNET.TextureData)">
+@brief
+\~English	Specify a background texture.
+\~Japanese	背景のテクスチャを設定する。
+@note
+\~English	Specified texture is not deleted by the renderer. This function is available except DirectX9, DirectX11.
+\~Japanese	設定されたテクスチャはレンダラーによって削除されない。この関数はDirectX9、DirectX11以外で使用できる。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetCommandList(EffekseerRendererNET.CommandList)">
+@brief
+\~English	specify a command list to render.  This function is available except DirectX9, DirectX11 and OpenGL.
+\~Japanese	描画に使用するコマンドリストを設定する。この関数はDirectX9、DirectX11、OpenGL以外で使用できる。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetTime(System.Single)">
+@brief
+\~english Set a current time (s)
+\~japanese 現在の時間を設定する。(秒)
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetTime">
+@brief
+\~english Get a current time (s)
+\~japanese 現在の時間を取得する。(秒)
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetBackgroundTextureUVStyle(EffekseerRendererNET.UVStyle)">
+@brief
+\~english Set an UV Style of background when particles are rendered.
+\~japanese パーティクルを描画するときの背景のUVの状態を設定する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetBackgroundTextureUVStyle">
+@brief
+\~english Get an UV Style of background when particles are rendered.
+\~japanese パーティクルを描画するときの背景のUVの状態を取得する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetTextureUVStyle(EffekseerRendererNET.UVStyle)">
+@brief
+\~english Set an UV Style of texture when particles are rendered.
+\~japanese パーティクルを描画するときのUVの状態を設定する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetTextureUVStyle">
+@brief
+\~english Get an UV Style of texture when particles are rendered.
+\~japanese パーティクルを描画するときのUVの状態を取得する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetRenderMode(EffekseerNET.RenderMode)">
+@brief
+\~english Specify a render mode.
+\~japanese 描画モードを設定する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetRenderMode">
+@brief
+\~english Get a render mode.
+\~japanese 描画モードを取得する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.ResetDrawVertexCount">
+@brief
+\~english Reset the number of vertex drawn
+\~japanese 描画された頂点数をリセットする
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.ResetDrawCallCount">
+@brief
+\~english Reset draw call count
+\~japanese ドローコールの回数をリセットする
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetDrawVertexCount">
+@brief
+\~english Get the number of vertex drawn
+\~japanese 描画された頂点数をリセットする
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetDrawCallCount">
+@brief
+\~english Get draw call count
+\~japanese ドローコールの回数を取得する
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetDistortingCallback(EffekseerRendererNET.DistortingCallback)">
+@brief	背景を歪ませるエフェクトが描画される前に呼ばれるコールバックを設定する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetDistortingCallback">
+@brief	背景を歪ませるエフェクトが描画される前に呼ばれるコールバックを取得する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.ResetRenderState">
+@brief	レンダーステートを強制的にリセットする。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateMaterialLoader(EffekseerNET.FileInterface)">
+@brief
+\~english Create default material loader
+\~japanese 標準のマテリアル読込クラスを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateMaterialLoader">
+@brief
+\~english Create default material loader
+\~japanese 標準のマテリアル読込クラスを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateModelLoader(EffekseerNET.FileInterface)">
+@brief	標準のモデル読込クラスを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateModelLoader">
+@brief	標準のモデル読込クラスを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateTextureLoader(EffekseerNET.FileInterface)">
+@brief	標準のテクスチャ読込クラスを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateTextureLoader">
+@brief	標準のテクスチャ読込クラスを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateTrackRenderer">
+@brief	軌跡レンダラーを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateModelRenderer">
+@brief	モデルレンダラーを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateRingRenderer">
+@brief	リングレンダラーを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateRibbonRenderer">
+@brief	リボンレンダラーを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.CreateSpriteRenderer">
+@brief	スプライトレンダラーを生成する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetCameraParameter(EffekseerNET.Vector3D,EffekseerNET.Vector3D)">
+@brief	Set a front direction and position of camera manually
+@param front (Right Hand) a direction from focus to eye, (Left Hand) a direction from eye to focus,
+@note
+These are set based on camera matrix automatically.
+It is failed on some platform.
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetCameraPosition">
+@brief	Get a position of camera
+@note
+We don't recommend to use it without understanding of internal code.
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetCameraFrontDirection">
+@brief	Get a front direction of camera
+@note
+We don't recommend to use it without understanding of internal code.
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetCameraProjectionMatrix">
+@brief	Get a camera projection matrix
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetCameraMatrix(EffekseerNET.Matrix44)">
+@brief	Set a camera matrix
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetCameraMatrix">
+@brief	Get a camera matrix
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetProjectionMatrix(EffekseerNET.Matrix44)">
+@brief	Set a projection matrix
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetProjectionMatrix">
+@brief	Get a projection matrix
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetSquareMaxCount">
+@brief	最大描画スプライト数を取得する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetLightAmbientColor(EffekseerNET.Color)">
+@brief	Specify the color of ambient
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetLightAmbientColor">
+@brief	Get the color of ambient
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetLightColor(EffekseerNET.Color)">
+@brief	Specify the color of light
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetLightColor">
+@brief	Get the color of light
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetLightDirection(EffekseerNET.Vector3D)">
+@brief	Specifiy the direction of light
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.GetLightDirection">
+@brief	Get the direction of light
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.EndRendering">
+@brief	描画を終了する時に実行する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.BeginRendering">
+@brief	描画を開始する時に実行する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.SetRestorationOfStatesFlag(System.Boolean)">
+@brief	ステートを復帰するかどうかのフラグを設定する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.Destroy">
+@brief	このインスタンスを破棄する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.OnResetDevice">
+@brief	デバイスがリセットされた時に実行する。
+
+</member>
+        <member name="M:EffekseerRendererNET.RendererBase.OnLostDevice">
+**
+@brief	デバイスロストが発生した時に実行する。
+
+</member>
+        <member name="M:EffekseerNET.MaterialLoader.Unload(EffekseerNET.MaterialData)">
+@brief
+\~English	dispose a material
+\~Japanese	マテリアルを破棄する。
+@param	data
+\~English	a pointer of loaded a material
+\~Japanese	読み込まれたマテリアルのポインタ
+
+</member>
+        <member name="M:EffekseerNET.MaterialLoader.Load(System.String,System.Int32,EffekseerNET.MaterialFileType)">
+@brief
+\~English	a function called when a material is loaded
+\~Japanese	マテリアルが読み込まれるときに呼ばれる関数
+@param	data
+\~English	data pointer
+\~Japanese	データのポインタ
+@param	size
+\~English	the size of data
+\~Japanese	データの大きさ
+@param	fileType
+\~English	file type
+\~Japanese	ファイルの種類
+@return
+\~English	a pointer of loaded a material
+\~Japanese	読み込まれたマテリアルのポインタ
+
+</member>
+        <member name="M:EffekseerNET.MaterialLoader.Load(System.String)">
+@brief
+\~English	load a material
+\~Japanese	マテリアルを読み込む。
+@param	path
+\~English	a file path
+\~Japanese	読み込み元パス
+@return
+\~English	a pointer of loaded a material
+\~Japanese	読み込まれたマテリアルのポインタ
+
+</member>
+        <member name="M:EffekseerNET.MaterialLoader.Dispose">
+@brief
+\~English	Destructor
+\~Japanese	デストラクタ
+
+</member>
+        <member name="M:EffekseerNET.MaterialLoader.#ctor">
+@brief
+\~English	Constructor
+\~Japanese	コンストラクタ
+
+</member>
+        <member name="T:EffekseerNET.MaterialLoader">
+@brief
+\~English	Material loader
+\~Japanese	マテリアル読み込み破棄関数指定クラス
+
+</member>
+        <member name="T:EffekseerNET.MaterialData">
+@brief	\~english	Material data
+		\~japanese	マテリアルデータ
+
+</member>
+        <member name="M:EffekseerNET.ModelLoader.Unload(System.IntPtr)">
+@brief	モデルを破棄する。
+@param	data	[in]	モデル
+@note
+モデルを破棄する。
+::Effekseer::Effectのインスタンスが破棄された時に使用される。
+
+</member>
+        <member name="M:EffekseerNET.ModelLoader.Load(System.String,System.Int32)">
+@brief
+\~English	a function called when model is loaded
+\~Japanese	モデルが読み込まれるときに呼ばれる関数
+@param	data
+\~English	data pointer
+\~Japanese	データのポインタ
+@param	size
+\~English	the size of data
+\~Japanese	データの大きさ
+@return
+\~English	a pointer of loaded texture
+\~Japanese	読み込まれたモデルのポインタ
+
+</member>
+        <member name="M:EffekseerNET.ModelLoader.Load(System.String)">
+@brief	モデルを読み込む。
+@param	path	[in]	読み込み元パス
+@return	モデルのポインタ
+@note
+モデルを読み込む。
+::Effekseer::Effect::Create実行時に使用される。
+
+</member>
+        <member name="M:EffekseerNET.ModelLoader.Dispose">
+@brief	デストラクタ
+
+</member>
+        <member name="M:EffekseerNET.ModelLoader.#ctor">
+@brief	コンストラクタ
+
+</member>
+        <member name="T:EffekseerNET.ModelLoader">
+@brief	モデル読み込み破棄関数指定クラス
+
+</member>
+        <member name="M:EffekseerNET.FileInterface.TryOpenRead(System.String)">
+@brief
+\~English	try to open a reader. It need not to succeeds in opening it.
+\~Japanese	リーダーを開くことを試します。成功する必要はありません。
+
+</member>
+        <member name="T:EffekseerNET.FileInterface">
+@brief
+\~English	factory class for io
+\~Japanese	IOのためのファクトリークラス
+
+</member>
+        <member name="T:EffekseerNET.FileWriter">
+@brief	ファイル書き込みクラス
+
+</member>
+        <member name="T:EffekseerNET.FileReader">
+@brief	ファイル読み込みクラス
+
+</member>
+        <member name="M:EffekseerNET.TextureLoader.Unload(EffekseerNET.TextureData)">
+@brief	テクスチャを破棄する。
+@param	data	[in]	テクスチャ
+@note
+テクスチャを破棄する。
+::Effekseer::Effectのインスタンスが破棄された時に使用される。
+
+</member>
+        <member name="M:EffekseerNET.TextureLoader.Load(System.IntPtr,System.Int32,EffekseerNET.TextureType)">
+@brief
+\~English	a function called when texture is loaded
+\~Japanese	テクスチャが読み込まれるときに呼ばれる関数
+@param	data
+\~English	data pointer
+\~Japanese	データのポインタ
+@param	size
+\~English	the size of data
+\~Japanese	データの大きさ
+@param	textureType
+\~English	a kind of texture
+\~Japanese	テクスチャの種類
+@return
+\~English	a pointer of loaded texture
+\~Japanese	読み込まれたテクスチャのポインタ
+
+</member>
+        <member name="M:EffekseerNET.TextureLoader.Load(System.String,EffekseerNET.TextureType)">
+@brief	テクスチャを読み込む。
+@param	path	[in]	読み込み元パス
+@param	textureType	[in]	テクスチャの種類
+@return	テクスチャのポインタ
+@note
+テクスチャを読み込む。
+::Effekseer::Effect::Create実行時に使用される。
+
+</member>
+        <member name="M:EffekseerNET.TextureLoader.Dispose">
+@brief	デストラクタ
+
+</member>
+        <member name="M:EffekseerNET.TextureLoader.#ctor">
+@brief	コンストラクタ
+
+</member>
+        <member name="T:EffekseerNET.TextureLoader">
+@brief	テクスチャ読み込み破棄関数指定クラス
+
+</member>
+        <member name="T:EffekseerNET.TextureData">
+@brief	\~english	Texture data
+		\~japanese	テクスチャデータ
+
+</member>
+        <member name="M:EffekseerNET.Color.Lerp(EffekseerNET.Color,EffekseerNET.Color,System.Single)">
+@brief	線形補間
+
+</member>
+        <member name="M:EffekseerNET.Color.Mul(EffekseerNET.Color,EffekseerNET.Color)">
+@brief	乗算
+
+</member>
+        <member name="M:EffekseerNET.Color.#ctor(System.Byte,System.Byte,System.Byte)">
+@brief	コンストラクタ
+
+</member>
+        <member name="F:EffekseerNET.Color.A">
+@brief	透明度
+
+</member>
+        <member name="F:EffekseerNET.Color.B">
+@brief	青
+
+</member>
+        <member name="F:EffekseerNET.Color.G">
+@brief	緑
+
+</member>
+        <member name="F:EffekseerNET.Color.R">
+@brief	赤
+
+</member>
+        <member name="T:EffekseerNET.Color">
+@brief	色
+
+</member>
+        <member name="T:EffekseerNET.RendererMaterialType">
+@brief	material type
+
+</member>
+        <member name="T:EffekseerNET.ReloadingThreadType">
+@brief
+\~English	A thread where reload function is called
+\~Japanese	リロードの関数が呼ばれるスレッド
+
+</member>
+        <member name="T:EffekseerNET.CoordinateSystem">
+            <summary>
+	座標系。
+</summary>
+        </member>
+        <member name="F:EffekseerNET.CoordinateSystem.RH">
+            <summary>
+	右手系。
+</summary>
+        </member>
+        <member name="F:EffekseerNET.CoordinateSystem.LH">
+            <summary>
+	左手系。
+</summary>
+        </member>
+        <member name="T:EffekseerNET.AlphaBlendType">
+@brief	アルファブレンド
+
+</member>
+        <member name="F:EffekseerNET.AlphaBlendType.Mul">
+            <summary>
+乗算
+</summary>
+        </member>
+        <member name="F:EffekseerNET.AlphaBlendType.Sub">
+            <summary>
+減算
+</summary>
+        </member>
+        <member name="F:EffekseerNET.AlphaBlendType.Add">
+            <summary>
+加算
+</summary>
+        </member>
+        <member name="F:EffekseerNET.AlphaBlendType.Blend">
+            <summary>
+透明
+</summary>
+        </member>
+        <member name="F:EffekseerNET.AlphaBlendType.Opacity">
+            <summary>
+不透明
+</summary>
+        </member>
+        <member name="M:EffekseerRendererNET.SingleFrameMemoryPool.NewFrame">
+@brief
+\~English	notify that new frame is started.
+\~Japanese	新規フレームが始ったことを通知する。
+
+</member>
+        <member name="T:EffekseerRendererNET.GraphicsDevice">
+@brief
+\~english A class which contains a graphics device
+\~japanese グラフィックデバイスを格納しているクラス
+
+</member>
+        <member name="T:EffekseerNET.ReferenceObject">
+@brief	参照カウンタオブジェクト
+
+</member>
+        <member name="M:EffekseerNET.IReference.Release">
+@brief	参照カウンタを減算する。0になった時、インスタンスを削除する。
+@return	減算後の参照カウンタ
+
+</member>
+        <member name="M:EffekseerNET.IReference.GetRef">
+@brief	参照カウンタを取得する。
+@return	参照カウンタ
+
+</member>
+        <member name="M:EffekseerNET.IReference.AddRef">
+@brief	参照カウンタを加算する。
+@return	加算後の参照カウンタ
+
+</member>
+        <member name="T:EffekseerNET.IReference">
+@brief	参照カウンタのインターフェース
+
+</member>
+        <member name="T:EffekseerRendererNET.DistortingCallback">
+@brief	背景を歪ませるエフェクトを描画する前に実行されるコールバック
+
+</member>
+        <member name="T:EffekseerRendererNET.ProxyTextureType">
+@brief
+\~english A type of texture which is rendered when textures are not assigned.
+\~japanese テクスチャが設定されていないときに描画されるテクスチャの種類
+
+</member>
+        <member name="T:EffekseerRendererNET.UVStyle">
+@brief
+\~english A status of UV when particles are rendered.
+\~japanese パーティクルを描画する時のUVの状態
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.Inverse(EffekseerNET.Matrix44@,EffekseerNET.Matrix44)">
+@brief	逆行列
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.Mul(EffekseerNET.Matrix44@,EffekseerNET.Matrix44,EffekseerNET.Matrix44)">
+@brief	乗算
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.Quaternion(System.Single,System.Single,System.Single,System.Single)">
+@brief	クオータニオンから行列に変換
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.RotationAxis(EffekseerNET.Vector3D,System.Single)">
+@brief	任意軸反時計回転行列
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.Translation(System.Single,System.Single,System.Single)">
+@brief	移動行列
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.RotationZ(System.Single)">
+@brief	Z軸回転行列(右手)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.RotationY(System.Single)">
+@brief	Y軸回転行列(右手)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.RotationX(System.Single)">
+@brief	X軸回転行列(右手)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.Scaling(System.Single,System.Single,System.Single)">
+@brief	拡大行列化
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.OrthographicLH(System.Single,System.Single,System.Single,System.Single)">
+@brief	正射影行列化(左手系)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.OrthographicRH(System.Single,System.Single,System.Single,System.Single)">
+@brief	正射影行列化(右手系)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.PerspectiveFovLH_OpenGL(System.Single,System.Single,System.Single,System.Single)">
+@brief	OpenGL用射影行列化(左手系)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.PerspectiveFovLH(System.Single,System.Single,System.Single,System.Single)">
+@brief	射影行列化(左手系)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.PerspectiveFovRH_OpenGL(System.Single,System.Single,System.Single,System.Single)">
+@brief	OpenGL用射影行列化(右手系)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.PerspectiveFovRH(System.Single,System.Single,System.Single,System.Single)">
+@brief	射影行列化(右手系)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.LookAtLH(EffekseerNET.Vector3D,EffekseerNET.Vector3D,EffekseerNET.Vector3D)">
+@brief	カメラ行列化(左手系)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.LookAtRH(EffekseerNET.Vector3D,EffekseerNET.Vector3D,EffekseerNET.Vector3D)">
+@brief	カメラ行列化(右手系)
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.Transpose">
+@brief	転置行列化
+
+</member>
+        <member name="M:EffekseerNET.Matrix44.Indentity">
+@brief	単位行列化
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.Multiple(EffekseerNET.Matrix43@,EffekseerNET.Matrix43,EffekseerNET.Matrix43)">
+@brief	行列同士の乗算を行う。
+@param	out	[out]	結果
+@param	in1	[in]	乗算の左側
+@param	in2	[in]	乗算の右側
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.IsValid">
+@brief	check whether all values are not valid number(not nan, not inf)
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.ToMatrix44(EffekseerNET.Matrix44@)">
+@brief	convert into matrix44
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.SetSRT(EffekseerNET.Vector3D,EffekseerNET.Matrix43,EffekseerNET.Vector3D)">
+@brief	行列の拡大、回転、移動を設定する。
+@param	s	[in]	拡大行列
+@param	r	[in]	回転行列
+@param	t	[in]	位置
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.GetTranslation(EffekseerNET.Vector3D@)">
+@brief	行列から移動ベクトルを取得する。
+@param	t	[out]	移動ベクトル
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.GetRotation(EffekseerNET.Matrix43@)">
+@brief	行列から回転行列を取得する。
+@param	s	[out]	回転行列
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.GetScale(EffekseerNET.Vector3D@)">
+@brief	行列から拡大ベクトルを取得する。
+@param	s	[out]	拡大ベクトル
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.GetSRT(EffekseerNET.Vector3D@,EffekseerNET.Matrix43@,EffekseerNET.Vector3D@)">
+@brief	行列を、拡大、回転、移動の行列とベクトルに分解する。
+@param	s	[out]	拡大行列
+@param	r	[out]	回転行列
+@param	t	[out]	位置
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.Translation(System.Single,System.Single,System.Single)">
+@brief	移動行列化を行う。
+@param	x	[in]	X方向移動
+@param	y	[in]	Y方向移動
+@param	z	[in]	Z方向移動
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.RotationAxis(EffekseerNET.Vector3D,System.Single,System.Single)">
+@brief	任意軸に対する反時計周り方向回転行列化を行う。
+@param	axis	[in]	回転軸
+@param	s	[in]	サイン
+@param	c	[in]	コサイン
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.RotationAxis(EffekseerNET.Vector3D,System.Single)">
+@brief	任意軸に対する反時計周り方向回転行列化を行う。
+@param	axis	[in]	回転軸
+@param	angle	[in]	角度(ラジアン)
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.RotationZXY(System.Single,System.Single,System.Single)">
+@brief	反時計周り方向のZXY軸回転行列化を行う。
+@param	rz	[in]	角度(ラジアン)
+@param	rx	[in]	角度(ラジアン)
+@param	ry	[in]	角度(ラジアン)
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.RotationXYZ(System.Single,System.Single,System.Single)">
+@brief	反時計周り方向のXYZ軸回転行列化を行う。
+@param	rx	[in]	角度(ラジアン)
+@param	ry	[in]	角度(ラジアン)
+@param	rz	[in]	角度(ラジアン)
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.RotationZ(System.Single)">
+@brief	反時計周り方向のZ軸回転行列化を行う。
+@param	angle	[in]	角度(ラジアン)
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.RotationY(System.Single)">
+@brief	反時計周り方向のY軸回転行列化を行う。
+@param	angle	[in]	角度(ラジアン)
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.RotationX(System.Single)">
+@brief	反時計周り方向のX軸回転行列化を行う。
+@param	angle	[in]	角度(ラジアン)
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.Scaling(System.Single,System.Single,System.Single)">
+@brief	拡大行列化を行う。
+@param	x	[in]	X方向拡大率
+@param	y	[in]	Y方向拡大率
+@param	z	[in]	Z方向拡大率
+
+</member>
+        <member name="M:EffekseerNET.Matrix43.Indentity">
+@brief	単位行列化を行う。
+
+</member>
+        <member name="M:EffekseerNET.Vector3D.Normal(EffekseerNET.Vector3D@,EffekseerNET.Vector3D)">
+@brief	単位ベクトル
+
+</member>
+        <member name="M:EffekseerNET.Vector3D.Dot(EffekseerNET.Vector3D,EffekseerNET.Vector3D)">
+@brief	内積
+
+</member>
+        <member name="M:EffekseerNET.Vector3D.LengthSq(EffekseerNET.Vector3D)">
+@brief	長さの二乗
+
+</member>
+        <member name="M:EffekseerNET.Vector3D.Length(EffekseerNET.Vector3D)">
+@brief	長さ
+
+</member>
+        <member name="M:EffekseerNET.Vector3D.Sub(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)">
+@brief	減算
+
+</member>
+        <member name="M:EffekseerNET.Vector3D.Add(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)">
+@brief	加算
+
+</member>
+        <member name="M:EffekseerNET.Vector3D.#ctor(System.Single,System.Single,System.Single)">
+@brief	コンストラクタ
+
+</member>
+        <member name="F:EffekseerNET.Vector3D.Z">
+@brief	Z
+
+</member>
+        <member name="F:EffekseerNET.Vector3D.Y">
+@brief	Y
+
+</member>
+        <member name="F:EffekseerNET.Vector3D.X">
+@brief	X
+
+</member>
+        <member name="T:EffekseerNET.Vector3D">
+@brief	3次元ベクトル
+
+</member>
+        <!-- メンバー 'M:EffekseerNET.Vector3D.Cross(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix43' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix44' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix43' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix44' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'M:EffekseerNET.Vector3D.Cross(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'M:EffekseerNET.Vector3D.Cross(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix44' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix43' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'M:EffekseerNET.Vector3D.Cross(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix44' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix44' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'M:EffekseerNET.Vector3D.Cross(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'M:EffekseerNET.Vector3D.Cross(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix43' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix44' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'M:EffekseerNET.Vector3D.Cross(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix43' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix44' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'M:EffekseerNET.Vector3D.Cross(EffekseerNET.Vector3D@,EffekseerNET.Vector3D,EffekseerNET.Vector3D)' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix43' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+        <!-- メンバー 'T:EffekseerNET.Matrix44' に対して形式が正しくない XML ドキュメント コメントを破棄します。-->
+    </members>
+</doc>

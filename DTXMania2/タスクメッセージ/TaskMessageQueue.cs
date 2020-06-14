@@ -50,7 +50,6 @@ namespace DTXMania2
             lock( this._TaskMessageList )
             {
                 var result = new List<TaskMessage>();
-                var resultIndexes = new List<int>();
 
                 // 指定された宛先のメッセージをリストから抽出。
                 for( int i = 0; i < this._TaskMessageList.Count; i++ )
@@ -59,13 +58,12 @@ namespace DTXMania2
                     if( msg.宛先 == 宛先 )
                     {
                         result.Add( msg );
-                        resultIndexes.Add( i );
                     }
                 }
 
                 // 抽出されたメッセージをリストから削除。
-                foreach( var index in resultIndexes )
-                    this._TaskMessageList.RemoveAt( index );
+                foreach( var msg in result )
+                    this._TaskMessageList.Remove( msg );
 
                 // 結果を返す。
                 return result;

@@ -94,10 +94,51 @@ namespace DTXMania2.曲読み込み
         // 進行と描画
 
 
-        public void 進行描画する()
+        public void 進行する()
         {
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
+            switch( this.現在のフェーズ )
+            {
+                case フェーズ.フェードイン:
+                {
+                    #region " フェードインが完了したら次のフェーズへ。"
+                    //----------------
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.オープン完了 )
+                        this.現在のフェーズ = フェーズ.表示;
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.表示:
+                {
+                    #region " スコアを読み込んで完了フェーズへ。"
+                    //----------------
+                    スコアを読み込む();
+                    Global.App.ドラム入力.すべての入力デバイスをポーリングする();  // 先行入力があったらここでキャンセル
+
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.完了;
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.完了:
+                {
+                    #region " 遷移終了。Appによるステージ遷移待ち。"
+                    //----------------
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+            }
+        }
+
+        public void 描画する()
+        {
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
+            dc.Transform = SharpDX.Matrix3x2.Identity;
 
             switch( this.現在のフェーズ )
             {
@@ -106,14 +147,8 @@ namespace DTXMania2.曲読み込み
                     #region " 背景画面＆アイキャッチフェードインを描画する。"
                     //----------------
                     dc.BeginDraw();
-
                     this._背景画面を描画する( dc );
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
-                    {
-                        // フェードインが完了したら次のフェーズへ。
-                        this.現在のフェーズ = フェーズ.表示;
-                    }
-
+                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
                     dc.EndDraw();
                     //----------------
                     #endregion
@@ -127,16 +162,10 @@ namespace DTXMania2.曲読み込み
                     dc.BeginDraw();
                     this._背景画面を描画する( dc );
                     dc.EndDraw();
-
-                    スコアを読み込む();
-
-                    Global.App.ドラム入力.すべての入力デバイスをポーリングする();  // 先行入力があったらここでキャンセル
-
-                    // 次のフェーズへ。
-                    this.現在のフェーズ = フェーズ.完了;
-                    break;
                     //----------------
                     #endregion
+
+                    break;
                 }
                 case フェーズ.完了:
                 {
@@ -239,7 +268,7 @@ namespace DTXMania2.曲読み込み
             var 表示位置dpx = new Vector2( 782f, 409f );
 
             // 拡大率を計算して描画する。            
-            float 最大幅dpx = Global.設計画面サイズ.Width - 表示位置dpx.X - 20f;  // -20f はマージン
+            float 最大幅dpx = Global.GraphicResources.設計画面サイズ.Width - 表示位置dpx.X - 20f;  // -20f はマージン
             float X方向拡大率 = ( this._曲名画像.画像サイズdpx.Width <= 最大幅dpx ) ? 1f : 最大幅dpx / this._曲名画像.画像サイズdpx.Width;
             this._曲名画像.描画する( dc, 表示位置dpx.X, 表示位置dpx.Y, X方向拡大率: X方向拡大率 );
         }
@@ -249,7 +278,7 @@ namespace DTXMania2.曲読み込み
             var 表示位置dpx = new Vector2( 782f, 520f );
 
             // 拡大率を計算して描画する。
-            float 最大幅dpx = Global.設計画面サイズ.Width - 表示位置dpx.X;
+            float 最大幅dpx = Global.GraphicResources.設計画面サイズ.Width - 表示位置dpx.X;
             float X方向拡大率 = ( this._サブタイトル画像.画像サイズdpx.Width <= 最大幅dpx ) ? 1f : 最大幅dpx / this._サブタイトル画像.画像サイズdpx.Width;
             this._サブタイトル画像.描画する( dc, 表示位置dpx.X, 表示位置dpx.Y, X方向拡大率: X方向拡大率 );
         }

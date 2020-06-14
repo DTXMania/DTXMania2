@@ -85,8 +85,8 @@ namespace DTXMania2.結果
             this._達成率 = ( this._最高成績である ) ? (達成率Base) new 達成率更新() : new 達成率();
 
             this._システム情報 = new システム情報();
-            this._黒マスクブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( Color3.Black, 0.75f ) );
-            this._プレビュー枠ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0xFF209292 ) );
+            this._黒マスクブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( Color3.Black, 0.75f ) );
+            this._プレビュー枠ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 0xFF209292 ) );
 
 
             var 選択曲 = Global.App.演奏スコア;
@@ -129,12 +129,8 @@ namespace DTXMania2.結果
         // 進行と描画
 
 
-        public void 進行描画する()
+        public void 進行する()
         {
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
-            this._システム情報.VPSをカウントする();
             this._システム情報.FPSをカウントしプロパティを更新する();
 
             Global.App.ドラム入力.すべての入力デバイスをポーリングする();
@@ -143,16 +139,6 @@ namespace DTXMania2.結果
             {
                 case フェーズ.表示:
                 {
-                    #region " 背景画面を描画する。"
-                    //----------------
-                    dc.BeginDraw();
-
-                    this._画面を描画する( dc );
-
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
                     #region " 入力処理。"
                     //----------------
                     if( Global.App.ドラム入力.確定キーが入力された() ||
@@ -163,6 +149,7 @@ namespace DTXMania2.結果
                         this._曲別SKILL.アニメを完了する();
                         this._達成率.アニメを完了する();
                         this._難易度.アニメを完了する();
+                        this._ランク.アニメを完了する();
 
                         this.現在のフェーズ = フェーズ.アニメ完了;
                         //----------------
@@ -188,17 +175,7 @@ namespace DTXMania2.結果
                 }
                 case フェーズ.アニメ完了:
                 {
-                    #region " 背景画面を描画する。"
-                    //----------------
-                    dc.BeginDraw();
-
-                    this._画面を描画する( dc );
-
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
-                    #region " 入力処理 "
+                    #region " 入力処理。"
                     //----------------
                     if( Global.App.ドラム入力.確定キーが入力された() ||
                         Global.App.ドラム入力.キャンセルキーが入力された() )
@@ -227,19 +204,10 @@ namespace DTXMania2.結果
                 }
                 case フェーズ.フェードアウト:
                 {
-                    #region " 背景画面＆フェードアウト "
+                    #region " フェードアウトが完了したら完了フェーズへ。"
                     //----------------
-                    dc.BeginDraw();
-
-                    this._画面を描画する( dc );
-
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
-                    {
-                        // フェードアウトが完了したら完了フェーズへ。
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.クローズ完了 )
                         this.現在のフェーズ = フェーズ.完了;
-                    }
-
-                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -255,6 +223,78 @@ namespace DTXMania2.結果
                     break;
                 }
             }
+        }
+
+        public void 描画する()
+        {
+            this._システム情報.VPSをカウントする();
+
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
+            dc.Transform = SharpDX.Matrix3x2.Identity;
+
+            switch( this.現在のフェーズ )
+            {
+                case フェーズ.表示:
+                case フェーズ.アニメ完了:
+                {
+                    #region " 背景画面を描画する。"
+                    //----------------
+                    dc.BeginDraw();
+
+                    this._画面を描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.フェードアウト:
+                {
+                    #region " 背景画面＆フェードアウト "
+                    //----------------
+                    dc.BeginDraw();
+
+                    this._画面を描画する( dc );
+                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.完了:
+                {
+                    #region " フェードアウト "
+                    //----------------
+                    dc.BeginDraw();
+
+                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+            }
+        }
+
+        private void _画面を描画する( DeviceContext dc )
+        {
+            this._背景.進行描画する( dc );
+            dc.FillRectangle( new RectangleF( 0f, 36f, Global.GraphicResources.設計画面サイズ.Width, Global.GraphicResources.設計画面サイズ.Height - 72f ), this._黒マスクブラシ );
+            this._プレビュー画像を描画する( dc );
+            this._曲名パネル.描画する( dc, 660f, 796f );
+            this._曲名を描画する( dc );
+            this._サブタイトルを描画する( dc );
+            this._演奏パラメータ結果.進行描画する( dc, 1317f, 716f, this._結果 );
+            this._ランク.進行描画する( dc, this._結果.ランク );
+            this._難易度.進行描画する( dc, 1341f, 208f, Global.App.演奏スコア.難易度 );
+            this._曲別SKILL.進行描画する( dc, 1329f, 327f, this._結果.スキル );
+            this._達成率.進行描画する( dc, 1233f, 428f, this._結果.Achievement );
+            this._システム情報.描画する( dc );
         }
 
         private void _プレビュー画像を描画する( DeviceContext dc )
@@ -301,22 +341,6 @@ namespace DTXMania2.結果
             float 最大幅dpx = 545f;
             float X方向拡大率 = ( this._サブタイトル画像.画像サイズdpx.Width <= 最大幅dpx ) ? 1f : 最大幅dpx / this._サブタイトル画像.画像サイズdpx.Width;
             this._サブタイトル画像.描画する( dc, 表示位置dpx.X, 表示位置dpx.Y, X方向拡大率: X方向拡大率 );
-        }
-
-        private void _画面を描画する( DeviceContext dc )
-        {
-            this._背景.進行描画する( dc );
-            dc.FillRectangle( new RectangleF( 0f, 36f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Height - 72f ), this._黒マスクブラシ );
-            this._プレビュー画像を描画する( dc );
-            this._曲名パネル.描画する( dc, 660f, 796f );
-            this._曲名を描画する( dc );
-            this._サブタイトルを描画する( dc );
-            this._演奏パラメータ結果.進行描画する( dc, 1317f, 716f, this._結果 );
-            this._ランク.進行描画する( dc, 200f, 300f, this._結果.ランク );
-            this._難易度.進行描画する( dc, 1341f, 208f, Global.App.演奏スコア.難易度 );
-            this._曲別SKILL.進行描画する( dc, 1329f, 327f, this._結果.スキル );
-            this._達成率.進行描画する( dc, 1233f, 428f, this._結果.Achievement );
-            this._システム情報.描画する( dc );
         }
 
 

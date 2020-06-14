@@ -37,16 +37,20 @@ namespace DTXMania2
             this._背景画像 = new 画像D2D( 背景画像ファイル名 ?? @"$(Images)\Background.jpg" );
             this._背景黒幕付き画像 = new 画像D2D( 背景黒幕付き画像ファイル名 ?? @"$(Images)\BackgroundWithDarkCurtain.jpg" );
 
-            var dc = Global.既定のD2D1DeviceContext;
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
 
             this._ガウスぼかしエフェクト = new GaussianBlur( dc );
             this._ガウスぼかしエフェクト黒幕付き用 = new GaussianBlur( dc );
 
             this._拡大エフェクト = new Scale( dc ) {
-                CenterPoint = new Vector2( Global.設計画面サイズ.Width / 2.0f, Global.設計画面サイズ.Height / 2.0f ),
+                CenterPoint = new Vector2(
+                    Global.GraphicResources.設計画面サイズ.Width / 2.0f,
+                    Global.GraphicResources.設計画面サイズ.Height / 2.0f ),
             };
             this._拡大エフェクト黒幕付き用 = new Scale( dc ) {
-                CenterPoint = new Vector2( Global.設計画面サイズ.Width / 2.0f, Global.設計画面サイズ.Height / 2.0f ),
+                CenterPoint = new Vector2( 
+                    Global.GraphicResources.設計画面サイズ.Width / 2.0f, 
+                    Global.GraphicResources.設計画面サイズ.Height / 2.0f ),
             };
 
             this._クリッピングエフェクト = new Crop( dc );

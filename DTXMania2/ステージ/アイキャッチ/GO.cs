@@ -203,7 +203,7 @@ namespace DTXMania2
                     棒の太さ = 50.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -241,7 +241,7 @@ namespace DTXMania2
                     棒の太さ = 20.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -279,7 +279,7 @@ namespace DTXMania2
                     棒の太さ = 50.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -317,7 +317,7 @@ namespace DTXMania2
                     棒の太さ = 20.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -355,7 +355,7 @@ namespace DTXMania2
                     棒の太さ = 50.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0.1f, 0.1f, 0.5f, 0.5f ) ), // 青
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 0.1f, 0.1f, 0.5f, 0.5f ) ), // 青
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -393,7 +393,7 @@ namespace DTXMania2
                     棒の太さ = 10.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 0.5f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 0.5f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -431,7 +431,7 @@ namespace DTXMania2
                     棒の太さ = 50.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.下辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -469,7 +469,7 @@ namespace DTXMania2
                     棒の太さ = 20.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.下辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -507,7 +507,7 @@ namespace DTXMania2
                     棒の太さ = 50.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.下辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -545,7 +545,7 @@ namespace DTXMania2
                     棒の太さ = 20.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.下辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -583,7 +583,7 @@ namespace DTXMania2
                     棒の太さ = 50.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.下辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0.1f, 0.1f, 0.5f, 0.5f ) ), // 青
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 0.1f, 0.1f, 0.5f, 0.5f ) ), // 青
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -621,7 +621,7 @@ namespace DTXMania2
                     棒の太さ = 10.0,
                     回転角rad = new Variable( animation.Manager, initialValue: 0.0 ),
                     辺の種類 = 辺の種類.下辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 0.5f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 0.5f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -663,7 +663,7 @@ namespace DTXMania2
                     棒の太さ = new Variable( animation.Manager, initialValue: 50.0 ),
                     回転角rad = Math.PI * 0.25,
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -687,7 +687,7 @@ namespace DTXMania2
                     棒の太さ = new Variable( animation.Manager, initialValue: 50.0 ),
                     回転角rad = Math.PI * 0.25,
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -711,7 +711,7 @@ namespace DTXMania2
                     棒の太さ = new Variable( animation.Manager, initialValue: 50.0 ),
                     回転角rad = Math.PI * 0.25,
                     辺の種類 = 辺の種類.下辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -735,7 +735,7 @@ namespace DTXMania2
                     棒の太さ = new Variable( animation.Manager, initialValue: 50.0 ),
                     回転角rad = Math.PI * 0.25,
                     辺の種類 = 辺の種類.下辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -759,7 +759,7 @@ namespace DTXMania2
                     棒の太さ = new Variable( animation.Manager, initialValue: 0.0 ),
                     回転角rad = Math.PI * 0.25,
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 1f, 1f, 1f, 1f ) ), // 白
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -783,7 +783,7 @@ namespace DTXMania2
                     棒の太さ = new Variable( animation.Manager, initialValue: 0.0 ),
                     回転角rad = Math.PI * 0.25,
                     辺の種類 = 辺の種類.上辺,
-                    ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
+                    ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, new Color4( 0.5f, 0.5f, 1f, 1f ) ), // 青
                     ストーリーボード = new Storyboard( animation.Manager ),
                 };
 
@@ -871,11 +871,14 @@ namespace DTXMania2
             {
                 var context = this._ぐるぐる棒アニメーション[ i ];
 
-                if( context.ストーリーボード is null || context.ストーリーボード.Status == 描画しないStatus )
+                if( context.ストーリーボード is null )
                     continue;
 
-                if( context.ストーリーボード.Status != StoryboardStatus.Ready )
+                if( context.ストーリーボード!.Status != StoryboardStatus.Ready )
                     すべて完了 = false;
+
+                if( context.ストーリーボード!.Status == 描画しないStatus )
+                    continue;
 
                 dc.Transform =
                     Matrix3x2.Rotation( (float) context.回転角rad.Value ) *
@@ -902,11 +905,14 @@ namespace DTXMania2
             {
                 var context = this._フラッシュオーバー棒アニメーション[ i ];
 
-                if( context.ストーリーボード is null || context.ストーリーボード.Status == 描画しないStatus )
+                if( context.ストーリーボード is null )
                     continue;
 
                 if( context.ストーリーボード.Status != StoryboardStatus.Ready )
                     すべて完了 = false;
+
+                if( context.ストーリーボード!.Status == 描画しないStatus )
+                    continue;
 
                 dc.Transform =
                     Matrix3x2.Rotation( (float) context.回転角rad ) *
@@ -931,11 +937,14 @@ namespace DTXMania2
             //----------------
             foreach( var context in this._文字アニメーション )
             {
-                if( context.ストーリーボード is null || context.ストーリーボード.Status == 描画しないStatus )
+                if( context.ストーリーボード is null )
                     continue;
-
+                
                 if( context.ストーリーボード.Status != StoryboardStatus.Ready )
                     すべて完了 = false;
+
+                if( context.ストーリーボード!.Status == 描画しないStatus )
+                    continue;
 
                 var 変換行列2D =
                     Matrix3x2.Scaling( (float) context.拡大率.Value ) *
@@ -951,26 +960,29 @@ namespace DTXMania2
             {
                 var context = this._フラッシュオーバー棒アニメーション[ 5 ];
 
-                if( null != context.ストーリーボード && context.ストーリーボード.Status != 描画しないStatus )
+                if( null != context.ストーリーボード )
                 {
                     if( context.ストーリーボード.Status != StoryboardStatus.Ready )
                         すべて完了 = false;
 
-                    dc.Transform =
-                        Matrix3x2.Rotation( (float) context.回転角rad ) *
-                        Matrix3x2.Translation( (float) context.中心位置X, (float) context.中心位置Y ) *
-                        preTrans;
+                    if( context.ストーリーボード.Status != 描画しないStatus )
+                    {
+                        dc.Transform =
+                            Matrix3x2.Rotation( (float) context.回転角rad ) *
+                            Matrix3x2.Translation( (float) context.中心位置X, (float) context.中心位置Y ) *
+                            preTrans;
 
-                    float contextの幅 = 2800.0f;
-                    float contextの高さ = (float) context.太さ.Value;
+                        float contextの幅 = 2800.0f;
+                        float contextの高さ = (float) context.太さ.Value;
 
-                    var rc = ( context.辺の種類 == 辺の種類.上辺 ) ?
-                        new RectangleF( -contextの幅 / 2f, -( contextの高さ + (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value ) :   // 上辺
-                        new RectangleF( -contextの幅 / 2f, +( contextの高さ - (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value );    // 下辺
+                        var rc = ( context.辺の種類 == 辺の種類.上辺 ) ?
+                            new RectangleF( -contextの幅 / 2f, -( contextの高さ + (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value ) :   // 上辺
+                            new RectangleF( -contextの幅 / 2f, +( contextの高さ - (float) context.棒の太さ.Value ) / 2f, contextの幅, (float) context.棒の太さ.Value );    // 下辺
 
-                    dc.FillRectangle( rc, context.ブラシ );
+                        dc.FillRectangle( rc, context.ブラシ );
 
-                    dc.Transform = preTrans;
+                        dc.Transform = preTrans;
+                    }
                 }
             }
             //----------------
@@ -981,13 +993,16 @@ namespace DTXMania2
             {
                 var context = this._フェードインアニメーション;
 
-                if( null != context.ストーリーボード && context.ストーリーボード.Status != 描画しないStatus )
+                if( null != context.ストーリーボード )
                 {
                     if( context.ストーリーボード.Status != StoryboardStatus.Ready )
                         すべて完了 = false;
 
-                    using( var ブラシ = new SolidColorBrush( dc, new Color4( 0.5f, 0.5f, 1f, (float) context.不透明度.Value ) ) )
-                        dc.FillRectangle( new RectangleF( 0f, 0f, 1920f, 1080f ), ブラシ );
+                    if( context.ストーリーボード.Status != 描画しないStatus )
+                    {
+                        using( var ブラシ = new SolidColorBrush( dc, new Color4( 0.5f, 0.5f, 1f, (float) context.不透明度.Value ) ) )
+                            dc.FillRectangle( new RectangleF( 0f, 0f, 1920f, 1080f ), ブラシ );
+                    }
                 }
             }
             //----------------

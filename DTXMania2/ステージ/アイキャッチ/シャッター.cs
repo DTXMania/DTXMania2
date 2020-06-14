@@ -20,7 +20,7 @@ namespace DTXMania2
 
             this._ロゴ = new 画像D2D( @"$(Images)\TitleLogo.png" );
 
-            var dc = Global.既定のD2D1DeviceContext;
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
 
             this._明るいブラシ = new SolidColorBrush( dc, new Color4( 83f / 255f, 210f / 255f, 255f / 255f, 1f ) );
             this._ふつうのブラシ = new SolidColorBrush( dc, new Color4( 46f / 255f, 117f / 255f, 182f / 255f, 1f ) );

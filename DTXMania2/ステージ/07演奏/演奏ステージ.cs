@@ -97,9 +97,9 @@ namespace DTXMania2.演奏
             this._エキサイトゲージ = new エキサイトゲージ();
             this._システム情報 = new システム情報();
             this._数字フォント中グレー48x64 = new フォント画像D2D( @"$(Images)\NumberFont48x64White.png", @"$(Images)\NumberFont48x64.yaml", 文字幅補正dpx: -16f, 不透明度: 0.3f );
-            this._小節線色 = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color.White );
-            this._小節線影色 = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color.Blue );
-            this._拍線色 = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color.Gray );
+            this._小節線色 = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Color.White );
+            this._小節線影色 = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Color.Blue );
+            this._拍線色 = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Color.Gray );
             this._スコア指定の背景画像 = null!;
             this._チップの演奏状態 = null!;
             this._フェードインカウンタ = new Counter();
@@ -162,12 +162,8 @@ namespace DTXMania2.演奏
         // 進行と描画
 
 
-        public void 進行描画する()
+        public void 進行する()
         {
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
-            this._システム情報.VPSをカウントする();
             this._システム情報.FPSをカウントしプロパティを更新する();
 
             CommandLineOptions? options = null!;
@@ -206,19 +202,6 @@ namespace DTXMania2.演奏
                 }
                 case フェーズ.フェードイン:
                 {
-                    #region " 演奏パーツなし画面＆フェードインを描画する。"
-                    //----------------
-                    Global.App.画面をクリアする();
-
-                    dc.BeginDraw();
-                    
-                    this._演奏パーツなし背景画面を描画する( dc );
-                    this._キャプチャ画面を描画する( dc, ( 1.0f - this._フェードインカウンタ.現在値の割合 ) );
-                    
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
                     #region " フェードインが完了したら演奏開始フェーズへ。"
                     //----------------
                     if( this._フェードインカウンタ.終了値に達した )
@@ -235,14 +218,6 @@ namespace DTXMania2.演奏
                 {
                     #region " 演奏を開始し、表示フェーズへ。"
                     //----------------
-                    Global.App.画面をクリアする();
-
-                    dc.BeginDraw();
-
-                    this._演奏パーツなし背景画面を描画する( dc );
-
-                    dc.EndDraw();
-
                     // 演奏を開始する。
                     this._描画開始チップ番号 = -1; // -1 以外になれば演奏開始。
 
@@ -266,6 +241,7 @@ namespace DTXMania2.演奏
                     }
 
                     // 次のフェーズへ。
+                    this._表示フェーズの結果 = 演奏結果.なし;
                     this.現在のフェーズ = フェーズ.表示;
                     //----------------
                     #endregion
@@ -276,25 +252,18 @@ namespace DTXMania2.演奏
                 {
                     #region " 演奏パーツあり画面を描画する。"
                     //----------------
-                    Global.App.画面をクリアする();
-
-                    dc.BeginDraw();
-
-                    switch( this._演奏パーツあり背景画面を描画する( dc ) )  // クリア or 失敗判定を返す。
+                    switch( this._表示フェーズの結果 )
                     {
                         case 演奏結果.なし:
                             break;
 
                         case 演奏結果.クリア:
-                            // 指示待機またはクリアフェーズへ。
                             this.現在のフェーズ = ( Global.Options.ビュアーモードである ) ? フェーズ.指示待機 : フェーズ.クリア;
                             break;
 
                         //todo: case 演奏結果.失敗:
                         //    break;
                     }
-
-                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -320,21 +289,10 @@ namespace DTXMania2.演奏
                 }
                 case フェーズ.キャンセル時フェードアウト:
                 {
-                    #region " 演奏パーツあり画面＆フェードアウトを描画する。"
+                    #region " フェードアウトが完了したらキャンセル完了フェーズへ。"
                     //----------------
-                    Global.App.画面をクリアする();
-                    
-                    dc.BeginDraw();
-
-                    this._演奏パーツあり背景画面を描画する( dc );
-
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
-                    {
-                        // フェードアウトが完了したらキャンセル完了フェーズへ。
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.クローズ完了 )
                         this.現在のフェーズ = フェーズ.キャンセル完了;
-                    }
-
-                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -342,37 +300,13 @@ namespace DTXMania2.演奏
                 }
                 case フェーズ.クリア:
                 {
-                    #region " 背景画像のみ描画する。"
-                    //----------------
-                    Global.App.画面をクリアする();
-
-                    dc.BeginDraw();
-
-                    this._背景画像.描画する( dc, 0f, 0f );
-
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-                    
                     break;
                 }
-                //TODO: case フェーズ.失敗:
+                //todo: case フェーズ.失敗:
                 //{
                 //}
                 case フェーズ.キャンセル完了:
                 {
-                    #region " 演奏パーツなし画面を描画する。"
-                    //----------------
-                    Global.App.画面をクリアする();
-
-                    dc.BeginDraw();
-
-                    this._演奏パーツなし背景画面を描画する( dc );
-
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
                     break;
                 }
 
@@ -380,18 +314,6 @@ namespace DTXMania2.演奏
 
                 case フェーズ.指示待機:
                 {
-                    #region " 待機画面を描画する。"
-                    //----------------
-                    Global.App.画面をクリアする();
-
-                    dc.BeginDraw();
-
-                    this._ビュアーモードの待機時背景を描画する( dc );
-
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
                     #region " オプションが届いていれば、取り出して処理する。 "
                     //----------------
                     if( options?.再生開始 ?? false )
@@ -421,6 +343,153 @@ namespace DTXMania2.演奏
                 }
                 case フェーズ.曲読み込み開始:
                 {
+                    #region " 曲読み込みタスクを起動し、曲読み込み完了待ちフェーズへ。"
+                    //----------------
+                    this._曲読み込みタスク = Task.Run( () => {
+                        曲読み込み.曲読み込みステージ.スコアを読み込む();
+                    } );
+
+                    // 次のフェーズへ。
+                    this.現在のフェーズ = フェーズ.曲読み込み完了待ち;
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.曲読み込み完了待ち:
+                {
+                    #region " 曲読み込みタスクが完了すれば演奏状態初期化フェーズへ。 "
+                    //----------------
+                    if( this._曲読み込みタスク.IsCompleted )
+                        this.現在のフェーズ = フェーズ.演奏状態初期化;
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+            }
+        }
+
+        public void 描画する()
+        {
+            this._システム情報.VPSをカウントする();
+
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
+            dc.Transform = SharpDX.Matrix3x2.Identity;
+
+            switch( this.現在のフェーズ )
+            {
+                case フェーズ.演奏状態初期化:
+                {
+                    break;
+                }
+                case フェーズ.フェードイン:
+                {
+                    #region " 演奏パーツなし画面＆フェードインを描画する。"
+                    //----------------
+                    Global.App.画面をクリアする();
+
+                    dc.BeginDraw();
+
+                    this._演奏パーツなし背景画面を描画する( dc );
+                    this._キャプチャ画面を描画する( dc, ( 1.0f - this._フェードインカウンタ.現在値の割合 ) );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.演奏開始:
+                {
+                    #region " 演奏パーツなし画面を描画する。"
+                    //----------------
+                    Global.App.画面をクリアする();
+
+                    dc.BeginDraw();
+                    this._演奏パーツなし背景画面を描画する( dc );
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.表示:
+                {
+                    #region " 演奏パーツあり画面を描画する。"
+                    //----------------
+                    Global.App.画面をクリアする();
+
+                    dc.BeginDraw();
+
+                    this._表示フェーズの結果 = this._演奏パーツあり背景画面を描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.キャンセル通知:
+                {
+                    break;
+                }
+                case フェーズ.キャンセル時フェードアウト:
+                {
+                    #region " 演奏パーツあり画面＆フェードアウトを描画する。"
+                    //----------------
+                    Global.App.画面をクリアする();
+
+                    dc.BeginDraw();
+
+                    this._演奏パーツあり背景画面を描画する( dc );
+                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.クリア:
+                {
+                    #region " 演奏パーツなし画面を描画する。"
+                    //----------------
+                    Global.App.画面をクリアする();
+
+                    dc.BeginDraw();
+
+                    this._演奏パーツなし背景画面を描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                //todo: case フェーズ.失敗:
+                //{
+                //}
+                case フェーズ.キャンセル完了:
+                {
+                    #region " フェードアウトを描画する。"
+                    //----------------
+                    dc.BeginDraw();
+
+                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+
+                // 以下、ビュアーモード用。
+
+                case フェーズ.指示待機:
+                case フェーズ.曲読み込み開始:
+                {
                     #region " 待機画面を描画する。"
                     //----------------
                     Global.App.画面をクリアする();
@@ -430,17 +499,6 @@ namespace DTXMania2.演奏
                     this._ビュアーモードの待機時背景を描画する( dc );
 
                     dc.EndDraw();
-                    //----------------
-                    #endregion
-
-                    #region " 曲読み込みタスクを起動し、曲読み込み完了待ちフェーズへ。"
-                    //----------------
-                    this._曲読み込みタスク = Task.Run( () => {
-                        曲読み込み.曲読み込みステージ.スコアを読み込む();
-                    } );
-
-                    // 次のフェーズへ。
-                    this.現在のフェーズ = フェーズ.曲読み込み完了待ち;
                     //----------------
                     #endregion
 
@@ -458,13 +516,6 @@ namespace DTXMania2.演奏
                     this._LoadingSpinner.進行描画する( dc );
 
                     dc.EndDraw();
-                    //----------------
-                    #endregion
-
-                    #region " 曲読み込みタスクが完了すれば演奏状態初期化フェーズへ。 "
-                    //----------------
-                    if( this._曲読み込みタスク.IsCompleted )
-                        this.現在のフェーズ = フェーズ.演奏状態初期化;
                     //----------------
                     #endregion
 
@@ -867,6 +918,13 @@ namespace DTXMania2.演奏
 
 
 
+        // ローカル
+
+
+        演奏結果 _表示フェーズの結果 = 演奏結果.なし;
+
+
+
         // 画面を構成するもの
 
 
@@ -905,8 +963,8 @@ namespace DTXMania2.演奏
             if( userConfig.スコア指定の背景画像を表示する )
             {
                 this._スコア指定の背景画像?.描画する( dc, 0f, 0f,
-                    X方向拡大率: Global.設計画面サイズ.Width / this._スコア指定の背景画像.サイズ.Width,
-                    Y方向拡大率: Global.設計画面サイズ.Height / this._スコア指定の背景画像.サイズ.Height );
+                    X方向拡大率: Global.GraphicResources.設計画面サイズ.Width / this._スコア指定の背景画像.サイズ.Width,
+                    Y方向拡大率: Global.GraphicResources.設計画面サイズ.Height / this._スコア指定の背景画像.サイズ.Height );
             }
             //----------------
             #endregion
@@ -1061,7 +1119,9 @@ namespace DTXMania2.演奏
             var result = 演奏結果.なし;
             var userConfig = Global.App.ログオン中のユーザ;
 
-            double 演奏時刻sec = Global.App.サウンドタイマ.現在時刻sec + Global.次のDComp表示までの残り時間sec;
+            double 演奏時刻sec = Global.App.サウンドタイマ.現在時刻sec;
+            if( Global.Options.VSyncWait )
+                演奏時刻sec += +Global.GraphicResources.次のDComp表示までの残り時間sec;
 
             #region " 譜面スクロールの進行 "
             //----------------
@@ -1075,8 +1135,8 @@ namespace DTXMania2.演奏
             if( userConfig.スコア指定の背景画像を表示する )
             {
                 this._スコア指定の背景画像?.描画する( dc, 0f, 0f,
-                    X方向拡大率: Global.設計画面サイズ.Width / this._スコア指定の背景画像.サイズ.Width,
-                    Y方向拡大率: Global.設計画面サイズ.Height / this._スコア指定の背景画像.サイズ.Height );
+                    X方向拡大率: Global.GraphicResources.設計画面サイズ.Width / this._スコア指定の背景画像.サイズ.Width,
+                    Y方向拡大率: Global.GraphicResources.設計画面サイズ.Height / this._スコア指定の背景画像.サイズ.Height );
             }
             //----------------
             #endregion
@@ -1098,8 +1158,8 @@ namespace DTXMania2.演奏
                             {
                                 #region " 100%全体表示 "
                                 //----------------
-                                float w = Global.設計画面サイズ.Width;
-                                float h = Global.設計画面サイズ.Height;
+                                float w = Global.GraphicResources.設計画面サイズ.Width;
+                                float h = Global.GraphicResources.設計画面サイズ.Height;
                                 video.描画する( dc, new RectangleF( 0f, 0f, w, h ) );
                                 //----------------
                                 #endregion
@@ -1111,8 +1171,8 @@ namespace DTXMania2.演奏
                             {
                                 #region " 75%縮小表示 "
                                 //----------------
-                                float w = Global.設計画面サイズ.Width;
-                                float h = Global.設計画面サイズ.Height;
+                                float w = Global.GraphicResources.設計画面サイズ.Width;
+                                float h = Global.GraphicResources.設計画面サイズ.Height;
 
                                 // (1) 画面いっぱいに描画。
                                 video.描画する( dc, new RectangleF( 0f, 0f, w, h ), 0.2f );    // 不透明度は 0.2 で暗くする。
@@ -1342,7 +1402,7 @@ namespace DTXMania2.演奏
 
             dc.DrawBitmap(
                 this.キャプチャ画面,
-                new RectangleF( 0f, 0f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Height ),
+                new RectangleF( 0f, 0f, Global.GraphicResources.設計画面サイズ.Width, Global.GraphicResources.設計画面サイズ.Height ),
                 不透明度,
                 BitmapInterpolationMode.Linear );
         }

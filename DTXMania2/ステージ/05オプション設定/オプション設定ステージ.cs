@@ -65,12 +65,8 @@ namespace DTXMania2.オプション設定
         // 進行と描画
 
 
-        public void 進行描画する()
+        public void 進行する()
         {
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
-            this._システム情報.VPSをカウントする();
             this._システム情報.FPSをカウントしプロパティを更新する();
 
             var 入力 = Global.App.ドラム入力;
@@ -80,19 +76,13 @@ namespace DTXMania2.オプション設定
             {
                 case フェーズ.フェードイン:
                 {
-                    #region " 背景画面を描画し、フェードインを開始して表示フェーズへ。"
+                    #region " フェードインを開始して表示フェーズへ。"
                     //----------------
-                    Global.App.システムサウンド.再生する( システムサウンド種別.オプション設定ステージ_開始音 );
-
-                    this._舞台画像.ぼかしと縮小を適用する( 0.5 );
-                    this._パネルリスト.フェードインを開始する();
-
-                    dc.BeginDraw();
-                    this._背景画面を描画する( dc );
-                    dc.EndDraw();
-
-                    // 表示フェーズへ。
-                    this.現在のフェーズ = フェーズ.表示;
+                    if( this._フェードインフェーズ完了 )
+                    {
+                        // 表示フェーズへ。
+                        this.現在のフェーズ = フェーズ.表示;
+                    }
                     //----------------
                     #endregion
 
@@ -180,50 +170,32 @@ namespace DTXMania2.オプション設定
                     //----------------
                     #endregion
 
-                    #region " 背景画面を描画する。"
-                    //----------------
-                    dc.BeginDraw();
-                    this._背景画面を描画する( dc );
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
                     break;
                 }
                 case フェーズ.入力割り当て:
                 {
-                    #region " 背景画面を描画する。"
-                    //----------------
-                    dc.BeginDraw();
-                    this._背景画面を描画する( dc );
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
                     #region " 入力割り当てダイアログを表示する。"
                     //----------------
-                    {
-                        // 入力割り当てダイアログを表示。
-                        var asycnResult = Global.App.BeginInvoke( new Action( () => {
+                    // 入力割り当てダイアログを表示。
+                    var asycnResult = Global.App.BeginInvoke( new Action( () => {
 
-                            using var dlg = new 入力割り当てダイアログ();
+                        using var dlg = new 入力割り当てダイアログ();
 
-                            Cursor.Show();  // いったんマウスカーソル表示
+                        Cursor.Show();  // いったんマウスカーソル表示
 
-                            dlg.表示する();
+                        dlg.表示する();
 
-                            if( Global.App.ScreenMode.IsFullscreenMode )
-                                Cursor.Hide();  // 全画面ならマウスカーソルを消す。
+                        if( Global.App.ScreenMode.IsFullscreenMode )
+                            Cursor.Hide();  // 全画面ならマウスカーソルを消す。
 
-                        } ) );
+                    } ) );
 
-                        // 入力割り当てダイアログが閉じられるのを待つ。
-                        asycnResult.AsyncWaitHandle.WaitOne();
+                    // 入力割り当てダイアログが閉じられるのを待つ。
+                    asycnResult.AsyncWaitHandle.WaitOne();
 
-                        // 閉じられたら表示フェーズへ。
-                        this._パネルリスト.フェードインを開始する();
-                        this.現在のフェーズ = フェーズ.表示;
-                    }
+                    // 閉じられたら表示フェーズへ。
+                    this._パネルリスト.フェードインを開始する();
+                    this.現在のフェーズ = フェーズ.表示;
                     //----------------
                     #endregion
 
@@ -231,50 +203,40 @@ namespace DTXMania2.オプション設定
                 }
                 case フェーズ.曲読み込みフォルダ割り当て:
                 {
-                    #region " 背景画面を描画する。"
-                    //----------------
-                    dc.BeginDraw();
-                    this._背景画面を描画する( dc );
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-                    
                     #region " 曲読み込みフォルダ割り当てダイアログを表示する。"
                     //----------------
-                    {
-                        var asyncResult = Global.App.BeginInvoke( new Action( () => {
+                    var asyncResult = Global.App.BeginInvoke( new Action( () => {
 
-                            using var dlg = new 曲読み込みフォルダ割り当てダイアログ( Global.App.システム設定.曲検索フォルダ );
+                        using var dlg = new 曲読み込みフォルダ割り当てダイアログ( Global.App.システム設定.曲検索フォルダ );
 
-                            Cursor.Show();  // いったんマウスカーソル表示
+                        Cursor.Show();  // いったんマウスカーソル表示
 
-                            if( dlg.ShowDialog() == DialogResult.OK &&
-                                dlg.新しい曲検索フォルダリストを取得する( out List<VariablePath> 新フォルダリスト ) )
-                            {
-                                // 曲検索フォルダを新しいリストに更新。
-                                Global.App.システム設定.曲検索フォルダ.Clear();
-                                Global.App.システム設定.曲検索フォルダ.AddRange( 新フォルダリスト );
-                                Global.App.システム設定.保存する();
+                        if( dlg.ShowDialog() == DialogResult.OK &&
+                            dlg.新しい曲検索フォルダリストを取得する( out List<VariablePath> 新フォルダリスト ) )
+                        {
+                            // 曲検索フォルダを新しいリストに更新。
+                            Global.App.システム設定.曲検索フォルダ.Clear();
+                            Global.App.システム設定.曲検索フォルダ.AddRange( 新フォルダリスト );
+                            Global.App.システム設定.保存する();
 
-                                // 再起動へ。
-                                this._再起動が必要 = true;
-                            }
-                            else
-                            {
-                                this._再起動が必要 = false;
-                            }
+                            // 再起動へ。
+                            this._再起動が必要 = true;
+                        }
+                        else
+                        {
+                            this._再起動が必要 = false;
+                        }
 
-                            if( Global.App.ScreenMode.IsFullscreenMode )
-                                Cursor.Hide();  // 全画面ならマウスカーソルを消す。
+                        if( Global.App.ScreenMode.IsFullscreenMode )
+                            Cursor.Hide();  // 全画面ならマウスカーソルを消す。
 
-                        } ) );
+                    } ) );
 
-                        // 曲読み込みフォルダ割り当てダイアログが閉じられるのを待つ。
-                        asyncResult.AsyncWaitHandle.WaitOne();
+                    // 曲読み込みフォルダ割り当てダイアログが閉じられるのを待つ。
+                    asyncResult.AsyncWaitHandle.WaitOne();
 
-                        // 閉じられたら次のフェーズへ。
-                        this.現在のフェーズ = ( this._再起動が必要 ) ? フェーズ.再起動 : フェーズ.表示;
-                    }
+                    // 閉じられたら次のフェーズへ。
+                    this.現在のフェーズ = ( this._再起動が必要 ) ? フェーズ.再起動 : フェーズ.表示;
                     //----------------
                     #endregion
 
@@ -282,14 +244,6 @@ namespace DTXMania2.オプション設定
                 }
                 case フェーズ.再起動:
                 {
-                    #region " 背景画面を描画する。"
-                    //----------------
-                    dc.BeginDraw();
-                    this._背景画面を描画する( dc );
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
                     #region " UIスレッドで再起動を実行する。"
                     //----------------
                     Global.App.BeginInvoke( new Action( () => {
@@ -303,39 +257,18 @@ namespace DTXMania2.オプション設定
                     
                     break;
                 }
-                case フェーズ.再起動待ち:
-                {
-                    #region " 背景画面を描画する。"
-                    //----------------
-                    dc.BeginDraw();
-                    this._背景画面を描画する( dc );
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
-                    break;
-                }
                 case フェーズ.フェードアウト:
                 {
-                    #region " 背景画面＆フェードアウトを描画する。"
+                    #region " フェードアウトが完了したら次のフェーズへ。"
                     //----------------
-                    dc.BeginDraw();
-
-                    this._舞台画像.進行描画する( dc );
-                    this._パネルリスト.進行描画する( dc, 613f, 0f );
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
-                    {
-                        // フェードアウトが完了したら次のフェーズへ。
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.クローズ完了 )
                         this.現在のフェーズ = フェーズ.完了;
-                    }
-                    this._システム情報.描画する( dc );
-
-                    dc.EndDraw();
                     //----------------
                     #endregion
 
                     break;
                 }
+                case フェーズ.再起動待ち:
                 case フェーズ.完了:
                 {
                     #region " 遷移終了。Appによるステージ遷移を待つ。"
@@ -364,6 +297,74 @@ namespace DTXMania2.オプション設定
             #endregion
         }
 
+        public void 描画する()
+        {
+            this._システム情報.VPSをカウントする();
+
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
+            dc.Transform = SharpDX.Matrix3x2.Identity;
+
+            switch( this.現在のフェーズ )
+            {
+                case フェーズ.フェードイン:
+                {
+                    #region " 背景画面を描画し、フェードインを開始して表示フェーズへ。"
+                    //----------------
+                    Global.App.システムサウンド.再生する( システムサウンド種別.オプション設定ステージ_開始音 );
+
+                    this._舞台画像.ぼかしと縮小を適用する( 0.5 );
+                    this._パネルリスト.フェードインを開始する();
+
+                    dc.BeginDraw();
+                    this._背景画面を描画する( dc );
+                    dc.EndDraw();
+
+                    this._フェードインフェーズ完了 = true;
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.表示:
+                case フェーズ.入力割り当て:
+                case フェーズ.曲読み込みフォルダ割り当て:
+                case フェーズ.再起動:
+                case フェーズ.再起動待ち:
+                {
+                    #region " 背景画面を描画する。"
+                    //----------------
+                    dc.BeginDraw();
+                    this._背景画面を描画する( dc );
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.フェードアウト:
+                {
+                    #region " 背景画面＆フェードアウトを描画する。"
+                    //----------------
+                    dc.BeginDraw();
+
+                    this._舞台画像.進行描画する( dc );
+                    this._パネルリスト.進行描画する( dc, 613f, 0f );
+                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
+                    this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.完了:
+                {
+                    break;
+                }
+            }
+        }
+
 
 
         // ローカル
@@ -383,5 +384,7 @@ namespace DTXMania2.オプション設定
             this._パネルリスト.進行描画する( dc, 613f, 0f );
             this._システム情報.描画する( dc );
         }
+
+        private bool _フェードインフェーズ完了 = false;
     }
 }

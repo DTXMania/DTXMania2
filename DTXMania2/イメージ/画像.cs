@@ -16,7 +16,7 @@ namespace DTXMania2
         ///     指定した画像ファイルから画像を作成する。
         /// </summary>
         public 画像( VariablePath 画像ファイルパス, BindFlags bindFlags = BindFlags.ShaderResource )
-            : base( Global.D3D11Device1, 画像ファイルパス, bindFlags )
+            : base( Global.GraphicResources.D3D11Device1, 画像ファイルパス, bindFlags )
         {
         }
 
@@ -24,7 +24,7 @@ namespace DTXMania2
         ///     指定したサイズの、空の画像を作成する。
         /// </summary>
         public 画像( Size2F サイズ, BindFlags bindFlags = BindFlags.ShaderResource )
-            : base( Global.D3D11Device1, サイズ, bindFlags )
+            : base( Global.GraphicResources.D3D11Device1, サイズ, bindFlags )
         {
         }
 
@@ -34,12 +34,12 @@ namespace DTXMania2
         public void 描画する( float 左位置, float 上位置, float 不透明度0to1 = 1.0f, float X方向拡大率 = 1.0f, float Y方向拡大率 = 1.0f, RectangleF? 転送元矩形 = null )
         {
             base.描画する(
-                Global.既定のD3D11DeviceContext,
-                Global.設計画面サイズ,
-                Global.既定のD3D11ViewPort,
-                Global.既定のD3D11DepthStencilView,
-                Global.既定のD3D11RenderTargetView,
-                Global.既定のD3D11DepthStencilState,
+                Global.GraphicResources.既定のD3D11DeviceContext,
+                Global.GraphicResources.設計画面サイズ,
+                Global.GraphicResources.既定のD3D11ViewPort,
+                Global.GraphicResources.既定のD3D11DepthStencilView,
+                Global.GraphicResources.既定のD3D11RenderTargetView,
+                Global.GraphicResources.既定のD3D11DepthStencilState,
                 左位置,
                 上位置,
                 不透明度0to1,
@@ -56,12 +56,12 @@ namespace DTXMania2
         public void 描画する( Matrix ワールド行列変換, float 不透明度0to1 = 1f, RectangleF? 転送元矩形 = null )
         {
             base.描画する(
-                Global.既定のD3D11DeviceContext,
-                Global.設計画面サイズ,
-                Global.既定のD3D11ViewPort,
-                Global.既定のD3D11DepthStencilView,
-                Global.既定のD3D11RenderTargetView,
-                Global.既定のD3D11DepthStencilState,
+                Global.GraphicResources.既定のD3D11DeviceContext,
+                Global.GraphicResources.設計画面サイズ,
+                Global.GraphicResources.既定のD3D11ViewPort,
+                Global.GraphicResources.既定のD3D11DepthStencilView,
+                Global.GraphicResources.既定のD3D11RenderTargetView,
+                Global.GraphicResources.既定のD3D11DepthStencilState,
                 ワールド行列変換,
                 不透明度0to1,
                 転送元矩形 );

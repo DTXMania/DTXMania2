@@ -19,7 +19,7 @@ namespace DTXMania2
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._ロゴ画像 = new 画像D2D( @"$(Images)\TitleLogo.png" );
-            this._黒ブラシ = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color.Black );
+            this._黒ブラシ = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Color.Black );
 
             this.現在のフェーズ = フェーズ.未定;
         }
@@ -70,7 +70,7 @@ namespace DTXMania2
             this._アニメーション.黒幕1左下_基点位置X = new Variable( animation.Manager, initialValue: -500.0 );
             this._アニメーション.黒幕1左下_回転角rad = new Variable( animation.Manager, initialValue: Math.PI * 0.75 );
             using( var 基点位置Xの遷移1 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.2 ), finalValue: 0.0 ) )
-            using( var 基点位置Xの遷移2 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.8 ), finalValue: Global.設計画面サイズ.Width / 2.0 ) )
+            using( var 基点位置Xの遷移2 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.8 ), finalValue: Global.GraphicResources.設計画面サイズ.Width / 2.0 ) )
             using( var 回転角の遷移 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec ), finalValue: 0.0 ) )
             {
                 this._アニメーション.ストーリーボード.AddTransition( this._アニメーション.黒幕1左下_基点位置X, 基点位置Xの遷移1 );
@@ -81,10 +81,10 @@ namespace DTXMania2
             #endregion
             #region " (3) 黒幕2（右上） のアニメーション構築 "
             //----------------
-            this._アニメーション.黒幕2右上_基点位置X = new Variable( animation.Manager, initialValue: Global.設計画面サイズ.Width + 500.0 );
+            this._アニメーション.黒幕2右上_基点位置X = new Variable( animation.Manager, initialValue: Global.GraphicResources.設計画面サイズ.Width + 500.0 );
             this._アニメーション.黒幕2右上_回転角rad = new Variable( animation.Manager, initialValue: Math.PI * 0.75f );
-            using( var 基点位置Xの遷移1 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.2 ), finalValue: Global.設計画面サイズ.Width ) )
-            using( var 基点位置Xの遷移2 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.8 ), finalValue: Global.設計画面サイズ.Width / 2.0 ) )
+            using( var 基点位置Xの遷移1 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.2 ), finalValue: Global.GraphicResources.設計画面サイズ.Width ) )
+            using( var 基点位置Xの遷移2 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.8 ), finalValue: Global.GraphicResources.設計画面サイズ.Width / 2.0 ) )
             using( var 回転角の遷移 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec ), finalValue: 0.0 ) )
             {
                 this._アニメーション.ストーリーボード.AddTransition( this._アニメーション.黒幕2右上_基点位置X, 基点位置Xの遷移1 );
@@ -141,7 +141,7 @@ namespace DTXMania2
             #endregion
             #region " (2) 黒幕1（左下） のアニメーション構築 "
             //----------------
-            this._アニメーション.黒幕1左下_基点位置X = new Variable( animation.Manager, initialValue: Global.設計画面サイズ.Width / 2.0 );
+            this._アニメーション.黒幕1左下_基点位置X = new Variable( animation.Manager, initialValue: Global.GraphicResources.設計画面サイズ.Width / 2.0 );
             this._アニメーション.黒幕1左下_回転角rad = new Variable( animation.Manager, initialValue: 0.0 );
             using( var 基点位置Xの遷移1 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.8 ), finalValue: 0.0 ) )
             using( var 基点位置Xの遷移2 = animation.TrasitionLibrary.AccelerateDecelerate( duration: 秒( 期間sec * 0.2 ), finalValue: -500.0, accelerationRatio: 0.9, decelerationRatio: 0.1 ) )
@@ -155,10 +155,10 @@ namespace DTXMania2
             #endregion
             #region " (3) 黒幕2（右上） のアニメーション構築 "
             //----------------
-            this._アニメーション.黒幕2右上_基点位置X = new Variable( animation.Manager, initialValue: Global.設計画面サイズ.Width / 2.0 );
+            this._アニメーション.黒幕2右上_基点位置X = new Variable( animation.Manager, initialValue: Global.GraphicResources.設計画面サイズ.Width / 2.0 );
             this._アニメーション.黒幕2右上_回転角rad = new Variable( animation.Manager, initialValue: 0.0 );
-            using( var 基点位置Xの遷移1 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.8 ), finalValue: Global.設計画面サイズ.Width ) )
-            using( var 基点位置Xの遷移2 = animation.TrasitionLibrary.AccelerateDecelerate( duration: 秒( 期間sec * 0.2 ), finalValue: Global.設計画面サイズ.Width + 500.0, accelerationRatio: 0.9, decelerationRatio: 0.1 ) )
+            using( var 基点位置Xの遷移1 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec * 0.8 ), finalValue: Global.GraphicResources.設計画面サイズ.Width ) )
+            using( var 基点位置Xの遷移2 = animation.TrasitionLibrary.AccelerateDecelerate( duration: 秒( 期間sec * 0.2 ), finalValue: Global.GraphicResources.設計画面サイズ.Width + 500.0, accelerationRatio: 0.9, decelerationRatio: 0.1 ) )
             using( var 回転角の遷移 = animation.TrasitionLibrary.Linear( duration: 秒( 期間sec ), finalValue: Math.PI * 0.75f ) )
             {
                 this._アニメーション.ストーリーボード.AddTransition( this._アニメーション.黒幕2右上_基点位置X, 基点位置Xの遷移1 );
@@ -212,7 +212,7 @@ namespace DTXMania2
                         //----------------
                         using( var ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, (float) this._アニメーション.背景_不透明度.Value ) ) )
                         {
-                            dc.FillRectangle( new RectangleF( 0f, 0f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Width ), ブラシ );
+                            dc.FillRectangle( new RectangleF( 0f, 0f, Global.GraphicResources.設計画面サイズ.Width, Global.GraphicResources.設計画面サイズ.Width ), ブラシ );
                         }
                         //----------------
                         #endregion
@@ -220,8 +220,8 @@ namespace DTXMania2
                         #region " (2) 黒幕1（左下）"
                         //----------------
                         {
-                            float w = Global.設計画面サイズ.Width * 1.5f;
-                            float h = Global.設計画面サイズ.Height;
+                            float w = Global.GraphicResources.設計画面サイズ.Width * 1.5f;
+                            float h = Global.GraphicResources.設計画面サイズ.Height;
                             var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
 
                             dc.Transform =
@@ -230,7 +230,7 @@ namespace DTXMania2
                                     center: new Vector2( 0f, -rc.Height / 2f ) ) *
                                 Matrix3x2.Translation(  // (基点X, H×3/4) へ移動
                                     x: (float) this._アニメーション.黒幕1左下_基点位置X.Value,
-                                    y: Global.設計画面サイズ.Height ) *
+                                    y: Global.GraphicResources.設計画面サイズ.Height ) *
                                 preTrans;
 
                             dc.FillRectangle( rc, this._黒ブラシ );
@@ -243,8 +243,8 @@ namespace DTXMania2
                         #region " (3) 黒幕2（右上）"
                         //----------------
                         {
-                            float w = Global.設計画面サイズ.Width * 1.5f;
-                            float h = Global.設計画面サイズ.Height;
+                            float w = Global.GraphicResources.設計画面サイズ.Width * 1.5f;
+                            float h = Global.GraphicResources.設計画面サイズ.Height;
                             var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
 
                             dc.Transform =
@@ -295,7 +295,7 @@ namespace DTXMania2
                         //----------------
                         using( var ブラシ = new SolidColorBrush( dc, new Color4( Color3.Black, (float) this._アニメーション.背景_不透明度.Value ) ) )
                         {
-                            dc.FillRectangle( new RectangleF( 0f, 0f, Global.設計画面サイズ.Width, Global.設計画面サイズ.Width ), ブラシ );
+                            dc.FillRectangle( new RectangleF( 0f, 0f, Global.GraphicResources.設計画面サイズ.Width, Global.GraphicResources.設計画面サイズ.Width ), ブラシ );
                         }
                         //----------------
                         #endregion
@@ -303,8 +303,8 @@ namespace DTXMania2
                         #region " (2) 黒幕1（左下）"
                         //----------------
                         {
-                            float w = Global.設計画面サイズ.Width * 1.5f;
-                            float h = Global.設計画面サイズ.Height;
+                            float w = Global.GraphicResources.設計画面サイズ.Width * 1.5f;
+                            float h = Global.GraphicResources.設計画面サイズ.Height;
                             var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
 
                             dc.Transform =
@@ -313,7 +313,7 @@ namespace DTXMania2
                                     center: new Vector2( 0f, -rc.Height / 2f ) ) *
                                 Matrix3x2.Translation(  // (基点X, H×3/4) へ移動
                                     x: (float) this._アニメーション.黒幕1左下_基点位置X.Value,
-                                    y: Global.設計画面サイズ.Height ) *
+                                    y: Global.GraphicResources.設計画面サイズ.Height ) *
                                 preTrans;
 
                             dc.FillRectangle( rc, this._黒ブラシ );
@@ -326,8 +326,8 @@ namespace DTXMania2
                         #region " (3) 黒幕2（右上）"
                         //----------------
                         {
-                            float w = Global.設計画面サイズ.Width * 1.5f;
-                            float h = Global.設計画面サイズ.Height;
+                            float w = Global.GraphicResources.設計画面サイズ.Width * 1.5f;
+                            float h = Global.GraphicResources.設計画面サイズ.Height;
                             var rc = new RectangleF( -w / 2f, -h / 2f, w, h );
 
                             dc.Transform =

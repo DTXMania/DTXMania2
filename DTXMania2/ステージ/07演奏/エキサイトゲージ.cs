@@ -22,7 +22,7 @@ namespace DTXMania2.演奏
             this._ゲージ枠通常 = new 画像D2D( @"$(Images)\PlayStage\ExciteGauge.png" );
             this._ゲージ枠DANGER = new 画像D2D( @"$(Images)\PlayStage\ExciteGauge_Danger.png" );
 
-            var dc = Global.既定のD2D1DeviceContext;
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
 
             this._通常ブラシ = new SolidColorBrush( dc, new Color4( 0xfff9b200 ) );      // ABGR
             this._DANGERブラシ = new SolidColorBrush( dc, new Color4( 0xff0000ff ) );

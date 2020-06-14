@@ -554,25 +554,6 @@ namespace DTXMania2.オプション設定
 
             // ツリー構築・システム設定パート（全ユーザ共通）
 
-            #region "「垂直帰線同期」ON/OFFトグル "
-            //----------------
-            this.パネルツリーのルートノード.子パネルリスト.Add(
-
-                new パネル_ONOFFトグル(
-
-                    パネル名:
-                        "垂直帰線同期",
-
-                    初期状態はON:
-                        systemConfig.垂直帰線同期を行う,
-
-                    値の変更処理:
-                        ( panel ) => {
-                            systemConfig.垂直帰線同期を行う = ( (パネル_ONOFFトグル) panel ).ONである;
-                        }
-                ) );
-            //----------------
-            #endregion
             #region "「判定位置調整」数値ボックス "
             //----------------
             this.パネルツリーのルートノード.子パネルリスト.Add(
@@ -866,7 +847,7 @@ namespace DTXMania2.オプション設定
 
             // (1) フレーム１（たて線）を描画。
 
-            this._青い線.描画する( dc, new Vector2( left, 0f ), 高さdpx: Global.設計画面サイズ.Height );
+            this._青い線.描画する( dc, new Vector2( left, 0f ), 高さdpx: Global.GraphicResources.設計画面サイズ.Height );
 
 
             // (2) パネルを描画。（選択中のパネルの3つ上から7つ下までの計11枚。）

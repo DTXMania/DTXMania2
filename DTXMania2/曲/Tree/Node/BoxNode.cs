@@ -6,7 +6,7 @@ using FDK;
 
 namespace DTXMania2.曲
 {
-    // HACK: box.def の PreImage 他への対応
+    // hack: box.def の PreImage 他への対応
 
     class BoxNode : Node
     {

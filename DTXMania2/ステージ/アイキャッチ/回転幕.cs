@@ -54,7 +54,7 @@ namespace DTXMania2
             this._画面BC_アイキャッチ遷移画面1_回転中 = new 舞台画像();
             this._画面D_アイキャッチ遷移画面2_逆回転中 = new 舞台画像();
 
-            this._斜めジオメトリマスク = new PathGeometry( Global.D2D1Factory1 );
+            this._斜めジオメトリマスク = new PathGeometry( Global.GraphicResources.D2D1Factory1 );
             using( var sink = this._斜めジオメトリマスク.Open() )
             {
                 // 長方形。これを、縮小＆45°回転してマスクさせる。
@@ -531,7 +531,9 @@ namespace DTXMania2
                                     Matrix3x2.Rotation( (float) ( Math.PI / ( 5.85 - 1.85 * ( 割合 * 2 ) ) ) ) :
                                     Matrix3x2.Rotation( (float) ( Math.PI / 4.0 ) ) // 45°
                                 ) *
-                                Matrix3x2.Translation( Global.設計画面サイズ.Width / 2.0f, Global.設計画面サイズ.Height / 2.0f ); // 画面中央固定。
+                                Matrix3x2.Translation(
+                                    Global.GraphicResources.設計画面サイズ.Width / 2.0f, 
+                                    Global.GraphicResources.設計画面サイズ.Height / 2.0f ); // 画面中央固定。
 
                             this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, layerParameters1: this._斜めレイヤーパラメータ );
                             this._ロゴを描画する( dc );
@@ -588,7 +590,9 @@ namespace DTXMania2
                                     Matrix3x2.Rotation( (float) ( Math.PI / ( 5.85 - 1.85 * ( 割合 * 2 ) ) ) ) :
                                     Matrix3x2.Rotation( (float) ( Math.PI / 4.0 ) ) // 45°
                                 ) *
-                                Matrix3x2.Translation( Global.設計画面サイズ.Width / 2.0f, Global.設計画面サイズ.Height / 2.0f ); // 画面中央固定。
+                                Matrix3x2.Translation( 
+                                    Global.GraphicResources.設計画面サイズ.Width / 2.0f, 
+                                    Global.GraphicResources.設計画面サイズ.Height / 2.0f ); // 画面中央固定。
 
                             this._画面BC_アイキャッチ遷移画面1_回転中.進行描画する( dc, layerParameters1: this._斜めレイヤーパラメータ );
                             this._ロゴを描画する( dc );

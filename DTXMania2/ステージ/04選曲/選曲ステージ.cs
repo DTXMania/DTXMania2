@@ -98,41 +98,30 @@ namespace DTXMania2.選曲
         // 進行と描画
 
 
-        public void 進行描画する()
+        public void 進行する()
         {
+            this._システム情報.FPSをカウントしプロパティを更新する();
+
             var 入力 = Global.App.ドラム入力;
             var 曲ツリー = Global.App.曲ツリーリスト.SelectedItem!;
             var フォーカスリスト = 曲ツリー.フォーカスリスト;
             var フォーカスノード = 曲ツリー.フォーカスノード!;
 
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
-
             入力.すべての入力デバイスをポーリングする();
-
-            this._システム情報.VPSをカウントする();
-            this._システム情報.FPSをカウントしプロパティを更新する();
 
             switch( this.現在のフェーズ )
             {
                 case フェーズ.フェードイン:
                 {
-                    #region " 背景画面＆フェードインを描画する。"
+                    #region " フェードイン描画が完了したら次のフェーズへ。"
                     //----------------
-                    dc.BeginDraw();
-
-                    this._背景画面を描画する( dc );
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.オープン完了 )
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.オープン完了 )
                     {
-                        // フェードイン描画が完了したら次のフェーズへ。
                         this.現在のフェーズ = フェーズ.表示;
 
                         if( !this._フェーズ完了 )             // まだ再開されてなければ、
                             Global.App.現行化.再開する();     // 曲ツリーの現行化タスクが一時停止していれば、再開する。
                     }
-                    this._システム情報.描画する( dc );
-
-                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -319,30 +308,13 @@ namespace DTXMania2.選曲
                     //----------------
                     #endregion
 
-                    #region " 背景画面を描画する。"
-                    //----------------
-                    dc.BeginDraw();
-
-                    this._背景画面を描画する( dc );
-                    this._システム情報.描画する( dc );
-
-                    dc.EndDraw();
-                    //----------------
-                    #endregion
-
                     break;
                 }
                 case フェーズ.QuickConfig:
                 {
-                    #region " 背景画面＆QuickConfigを描画する。"
+                    #region " QuickConfig パネルの選択結果に従って次のフェーズへ。"
                     //----------------
-                    dc.BeginDraw();
-
-                    this._背景画面を描画する( dc );
-                    this._システム情報.描画する( dc );
-                    this._QuickConfig画面.進行描画する( dc, 568f, 68f );
-
-                    dc.EndDraw();
+                    this._QuickConfig画面.進行する();
 
                     if( this._QuickConfig画面.現在のフェーズ == QuickConfig.QuickConfigパネル.フェーズ.完了_戻る )
                     {
@@ -366,17 +338,11 @@ namespace DTXMania2.選曲
                 {
                     #region " 背景画面＆フェードアウトを描画する。"
                     //----------------
-                    dc.BeginDraw();
-
-                    this._背景画面を描画する( dc );
-                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc ) == アイキャッチ.フェーズ.クローズ完了 )
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.クローズ完了 )
                     {
                         // フェードアウト描画が完了したら次のフェーズへ。
                         this.現在のフェーズ = this._フェートアウト後のフェーズ; // フェードアウト開始時に設定済み
                     }
-                    this._システム情報.描画する( dc );
-
-                    dc.EndDraw();
                     //----------------
                     #endregion
 
@@ -391,6 +357,87 @@ namespace DTXMania2.選曲
                     //----------------
                     #endregion
 
+                    break;
+                }
+            }
+        }
+
+        public void 描画する()
+        {
+            this._システム情報.VPSをカウントする();
+
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
+            dc.Transform = SharpDX.Matrix3x2.Identity;
+
+            switch( this.現在のフェーズ )
+            {
+                case フェーズ.フェードイン:
+                {
+                    #region " 背景画面＆フェードインを描画する。"
+                    //----------------
+                    dc.BeginDraw();
+
+                    this._背景画面を描画する( dc );
+                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
+                    this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.表示:
+                {
+                    #region " 背景画面を描画する。"
+                    //----------------
+                    dc.BeginDraw();
+
+                    this._背景画面を描画する( dc );
+                    this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.QuickConfig:
+                {
+                    #region " 背景画面＆QuickConfigを描画する。"
+                    //----------------
+                    dc.BeginDraw();
+
+                    this._背景画面を描画する( dc );
+                    this._システム情報.描画する( dc );
+                    this._QuickConfig画面.描画する( dc, 568f, 68f );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.フェードアウト:
+                {
+                    #region " 背景画面＆フェードアウトを描画する。"
+                    //----------------
+                    dc.BeginDraw();
+
+                    this._背景画面を描画する( dc );
+                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( dc );
+                    this._システム情報.描画する( dc );
+
+                    dc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+                case フェーズ.確定_選曲:
+                case フェーズ.確定_設定:
+                case フェーズ.キャンセル:
+                {
                     break;
                 }
             }

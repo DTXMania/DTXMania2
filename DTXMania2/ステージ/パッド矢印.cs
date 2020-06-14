@@ -58,8 +58,8 @@ namespace DTXMania2
                 return;
 
             var 左上位置dpx = new Vector3(
-                Global.画面左上dpx.X + 中央位置dpx.X - 矩形.Value.Width * 拡大率 / 2f,
-                Global.画面左上dpx.Y + 中央位置dpx.Y - 矩形.Value.Height * 拡大率 / 2f,
+                Global.GraphicResources.画面左上dpx.X + 中央位置dpx.X - 矩形.Value.Width * 拡大率 / 2f,
+                Global.GraphicResources.画面左上dpx.Y + 中央位置dpx.Y - 矩形.Value.Height * 拡大率 / 2f,
                 0f );
 
             var 変換行列 =

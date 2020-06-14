@@ -23,7 +23,7 @@ namespace DTXMania2.選曲
             this._背景画像 = new 画像D2D( @"$(Images)\SelectStage\ScoreStatusPanel.png" );
 
             // 色ブラシを作成。
-            var dc = Global.既定のD2D1DeviceContext;
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
             this._色 = new Dictionary<表示レーン種別, SolidColorBrush>() {
                 { 表示レーン種別.LeftCymbal,   new SolidColorBrush( dc, new Color4( 0xff7b1fff ) ) },
                 { 表示レーン種別.HiHat,        new SolidColorBrush( dc, new Color4( 0xffffc06a ) ) },

@@ -17,7 +17,7 @@ namespace DTXMania2
         /// <param name="不透明度">透明: 0 ～ 1 :不透明</param>
         public フォント画像( VariablePath 文字盤の画像ファイルパス, VariablePath 文字盤設定ファイルパス, float 文字幅補正dpx = 0f, float 不透明度 = 1f )
             : base(
-                Global.D3D11Device1,
+                Global.GraphicResources.D3D11Device1,
                 文字盤の画像ファイルパス, 文字盤設定ファイルパス, 文字幅補正dpx, 不透明度 )
         {
         }
@@ -31,12 +31,12 @@ namespace DTXMania2
         public void 描画する( float 基点のX位置, float 上位置, string 表示文字列, Size2F? 拡大率 = null, bool 右揃え = false )
         {
             base.描画する(
-                Global.既定のD3D11DeviceContext,
-                Global.設計画面サイズ,
-                Global.既定のD3D11ViewPort,
-                Global.既定のD3D11DepthStencilView,
-                Global.既定のD3D11RenderTargetView,
-                Global.既定のD3D11DepthStencilState,
+                Global.GraphicResources.既定のD3D11DeviceContext,
+                Global.GraphicResources.設計画面サイズ,
+                Global.GraphicResources.既定のD3D11ViewPort,
+                Global.GraphicResources.既定のD3D11DepthStencilView,
+                Global.GraphicResources.既定のD3D11RenderTargetView,
+                Global.GraphicResources.既定のD3D11DepthStencilState,
                 基点のX位置,
                 上位置,
                 表示文字列,

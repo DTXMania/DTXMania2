@@ -89,10 +89,8 @@ namespace DTXMania2.起動
         // 進行と描画
 
 
-        public void 進行描画する()
+        public void 進行する()
         {
-            // 進行
-
             switch( this.現在のフェーズ )
             {
                 case フェーズ.開始:
@@ -272,7 +270,7 @@ namespace DTXMania2.起動
                     #region " 開始音の終了待ちを開始して次のフェーズへ。"
                     //----------------
                     this._コンソール表示内容.Add( "All setup done." );
-                    
+
                     // 次のフェーズへ。
                     this.現在のフェーズ = フェーズ.開始音終了待ち;
                     break;
@@ -302,14 +300,14 @@ namespace DTXMania2.起動
                     #endregion
                 }
             }
+        }
 
-
-            // 描画
-
+        public void 描画する()
+        {
             Global.App.画面をクリアする();
 
-            var dc = Global.既定のD2D1DeviceContext;
-            dc.Transform = Global.拡大行列DPXtoPX;
+            var dc = Global.GraphicResources.既定のD2D1DeviceContext;
+            dc.Transform = SharpDX.Matrix3x2.Identity;
 
             dc.BeginDraw();
 

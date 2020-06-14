@@ -327,7 +327,7 @@ namespace DTXMania2
 
         private IReadOnlyDictionary<判定種別, int> _ヒット割合を算出して返す()
         {
-            // HACK: ヒット割合の計算式は、本家とは一致していない。
+            // hack: ヒット割合の計算式は、本家とは一致していない。
 
             int ヒット数の合計 = 0;
             var ヒット割合_実数 = new Dictionary<判定種別, double>();  // 実値（0～100）

@@ -30,8 +30,8 @@ namespace DTXMania2.演奏
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._前回表示した名前 = "";
-            this._TextFormat = new TextFormat( Global.DWriteFactory, "メイリオ", FontWeight.Regular, FontStyle.Normal, 22f );
-            this._文字色 = new SolidColorBrush( Global.既定のD2D1DeviceContext, Color4.White );
+            this._TextFormat = new TextFormat( Global.GraphicResources.DWriteFactory, "メイリオ", FontWeight.Regular, FontStyle.Normal, 22f );
+            this._文字色 = new SolidColorBrush( Global.GraphicResources.既定のD2D1DeviceContext, Color4.White );
             this._拡大率X = 1.0f;
         }
 
@@ -56,7 +56,7 @@ namespace DTXMania2.演奏
             // 初回または名前が変更された場合に TextLayout を再構築する。
             if( ( this._TextLayout is null ) || ( this._前回表示した名前 != this.名前 ) )
             {
-                this._TextLayout = new TextLayout( Global.DWriteFactory, this.名前, this._TextFormat, 1000f, 30f ) { // 最大1000dpxまで
+                this._TextLayout = new TextLayout( Global.GraphicResources.DWriteFactory, this.名前, this._TextFormat, 1000f, 30f ) { // 最大1000dpxまで
                     TextAlignment = TextAlignment.Leading,
                     WordWrapping = WordWrapping.NoWrap, // 1000dpxを超えても改行しない（はみ出し分は切り捨て）
                 };

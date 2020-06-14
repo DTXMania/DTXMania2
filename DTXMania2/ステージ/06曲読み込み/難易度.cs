@@ -21,7 +21,7 @@ namespace DTXMania2.曲読み込み
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._数字画像 = new フォント画像D2D( @"$(Images)\ParameterFont_Large.png", @"$(Images)\ParameterFont_Large.yaml", 文字幅補正dpx: 0f );
-            this._見出し用TextFormat = new TextFormat( Global.DWriteFactory, "Century Gothic", 50f );
+            this._見出し用TextFormat = new TextFormat( Global.GraphicResources.DWriteFactory, "Century Gothic", 50f );
         }
 
         public virtual void Dispose()

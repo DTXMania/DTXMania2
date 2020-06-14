@@ -13,7 +13,7 @@ namespace DTXMania2
     class 文字列画像D2D : FDK.文字列画像D2D
     {
         public 文字列画像D2D()
-            : base( Global.DWriteFactory, Global.D2D1Factory1, Global.既定のD2D1DeviceContext, Global.設計画面サイズ )
+            : base( Global.GraphicResources.DWriteFactory, Global.GraphicResources.D2D1Factory1, Global.GraphicResources.既定のD2D1DeviceContext, Global.GraphicResources.設計画面サイズ )
         {
         }
     }

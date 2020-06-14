@@ -50,7 +50,7 @@ namespace DTXMania2.演奏
 
             var 変換行列 =
                 Matrix.RotationY( MathUtil.DegreesToRadians( +48f ) ) *
-                Matrix.Translation( Global.画面左上dpx.X + 1630f, Global.画面左上dpx.Y - 530f, 0f );
+                Matrix.Translation( Global.GraphicResources.画面左上dpx.X + 1630f, Global.GraphicResources.画面左上dpx.Y - 530f, 0f );
 
             this.クリアパネル.描画する( 変換行列 );
         }

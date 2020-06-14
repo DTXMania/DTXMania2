@@ -93,7 +93,7 @@ namespace DTXMania2.認証
             var 描画位置 = new Vector2( 569f, 188f );
             const float リストの改行幅 = 160f;
 
-            int 表示人数 = Math.Min( 5, Global.App.ユーザリスト.Count );   // HACK: 現状は最大５人までとする。
+            int 表示人数 = Math.Min( 5, Global.App.ユーザリスト.Count );   // hack: 現状は最大５人までとする。
 
             for( int i = 0; i < 表示人数; i++ )
             {

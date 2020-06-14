@@ -158,10 +158,8 @@ namespace DTXMania2.選曲.QuickConfig
         // 進行と描画
 
 
-        public void 進行描画する( DeviceContext dc, float 左位置, float 上位置 )
+        public void 進行する()
         {
-            var preTrans = dc.Transform;
-
             var 入力 = Global.App.ドラム入力;  // 呼び出し元でポーリング済み
 
             switch( this.現在のフェーズ )
@@ -283,6 +281,29 @@ namespace DTXMania2.選曲.QuickConfig
                     //----------------
                     #endregion
 
+                    break;
+                }
+                case フェーズ.完了_戻る:
+                case フェーズ.完了_オプション設定:
+                {
+                    #region " 遷移終了。呼び出し元による継続処理を待つ。"
+                    //----------------
+                    //----------------
+                    #endregion
+
+                    break;
+                }
+            }
+        }
+
+        public void 描画する( DeviceContext dc, float 左位置, float 上位置 )
+        {
+            var preTrans = dc.Transform;
+
+            switch( this.現在のフェーズ )
+            {
+                case フェーズ.表示:
+                {
                     #region " QuickConfig パネルを描画する。"
                     //----------------
                     this._パネル.描画する( dc, 左位置, 上位置 );
@@ -297,10 +318,10 @@ namespace DTXMania2.選曲.QuickConfig
                         // 選択カーソルを描画する。
                         if( this._設定項目リスト.SelectedIndex == i )
                         {
-                            dc.Transform = Global.拡大行列DPXtoPX;
-                         
+                            dc.Transform = SharpDX.Matrix3x2.Identity;
+
                             using var brush = new SolidColorBrush( dc, new SharpDX.Color( 0.6f, 0.6f, 1f, 0.4f ) );
-                            
+
                             dc.FillRectangle(
                                 new SharpDX.RectangleF(
                                     左位置 + 左右マージン,
@@ -323,11 +344,6 @@ namespace DTXMania2.選曲.QuickConfig
                 case フェーズ.完了_戻る:
                 case フェーズ.完了_オプション設定:
                 {
-                    #region " 遷移終了。呼び出し元による継続処理を待つ。"
-                    //----------------
-                    //----------------
-                    #endregion
-
                     break;
                 }
             }

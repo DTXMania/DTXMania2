@@ -21,6 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSTFEditor", "SSTFEditor\SS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{91F334F0-5496-4121-A7A2-ADDFCDC7F553}"
 	ProjectSection(SolutionItems) = preProject
+		ランクエフェクトの作成.md = ランクエフェクトの作成.md
 		Docs\配布ファイルの作成手順.md = Docs\配布ファイルの作成手順.md
 	EndProjectSection
 EndProject
