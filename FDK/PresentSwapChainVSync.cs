@@ -22,6 +22,24 @@ namespace FDK
         /// <summary>
         ///     表示用の専用タスクを生成して、そこで垂直帰線同期とスワップチェーンの表示を行う。
         /// </summary>
+        public void 表示する( SharpDX.DXGI.SwapChain1 swapChain1 )
+        {
+            this.表示待機中 = true;    // 表示開始
+
+            // HACK: 毎回 Task.Run を実行しないような実装に変える。
+            Task.Run( () => {
+
+                swapChain1.Present( 1, SharpDX.DXGI.PresentFlags.None );
+
+                this.表示待機中 = false;   // 表示完了
+
+            } );
+        }
+
+        /// <summary>
+        ///     表示用の専用タスクを生成して、そこで垂直帰線同期とスワップチェーンの表示を行う。
+        /// </summary>
+        [Obsolete]
         public void 表示する( SharpDX.DXGI.Output1 dxgiOutput1, SharpDX.DXGI.SwapChain1 swapChain1, int syncInterval )
         {
             this.表示待機中 = true;    // 表示開始

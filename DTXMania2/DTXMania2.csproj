@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>x64</Platforms>
     <Nullable>enable</Nullable>
-    <Version>57.0.0</Version>
+    <Version>58.0.0</Version>
     <Authors>FROM / Kenji Yamazaki</Authors>
     <Copyright>Copyright (C) 2000 2020 FROM / Kenji Yamazaki</Copyright>
     <Configurations>Debug;Release</Configurations>
@@ -22,7 +22,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Default\Images\TexturePS.hlsl" />
+    <None Remove="Resources\Default\Images\TextureVS.hlsl" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.3" />
+    <PackageReference Include="Microsoft.HLSL.CSharpVB" Version="1.0.2" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
     <PackageReference Include="NVorbis" Version="0.10.1" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
@@ -36,6 +42,14 @@
     <PackageReference Include="SharpDX.MediaFoundation" Version="4.2.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
     <PackageReference Include="YamlDotNet" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PixelShader Include="Resources\Default\Images\TexturePS.hlsl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <VertexShader Include="Resources\Default\Images\TextureVS.hlsl" />
   </ItemGroup>
 
   <ItemGroup>
@@ -77,27 +91,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="concrt140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="D3DCompiler_47.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Ijwhost.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="msvcp140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="msvcp140_1.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="msvcp140_2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="msvcp140_codecvt_ids.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Resources\Default\DrumSounds\Bass.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -297,12 +290,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Default\Images\SelectStage\RatingIcon.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Default\Images\TexturePS.cso">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Default\Images\TextureVS.cso">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Default\Images\EyeCatch\!.png">
@@ -584,18 +571,10 @@
     <None Update="Resources\Default\SystemSounds\SelectStage_Decide.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="vccorlib140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="vcruntime140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="vcruntime140_1.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ws2_32.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /Y $(SolutionDir)packages-selfbuild\Effekseer-netcore\Ijwhost.dll $(TargetDir)&#xD;&#xA;xcopy /Y $(SolutionDir)Dlls\*.dll $(TargetDir)&#xD;&#xA;" />
+  </Target>
 
 </Project>

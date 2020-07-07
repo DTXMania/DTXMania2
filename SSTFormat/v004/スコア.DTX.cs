@@ -616,7 +616,7 @@ namespace SSTFormat.v004
 
                 現在の.BPM定義マップ[ 現在の.zz36進数 ] = BPM値;  // あれば上書き、なければ追加
             }
-            internal static void _コマンド_AVIzz()
+            internal static void _コマンド_AVIzz_VIDEOzz()
             {
                 if( -1 == 現在の.zz36進数 )
                 {
@@ -766,7 +766,7 @@ namespace SSTFormat.v004
                         switch( 現在の.チャンネル番号 )
                         {
                             // 多重再生禁止サウンド
-                            case 0x01:                                                                               // BGM
+                            case 0x01:  // BGM
                             case 0x20:
                             case 0x21:
                             case 0x22:
@@ -791,7 +791,7 @@ namespace SSTFormat.v004
                             case 0x66:
                             case 0x67:
                             case 0x68:
-                            case 0x69:              // SE  1～9
+                            case 0x69:  // SE  1～9
                             case 0x70:
                             case 0x71:
                             case 0x72:
@@ -801,7 +801,7 @@ namespace SSTFormat.v004
                             case 0x76:
                             case 0x77:
                             case 0x78:
-                            case 0x79:   // SE 10～19
+                            case 0x79:  // SE 10～19
                             case 0x80:
                             case 0x81:
                             case 0x82:
@@ -811,57 +811,54 @@ namespace SSTFormat.v004
                             case 0x86:
                             case 0x87:
                             case 0x88:
-                            case 0x89:   // SE 20～29
+                            case 0x89:  // SE 20～29
                             case 0x90:
                             case 0x91:
-                            case 0x92:                                                                                // SE 30～32
+                            case 0x92:  // SE 30～32
+                            {
+                                int WAV番号 = オブジェクト値;
+                                var wavList = 現在の.スコア.WAVリスト;
+
+                                if( wavList.ContainsKey( WAV番号 ) )
                                 {
-                                    int WAV番号 = オブジェクト値;
-                                    var wavList = 現在の.スコア.WAVリスト;
+                                    wavList[ WAV番号 ].多重再生する = ( 現在の.チャンネル番号 == 0x01 );  // ch01 だけは多重再生する
+                                    wavList[ WAV番号 ].BGMである = true; // Viewer に対しては、すべて BGM と同じ扱い。
 
-                                    if( wavList.ContainsKey( WAV番号 ) )
+                                    // 初めてのBGMなら、BGMファイルとしてサウンドを登録する。
+                                    if( 0x01 == 現在の.チャンネル番号 && string.IsNullOrEmpty( 現在の.スコア.BGMファイル名 ) )
                                     {
-                                        wavList[ WAV番号 ].多重再生する = ( 現在の.チャンネル番号 == 0x01 );  // ch01 だけは多重再生する
-                                        wavList[ WAV番号 ].BGMである = true; // Viewer に対しては、すべて BGM と同じ扱い。
-
-                                        // 初めてのBGMなら、BGMファイルとしてサウンドを登録する。
-                                        if( 0x01 == 現在の.チャンネル番号 && string.IsNullOrEmpty( 現在の.スコア.BGMファイル名 ) )
-                                        {
-                                            現在の.スコア.BGMファイル名 = wavList[ WAV番号 ].ファイルパス;
-                                        }
+                                        現在の.スコア.BGMファイル名 = wavList[ WAV番号 ].ファイルパス;
                                     }
                                 }
                                 break;
-
-                            // BPM
-                            case 0x03:
+                            }
+                            case 0x03:  // BPM
+                            {
                                 chip.BPM = オブジェクト値 + 現在の.BASEBPM;  // 引き当てないので、ここでBASEBPMを加算する。
                                 break;
-
-                            // 拡張BPM
-                            case 0x08:
+                            }
+                            case 0x08:  // 拡張BPM
+                            {
                                 chip.BPM = 0.0; // あとで引き当てる。BASEBPMは引き当て時に加算する。
                                 現在の.BPM参照マップ.Add( chip, オブジェクト値 );  // 引き当てを予約。
                                 break;
+                            }
+                            case 0x54:  // 動画
+                            case 0x5A:  // 全画面動画
+                            {
+                                int AVI番号 = オブジェクト値;
+                                var aviList = 現在の.スコア.AVIリスト;
 
-                            // 動画
-                            case 0x54:
-                            case 0x5A:
+                                if( aviList.ContainsKey( AVI番号 ) )
                                 {
-                                    int AVI番号 = オブジェクト値;
-                                    var aviList = 現在の.スコア.AVIリスト;
-
-                                    if( aviList.ContainsKey( AVI番号 ) )
+                                    // 初めての動画なら、BGVファイルとして動画を登録する。
+                                    if( string.IsNullOrEmpty( 現在の.スコア.BGVファイル名 ) )
                                     {
-                                        // 初めての動画なら、BGVファイルとして動画を登録する。
-                                        if( string.IsNullOrEmpty( 現在の.スコア.BGVファイル名 ) )
-                                        {
-                                            現在の.スコア.BGVファイル名 = aviList[ AVI番号 ];
-                                        }
+                                        現在の.スコア.BGVファイル名 = aviList[ AVI番号 ];
                                     }
                                 }
                                 break;
-
+                            }
                             // 空打ち（ドラム）
                             case 0xB1: 現在の.スコア.空打ちチップマップ[ レーン種別.HiHat ] = オブジェクト値; break;      // HiHat Open と共有
                             case 0xB2: 現在の.スコア.空打ちチップマップ[ レーン種別.Snare ] = オブジェクト値; break;
@@ -869,16 +866,20 @@ namespace SSTFormat.v004
                             case 0xB4: 現在の.スコア.空打ちチップマップ[ レーン種別.Tom1 ] = オブジェクト値; break;
                             case 0xB5: 現在の.スコア.空打ちチップマップ[ レーン種別.Tom2 ] = オブジェクト値; break;
                             case 0xB6:
+                            {
                                 現在の.スコア.空打ちチップマップ[ レーン種別.RightCrash ] = オブジェクト値;               // ReftCrash と China は共有
                                 現在の.スコア.空打ちチップマップ[ レーン種別.China ] = オブジェクト値;
                                 break;
+                            }
                             case 0xB7: 現在の.スコア.空打ちチップマップ[ レーン種別.Tom3 ] = オブジェクト値; break;
                             case 0xB8: 現在の.スコア.空打ちチップマップ[ レーン種別.HiHat ] = オブジェクト値; break;      // HiHat Close と共有
                             case 0xB9: 現在の.スコア.空打ちチップマップ[ レーン種別.Ride ] = オブジェクト値; break;
                             case 0xBC:
+                            {
                                 現在の.スコア.空打ちチップマップ[ レーン種別.LeftCrash ] = オブジェクト値;                // LeftCrash と Splash は共有
                                 現在の.スコア.空打ちチップマップ[ レーン種別.Splash ] = オブジェクト値;
                                 break;
+                            }
                         }
                     }
                     //----------------
@@ -1052,7 +1053,8 @@ namespace SSTFormat.v004
                 [ "preview" ] = (true, _コマンド_PREVIEW),
                 [ "preimage" ] = (true, _コマンド_PREIMAGE),
                 [ "premovie" ] = (true, _コマンド_PREMOVIE),
-                [ "avi" ] = (true, _コマンド_AVIzz),
+                [ "avi" ] = (true, _コマンド_AVIzz_VIDEOzz),
+                [ "video" ] = (true, _コマンド_AVIzz_VIDEOzz),
                 [ "bgmwav" ] = (true, _コマンド_BGMWAV),
                 [ "background" ] = (true, _コマンド_BACKGROUND),
                 [ "wall" ] = (true, _コマンド_BACKGROUND),
@@ -1134,33 +1136,33 @@ namespace SSTFormat.v004
             private static readonly Dictionary<int, (チップ種別 チップ種別, bool 可視, bool WAVを使う)> _DTXチャンネルプロパティマップ = new Dictionary<int, (チップ種別 チップ種別, bool 可視, bool WAVを使う)> {
                 #region " *** "
                 //----------------
-                // Ch番号,   チップ種別,            可視, WAVを使う
-                [ 0x01 ] = (チップ種別.BGM, false, true),  // バックコーラス(BGM)
-                [ 0x02 ] = (チップ種別.Unknown, false, false),  // 小節長倍率 ... SSTFではチップじゃない。
-                [ 0x03 ] = (チップ種別.BPM, false, false),  // BPM
-                [ 0x08 ] = (チップ種別.BPM, false, false),  // 拡張BPM
-                [ 0x11 ] = (チップ種別.HiHat_Close, true, true),  // チップ配置（ドラム）・ハイハットクローズ
-                [ 0x12 ] = (チップ種別.Snare, true, true),  // チップ配置（ドラム）・スネア
-                [ 0x13 ] = (チップ種別.Bass, true, true),  // チップ配置（ドラム）・バス
-                [ 0x14 ] = (チップ種別.Tom1, true, true),  // チップ配置（ドラム）・ハイタム
-                [ 0x15 ] = (チップ種別.Tom2, true, true),  // チップ配置（ドラム）・ロータム
+                //[Ch番号] = (チップ種別, 可視, WAVを使う)
+                [ 0x01 ] = (チップ種別.BGM, false, true),        // バックコーラス(BGM)
+                [ 0x02 ] = (チップ種別.Unknown, false, false),   // 小節長倍率 ... SSTFではチップじゃない。
+                [ 0x03 ] = (チップ種別.BPM, false, false),       // BPM
+                [ 0x08 ] = (チップ種別.BPM, false, false),       // 拡張BPM
+                [ 0x11 ] = (チップ種別.HiHat_Close, true, true), // チップ配置（ドラム）・ハイハットクローズ
+                [ 0x12 ] = (チップ種別.Snare, true, true),       // チップ配置（ドラム）・スネア
+                [ 0x13 ] = (チップ種別.Bass, true, true),        // チップ配置（ドラム）・バス
+                [ 0x14 ] = (チップ種別.Tom1, true, true),        // チップ配置（ドラム）・ハイタム
+                [ 0x15 ] = (チップ種別.Tom2, true, true),        // チップ配置（ドラム）・ロータム
                 [ 0x16 ] = (チップ種別.RightCrash, true, true),  // チップ配置（ドラム）・右シンバル
-                [ 0x17 ] = (チップ種別.Tom3, true, true),  // チップ配置（ドラム）・フロアタム
+                [ 0x17 ] = (チップ種別.Tom3, true, true),        // チップ配置（ドラム）・フロアタム
                 [ 0x18 ] = (チップ種別.HiHat_Open, true, true),  // チップ配置（ドラム）・ハイハットオープン
-                [ 0x19 ] = (チップ種別.Ride, true, true),  // チップ配置（ドラム）・ライドシンバル
-                [ 0x1A ] = (チップ種別.LeftCrash, true, true),  // チップ配置（ドラム）・左シンバル
+                [ 0x19 ] = (チップ種別.Ride, true, true),        // チップ配置（ドラム）・ライドシンバル
+                [ 0x1A ] = (チップ種別.LeftCrash, true, true),   // チップ配置（ドラム）・左シンバル
                 [ 0x1B ] = (チップ種別.HiHat_Foot, true, true),  // チップ配置（ドラム）・左ペダル
-                [ 0x1C ] = (チップ種別.Bass, true, true),  // チップ配置（ドラム）・左バス      --> SSTF では LeftBass は Bass に統合される
-                [ 0x20 ] = (チップ種別.GuitarAuto, false, true),  // チップ配置（ギター）・OPEN
-                [ 0x21 ] = (チップ種別.GuitarAuto, false, true),  // チップ配置（ギター）・xxB
-                [ 0x22 ] = (チップ種別.GuitarAuto, false, true),  // チップ配置（ギター）・xGx
-                [ 0x23 ] = (チップ種別.GuitarAuto, false, true),  // チップ配置（ギター）・xGB
-                [ 0x24 ] = (チップ種別.GuitarAuto, false, true),  // チップ配置（ギター）・Rxx
-                [ 0x25 ] = (チップ種別.GuitarAuto, false, true),  // チップ配置（ギター）・RxB
-                [ 0x26 ] = (チップ種別.GuitarAuto, false, true),  // チップ配置（ギター）・RGx
-                [ 0x27 ] = (チップ種別.GuitarAuto, false, true),  // チップ配置（ギター）・RGB
-                [ 0x50 ] = (チップ種別.小節線, true, false),  // 小節線
-                [ 0x51 ] = (チップ種別.拍線, true, false),  // 拍線
+                [ 0x1C ] = (チップ種別.Bass, true, true),        // チップ配置（ドラム）・左バス      --> SSTF では LeftBass は Bass に統合される
+                [ 0x20 ] = (チップ種別.GuitarAuto, false, true), // チップ配置（ギター）・OPEN
+                [ 0x21 ] = (チップ種別.GuitarAuto, false, true), // チップ配置（ギター）・xxB
+                [ 0x22 ] = (チップ種別.GuitarAuto, false, true), // チップ配置（ギター）・xGx
+                [ 0x23 ] = (チップ種別.GuitarAuto, false, true), // チップ配置（ギター）・xGB
+                [ 0x24 ] = (チップ種別.GuitarAuto, false, true), // チップ配置（ギター）・Rxx
+                [ 0x25 ] = (チップ種別.GuitarAuto, false, true), // チップ配置（ギター）・RxB
+                [ 0x26 ] = (チップ種別.GuitarAuto, false, true), // チップ配置（ギター）・RGx
+                [ 0x27 ] = (チップ種別.GuitarAuto, false, true), // チップ配置（ギター）・RGB
+                [ 0x50 ] = (チップ種別.小節線, true, false),     // 小節線
+                [ 0x51 ] = (チップ種別.拍線, true, false),       // 拍線
                 [ 0x54 ] = (チップ種別.背景動画, false, false),  // 動画
                 [ 0x5A ] = (チップ種別.背景動画, false, false),  // 動画（全画面）
                 [ 0x61 ] = (チップ種別.SE1, false, true),  // SE1

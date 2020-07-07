@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSTFormat", "SSTFormat\SSTFormat.csproj", "{08404500-04A1-4413-BE88-ABA220449298}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BuildHLSL", "BuildHLSL\BuildHLSL.vcxproj", "{80C8FBBC-F71D-4413-BD6B-756023F599BF}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューションフォルダ", "ソリューションフォルダ", "{104E64FF-A4D0-4809-B83C-7047E458AEEF}"
 	ProjectSection(SolutionItems) = preProject
 		InnoSetupScript.iss = InnoSetupScript.iss
@@ -26,9 +24,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{91F334F0-5
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTXMania2", "DTXMania2\DTXMania2.csproj", "{ED3CF274-10A3-4065-845C-4B43AECE8176}"
-	ProjectSection(ProjectDependencies) = postProject
-		{80C8FBBC-F71D-4413-BD6B-756023F599BF} = {80C8FBBC-F71D-4413-BD6B-756023F599BF}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,10 +35,6 @@ Global
 		{08404500-04A1-4413-BE88-ABA220449298}.Debug|x64.Build.0 = Debug|x64
 		{08404500-04A1-4413-BE88-ABA220449298}.Release|x64.ActiveCfg = Release|x64
 		{08404500-04A1-4413-BE88-ABA220449298}.Release|x64.Build.0 = Release|x64
-		{80C8FBBC-F71D-4413-BD6B-756023F599BF}.Debug|x64.ActiveCfg = Release|x64
-		{80C8FBBC-F71D-4413-BD6B-756023F599BF}.Debug|x64.Build.0 = Release|x64
-		{80C8FBBC-F71D-4413-BD6B-756023F599BF}.Release|x64.ActiveCfg = Release|x64
-		{80C8FBBC-F71D-4413-BD6B-756023F599BF}.Release|x64.Build.0 = Release|x64
 		{27159CB2-98AA-4D37-B33C-31CDDC18602F}.Debug|x64.ActiveCfg = Debug|x64
 		{27159CB2-98AA-4D37-B33C-31CDDC18602F}.Debug|x64.Build.0 = Debug|x64
 		{27159CB2-98AA-4D37-B33C-31CDDC18602F}.Release|x64.ActiveCfg = Release|x64

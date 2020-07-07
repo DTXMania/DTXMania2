@@ -71,7 +71,7 @@ namespace DTXMania2.演奏
                 float 横拡大率 = 0.2f + 0.8f * 割合;                          // 0.2 → 1.0
                 割合 = (float) Math.Cos( 割合 * Math.PI / 2f );               // 1 → 0（加速しながら）
 
-                for( float y = ( レーンフレーム.領域.Bottom - フラッシュ１枚のサイズ.Height ); y > ( レーンフレーム.領域.Top - フラッシュ１枚のサイズ.Height ); y -= フラッシュ１枚のサイズ.Height - 0.5f )
+                for( float y = ( レーンフレーム.領域.Bottom - フラッシュ１枚のサイズ.Height ); y > ( レーンフレーム.領域.Top - フラッシュ１枚のサイズ.Height ); y -= フラッシュ１枚のサイズ.Height )
                 {
                     this._レーンフラッシュ画像.描画する(
                         dc,

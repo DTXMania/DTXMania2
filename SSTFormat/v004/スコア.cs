@@ -285,7 +285,14 @@ namespace SSTFormat.v004
                     score = SSTFScoreFactory.CreateFromFile( スコアファイルの絶対パス, ヘッダだけ );
                     break;
 
-                default:    // dtx, gda, 他
+                case ".dtx":
+                    if( SSTFoverDTX.ファイルがSSTFoverDTXである( スコアファイルの絶対パス ) )
+                        score = SSTFoverDTX.ファイルから生成する( スコアファイルの絶対パス, ヘッダだけ );
+                    else
+                        score = DTX.ファイルから生成する( スコアファイルの絶対パス, DTX.データ種別.DTX, ヘッダだけ );
+                    break;
+
+                default:    // 通常dtx, gda, 他
                     score = DTX.ファイルから生成する( スコアファイルの絶対パス, DTX.データ種別.拡張子から判定, ヘッダだけ );
                     break;
             }
@@ -312,13 +319,13 @@ namespace SSTFormat.v004
             this.プレビュー動画ファイル名 = v3score.プレビュー動画ファイル名;
             this.サウンドデバイス遅延ms = v3score.サウンドデバイス遅延ms;
 
+            var 基点フォルダ = Path.GetDirectoryName( v3score.譜面ファイルパス );
+
             #region " 曲ファイルと同じ場所にあるプレビュー画像の検索（v3仕様）"
             //----------------
             if( string.IsNullOrEmpty( this.プレビュー画像ファイル名 ) && !string.IsNullOrEmpty( v3score.譜面ファイルパス ) )
             {
                 var _対応するサムネイル画像名 = new[] { "thumb.png", "thumb.bmp", "thumb.jpg", "thumb.jpeg" };
-
-                var 基点フォルダ = Path.GetDirectoryName( v3score.譜面ファイルパス );
 
                 var path =
                     ( from ファイル名 in Directory.GetFiles( 基点フォルダ )
@@ -333,10 +340,13 @@ namespace SSTFormat.v004
             //----------------
             #endregion
 
-            this.BGVファイル名 = v3score.背景動画ID;    // v3では、BGV と
-            this.BGMファイル名 = v3score.背景動画ID;    // BGM は同じファイル
+            string 背景動画IDファイル = v3score.背景動画ID;
+            this.BGVファイル名 = ( Path.IsPathRooted( 背景動画IDファイル ) ) ? _絶対パスを相対パスに変換する( 基点フォルダ, 背景動画IDファイル ) : 背景動画IDファイル;    // v3では、BGV と
+            this.BGMファイル名 = this.BGVファイル名;    // BGM は同じファイル。
             this.譜面ファイルの絶対パス = v3score.譜面ファイルパス;
             this._PATH_WAV = v3score.PATH_WAV;
+            if( this._PATH_WAV == "\\" )
+                this._PATH_WAV = "";
 
             this.チップリスト = new List<チップ>();
             foreach( var v3chip in v3score.チップリスト )
@@ -371,7 +381,7 @@ namespace SSTFormat.v004
                 // wav01 にも登録。
                 if( !( this.WAVリスト.ContainsKey( 1 ) ) )
                     this.WAVリスト.Add( 1, new WAV情報() );
-                this.WAVリスト[ 1 ].ファイルパス = this.BGVファイル名;
+                this.WAVリスト[ 1 ].ファイルパス = this.BGMファイル名;
                 this.WAVリスト[ 1 ].多重再生する = false;
                 this.WAVリスト[ 1 ].BGMである = true;
 

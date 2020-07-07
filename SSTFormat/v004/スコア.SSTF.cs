@@ -100,26 +100,25 @@ namespace SSTFormat.v004
             /// </summary>
             public static void 出力する( スコア score, Stream 出力先, string 追加ヘッダ文 = null )
             {
-                using( var sw = new StreamWriter( 出力先, Encoding.UTF8 ) )
+                using var sw = new StreamWriter( 出力先, Encoding.UTF8 );
+
+                // SSTFバージョンの出力
+                sw.WriteLine( $"# SSTFVersion {SSTFVERSION}" );
+
+                // 追加ヘッダの出力（あれば）
+                if( !( string.IsNullOrEmpty( 追加ヘッダ文 ) ) )
                 {
-                    // SSTFバージョンの出力
-                    sw.WriteLine( $"# SSTFVersion {SSTFVERSION.ToString()}" );
-
-                    // 追加ヘッダの出力（あれば）
-                    if( !( string.IsNullOrEmpty( 追加ヘッダ文 ) ) )
-                    {
-                        sw.WriteLine( $"{追加ヘッダ文}" );    // ヘッダ文に "{...}" が入ってても大丈夫なように、$"{...}" で囲む。
-                        sw.WriteLine( "" );
-                    }
-
-                    _ヘッダ行を出力する( score, sw );
-
-                    _チップ記述行を出力する( score, sw );
-
-                    _小節メモ行を出力する( score, sw );
-
-                    sw.Close();
+                    sw.WriteLine( $"{追加ヘッダ文}" );    // ヘッダ文に "{...}" が入ってても大丈夫なように、$"{...}" で囲む。
+                    sw.WriteLine( "" );
                 }
+
+                _ヘッダ行を出力する( score, sw );
+
+                _チップ記述行を出力する( score, sw );
+
+                _小節メモ行を出力する( score, sw );
+
+                sw.Close();
             }
 
 
@@ -1276,9 +1275,9 @@ namespace SSTFormat.v004
                     #region " Part を出力する。"
                     //-----------------
                     {
-                        var options = ( score.小節長倍率リスト[ 小節番号 ] == 1.0 ) ? "" : $"s{score.小節長倍率リスト[ 小節番号 ].ToString()}";     // 小節長倍率指定
+                        var options = ( score.小節長倍率リスト[ 小節番号 ] == 1.0 ) ? "" : $"s{score.小節長倍率リスト[ 小節番号 ]}";     // 小節長倍率指定
 
-                        sw.WriteLine( $"Part = {小節番号.ToString()}{options};" );
+                        sw.WriteLine( $"Part = {小節番号}{options};" );
                     }
                     //-----------------
                     #endregion

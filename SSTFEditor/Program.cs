@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,6 +15,8 @@ namespace SSTFEditor
         [STAThread]
         static void Main()
         {
+            Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );    // .NET Core ‚Å Shift-JIS ‘¼‚ð—˜—p‰Â”\‚É‚·‚é
+
             Application.SetHighDpiMode( HighDpiMode.SystemAware );
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );

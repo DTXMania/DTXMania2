@@ -209,7 +209,7 @@ namespace SSTFEditor
             { チップ種別.China,              "China" },
             { チップ種別.HiHat_Close,        "HiHat(Close)" },
             { チップ種別.HiHat_Foot,         "FootPedal" },
-            { チップ種別.HiHat_HalfOpen,     "HiHat(HarfOpen)" },
+            { チップ種別.HiHat_HalfOpen,     "HiHat(HalfOpen)" },
             { チップ種別.HiHat_Open,         "HiHat(Open)" },
             { チップ種別.LeftCrash,          "Crash" },
             { チップ種別.Ride,               "Ride" },
@@ -504,10 +504,18 @@ namespace SSTFEditor
                 if( this.選択モードである )
                     this.選択モード.全チップの選択を解除する();
 
-                // SSTFファイルを出力する。
-                this.譜面.SSTFファイルを書き出す(
-                    ファイルの絶対パス,
-                    $"# Created by SSTFEditor {this.メジャーバージョン番号}.{this.マイナーバージョン番号}.{this.リビジョン番号}.{this.ビルド番号}" );
+                // ファイルを出力する。
+                string ヘッダ行 = $"# Created by SSTFEditor {this.メジャーバージョン番号}.{this.マイナーバージョン番号}.{this.リビジョン番号}.{this.ビルド番号}";
+                switch( Path.GetExtension( ファイルの絶対パス ).ToLower() )
+                {
+                    case ".dtx":
+                        this.譜面.SSTFoverDTXファイルを書き出す( ファイルの絶対パス, ヘッダ行 );
+                        break;
+
+                    case ".sstf":
+                        this.譜面.SSTFファイルを書き出す( ファイルの絶対パス, ヘッダ行 );
+                        break;
+                }
 
                 // 出力したファイルのパスを、[ファイル]メニューの最近使ったファイル一覧に追加する。
                 if( false == 一時ファイルである )
@@ -1489,17 +1497,19 @@ namespace SSTFEditor
         {
             DialogResult result;
             string ファイル名;
+            int filterIndex;
 
             // ダイアログでファイル名を取得する。
             using( var dialog = new SaveFileDialog() {
                 Title = "名前をつけて保存",
-                Filter = "SSTFファイル(*.sstf)|*.sstf",
+                Filter = "SSTFoverDTXファイル(*.dtx)|*.dtx|SSTFファイル(*.sstf)|*.sstf",
                 FilterIndex = 1,
                 InitialDirectory = this._作業フォルダパス,
             } )
             {
                 result = dialog.ShowDialog( this );
                 ファイル名 = dialog.FileName;
+                filterIndex = dialog.FilterIndex;
             }
 
             // 画面を再描画してダイアログのゴミを消去する。
@@ -1509,22 +1519,33 @@ namespace SSTFEditor
             if( DialogResult.OK != result )
                 return "";
 
-            // ファイルの拡張子を .sstf に変更。
+            // ファイルの拡張子がなければ付与する。
             if( 0 == Path.GetExtension( ファイル名 ).Length )
-                ファイル名 = Path.ChangeExtension( ファイル名, ".sstf" );
+            {
+                string 既定の拡張子 = filterIndex switch
+                {
+                    1 => ".dtx",
+                    2 => ".sstf",
+                    _ => throw new NotImplementedException(),
+                };
+
+                ファイル名 = Path.ChangeExtension( ファイル名, 既定の拡張子 );
+            }
 
             return ファイル名;
         }
 
         private void _ファイルを読み込む( string ファイル名 )
         {
-            #region " .sstf 以外のファイルの場合、SSTF形式でインポートする旨を表示する。"
+            bool SSTFoverDTXである = スコア.SSTFoverDTX.ファイルがSSTFoverDTXである( ファイル名 );
+
+            #region " .sstf 以外のファイルの場合（SSTFoverDTXを除く）、SSTF形式でインポートする旨を表示する。"
             //----------------
             if( this.Config.DisplaysConfirmOfSSTFConversion )
             {
                 var 拡張子 = Path.GetExtension( ファイル名 ).ToLower();
 
-                if( 拡張子 != ".sstf" )
+                if( 拡張子 != ".sstf" && !SSTFoverDTXである )   // SSTFoverDTX なら表示しない
                 {
                     // [SSTF形式に変換しますか？] ダイアログを表示。
                     var result = MessageBox.Show(
@@ -1566,7 +1587,13 @@ namespace SSTFEditor
                     ;
 
                 string 読み込み時の拡張子 = Path.GetExtension( ファイル名 ).ToLower();
-                this._編集中のファイル名 = Path.ChangeExtension( Path.GetFileName( ファイル名 ), ".sstf" );       // 読み込んだファイルの拡張子を .sstf に変換。（ファイルはすでに読み込み済み）
+                if( !SSTFoverDTXである )
+                {
+                    // 読み込んだファイルの拡張子を .sstf に変換。（ファイルはすでに読み込み済み）
+                    this._編集中のファイル名 = Path.ChangeExtension( Path.GetFileName( ファイル名 ), ".sstf" );
+                }
+                else
+                    this._編集中のファイル名 = Path.GetFileName( ファイル名 );
                 this._作業フォルダパス = Path.GetDirectoryName( ファイル名 ) + @"\";
 
                 // 読み込んだファイルを [ファイル]メニューの最近使ったファイル一覧に追加する。
@@ -1610,8 +1637,9 @@ namespace SSTFEditor
                 // ウィンドウのタイトルバーの表示変更（str編集中のファイル名 が確定した後に）
                 this.未保存である = true;     // 以前の状態によらず、確実に更新するようにする。
 
-                // sstf 以外を読み込んだ場合は、未保存状態のままとする。
-                if( 読み込み時の拡張子.ToLower() == ".sstf" )
+                // 読み込み時と拡張子が同一である（が読み込み時はSSTFoverDTXではない）場合は、保存済み状態としておく。
+                if( 読み込み時の拡張子.ToLower() == Path.GetExtension( this._編集中のファイル名 ).ToLower() &&
+                    ! SSTFoverDTXである )
                     this.未保存である = false;
             }
             catch( InvalidDataException )
@@ -1794,7 +1822,7 @@ namespace SSTFEditor
                 if( !Path.IsPathRooted( path ) )
                     path = Path.Combine( this._作業フォルダパス, path );
 
-                this.pictureBoxプレビュー画像.Image = Image.FromFile( path );
+                this.pictureBoxプレビュー画像.Image = System.Drawing.Image.FromFile( path );
             }
             catch
             {

@@ -296,6 +296,12 @@ namespace SSTFEditor
             スコア.SSTF.出力する( this.SSTFormatScore, fs, $"{ヘッダ行}{Environment.NewLine}" );
         }
 
+        public void SSTFoverDTXファイルを書き出す( string ファイル名, string ヘッダ行 )
+        {
+            using var fs = new FileStream( ファイル名, FileMode.Create, FileAccess.Write );
+            スコア.SSTFoverDTX.出力する( this.SSTFormatScore, fs, $"{ヘッダ行}{Environment.NewLine}" );
+        }
+
         public void 描画する( Graphics g, Control panel )
         {
             #region " panel のレーン背景画像が未作成なら作成する。"

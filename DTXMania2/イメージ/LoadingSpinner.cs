@@ -41,8 +41,13 @@ namespace DTXMania2
         public void 進行描画する( DeviceContext dc )
         {
             var count = this._回転カウンタ.現在値;   // 0～_回転段数-1
-            var 変換行列2D = 
-                Matrix3x2.Rotation( (float) ( -2.0 * Math.PI * ( (double) count / _回転段数 ) ) );
+            var 変換行列2D =
+                Matrix3x2.Rotation(
+                    angle: (float) ( 2.0 * Math.PI * ( (double) count / _回転段数 ) ),
+                    center: new Vector2( this._Spinner画像.サイズ.Width / 2f, this._Spinner画像.サイズ.Height / 2f ) ) *
+                Matrix3x2.Translation(
+                    ( Global.GraphicResources.設計画面サイズ.Width - this._Spinner画像.サイズ.Width ) / 2f,
+                    ( Global.GraphicResources.設計画面サイズ.Height - this._Spinner画像.サイズ.Height ) / 2f );
 
             this._Spinner画像.描画する( dc, 変換行列2D );
         }

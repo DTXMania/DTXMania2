@@ -307,7 +307,7 @@ namespace SSTFormat.v003
             this.背景動画ID = v2score.背景動画ファイル名;    // v3で仕様変更
             this.プレビュー画像ファイル名 = null;            // v3で新規追加
             this.サウンドデバイス遅延ms = v2score.Header.サウンドデバイス遅延ms;
-            //this.譜面ファイルパス = SSTFファイルパス;  --> 呼び出し元で設定すること。
+            this.譜面ファイルパス = v2score.Header.譜面ファイルパス;
 
             #region " 曲ファイルと同じ場所にあるプレビュー画像の検索（v3仕様）"
             //----------------

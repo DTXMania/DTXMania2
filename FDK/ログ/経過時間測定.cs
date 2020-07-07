@@ -24,6 +24,7 @@ namespace FDK
             lock( this._lock )
             {
                 this.スタック.Clear();
+                this._count = 0;
                 this._Timer.リセットする();
                 this.経過ポイント( "開始" );
             }
@@ -34,6 +35,15 @@ namespace FDK
             lock( this._lock )
             {
                 this.スタック.TryAdd( ポイント名, (float) ( this._Timer.現在のリアルタイムカウントsec ) );
+            }
+        }
+
+        public void 経過ポイント()
+        {
+            lock( this._lock )
+            {
+                this.スタック.TryAdd( $"{this._count}", (float) ( this._Timer.現在のリアルタイムカウントsec ) );
+                this._count++;
             }
         }
 
@@ -66,5 +76,7 @@ namespace FDK
         private QPCTimer _Timer = new QPCTimer();
         
         private readonly object _lock = new object();
+
+        private long _count = 0;
     }
 }

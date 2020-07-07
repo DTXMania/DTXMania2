@@ -969,8 +969,6 @@ namespace DTXMania2.演奏
             //----------------
             #endregion
 
-            dc.EndDraw();   // D2D中断
-
             #region " 左サイドパネルへの描画と、左サイドパネルの表示 "
             //----------------
             {
@@ -981,8 +979,6 @@ namespace DTXMania2.演奏
                 dc.Target = this._左サイドクリアパネル.クリアパネル.Bitmap;
                 dc.Transform = Matrix3x2.Identity;  // 等倍描画(DPXtoDPX)
                 dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
-
-                dc.BeginDraw();
 
                 // 背景画像
                 dc.Clear( new Color4( Color3.Black, 0f ) );
@@ -1004,7 +1000,7 @@ namespace DTXMania2.演奏
                 // スキル
                 this._曲別SKILL.進行描画する( dc, 0f );
 
-                dc.EndDraw();
+                dc.Flush(); // いったんここまで描画
 
                 dc.Target = preTarget;
                 dc.Transform = preTrans;
@@ -1028,13 +1024,11 @@ namespace DTXMania2.演奏
                 dc.Transform = Matrix3x2.Identity;  // 等倍描画(DPXtoDPX)
                 dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
 
-                dc.BeginDraw();
-
                 // 背景画像
                 dc.Clear( new Color4( Color3.Black, 0f ) );
                 dc.DrawBitmap( this._右サイドクリアパネル.背景.Bitmap, opacity: 1f, interpolationMode: InterpolationMode.Linear );
 
-                dc.EndDraw();
+                dc.Flush(); // いったんここまで描画
 
                 dc.Target = preTarget;
                 dc.Transform = preTrans;
@@ -1046,8 +1040,6 @@ namespace DTXMania2.演奏
             this._右サイドクリアパネル.進行描画する();
             //----------------
             #endregion
-
-            dc.BeginDraw(); // D2D再開
 
             #region " レーンフレーム "
             //----------------
@@ -1197,8 +1189,6 @@ namespace DTXMania2.演奏
             //----------------
             #endregion
 
-            dc.EndDraw();   // D2D中断
-
             #region " 左サイドパネルへの描画と、左サイドパネルの表示 "
             //----------------
             {
@@ -1209,8 +1199,6 @@ namespace DTXMania2.演奏
                 dc.Target = this._左サイドクリアパネル.クリアパネル.Bitmap;
                 dc.Transform = Matrix3x2.Identity;  // 等倍描画(DPXtoDPX)
                 dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
-
-                dc.BeginDraw();
 
                 // 背景画像
                 dc.Clear( new Color4( Color3.Black, 0f ) );
@@ -1232,7 +1220,7 @@ namespace DTXMania2.演奏
                 // スキル
                 this._曲別SKILL.進行描画する( dc, this.成績.スキル );
 
-                dc.EndDraw();
+                dc.Flush(); // いったんここまで描画。
 
                 dc.Target = preTarget;
                 dc.Transform = preTrans;
@@ -1256,8 +1244,6 @@ namespace DTXMania2.演奏
                 dc.Transform = Matrix3x2.Identity;  // 等倍描画(DPXtoDPX)
                 dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
 
-                dc.BeginDraw();
-
                 // 背景画像
                 dc.Clear( new Color4( Color3.Black, 0f ) );
                 dc.DrawBitmap( this._右サイドクリアパネル.背景.Bitmap, opacity: 1f, interpolationMode: InterpolationMode.Linear );
@@ -1265,7 +1251,7 @@ namespace DTXMania2.演奏
                 // コンボ
                 this._コンボ表示.進行描画する( dc, new Vector2( +228f + 264f / 2f, +234f ), this.成績 );
 
-                dc.EndDraw();
+                dc.Flush(); // いったんここまで描画。
 
                 dc.Target = preTarget;
                 dc.Transform = preTrans;
@@ -1277,8 +1263,6 @@ namespace DTXMania2.演奏
             this._右サイドクリアパネル.進行描画する();
             //----------------
             #endregion
-
-            dc.BeginDraw(); // D2D再開
 
             #region " レーンフレーム "
             //----------------
@@ -1800,7 +1784,9 @@ namespace DTXMania2.演奏
             }
             else
             {
-                if( Global.Options.ビュアーモードである && !演奏ステージ.ビュアーモードでドラム音を再生する )
+                if( Global.Options.ビュアーモードである && 
+                    !演奏ステージ.ビュアーモードでドラム音を再生する &&
+                    chip.チップ種別 != チップ種別.BGM )   // BGM はドラムサウンドではない
                     return;
 
                 var drumChipProperty = userConfig.ドラムチッププロパティリスト.チップtoプロパティ[ chip.チップ種別 ];
@@ -1890,8 +1876,6 @@ namespace DTXMania2.演奏
         {
             var userConfig = Global.App.ログオン中のユーザ;
 
-            dc.EndDraw();   // D2D中断
-
             #region " 左サイドパネルへの描画と、左サイドパネルの表示 "
             //----------------
             {
@@ -1902,8 +1886,6 @@ namespace DTXMania2.演奏
                 dc.Target = this._左サイドクリアパネル.クリアパネル.Bitmap;
                 dc.Transform = Matrix3x2.Identity;  // 等倍描画(DPXtoDPX)
                 dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
-
-                dc.BeginDraw();
 
                 // 背景画像
                 dc.Clear( new Color4( Color3.Black, 0f ) );
@@ -1925,7 +1907,7 @@ namespace DTXMania2.演奏
                 // スキル
                 this._曲別SKILL.進行描画する( dc, 0f );
 
-                dc.EndDraw();
+                dc.Flush(); // いったんここまで描画。
 
                 dc.Target = preTarget;
                 dc.Transform = preTrans;
@@ -1949,13 +1931,11 @@ namespace DTXMania2.演奏
                 dc.Transform = Matrix3x2.Identity;  // 等倍描画(DPXtoDPX)
                 dc.PrimitiveBlend = PrimitiveBlend.SourceOver;
 
-                dc.BeginDraw();
-
                 // 背景画像
                 dc.Clear( new Color4( Color3.Black, 0f ) );
                 dc.DrawBitmap( this._右サイドクリアパネル.背景.Bitmap, opacity: 1f, interpolationMode: InterpolationMode.Linear );
 
-                dc.EndDraw();
+                dc.Flush(); // いったんここまで描画。
 
                 dc.Target = preTarget;
                 dc.Transform = preTrans;
@@ -1968,8 +1948,6 @@ namespace DTXMania2.演奏
             //----------------
             #endregion
 
-            dc.BeginDraw(); // D2D再開
-            
             #region " レーンフレーム "
             //----------------
             this._レーンフレーム.進行描画する( dc, userConfig.レーンの透明度, レーンラインを描画する: ( userConfig.ダーク == ダーク種別.OFF ) );

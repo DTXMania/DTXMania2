@@ -102,7 +102,7 @@ namespace SSTFormat.v004
         ///		左右の発声位置。PAN。
         ///		左:-100 ～ 中央:0 ～ +100:右。
         /// </summary>
-        public int 左右位置
+        public int 左右位置 // hack: チップの左右位置の反映
         {
             get
                 => this._位置;
