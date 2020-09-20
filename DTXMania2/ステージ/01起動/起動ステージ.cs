@@ -161,6 +161,7 @@ namespace DTXMania2.起動
                     Global.App.曲ツリーリスト.Add( allTree );
                     Global.App.曲ツリーリスト.Add( ratingTree );
                     Global.App.曲ツリーリスト.SelectFirst();
+                    曲.Song.現在の難易度レベル = () => Global.App.曲ツリーリスト.SelectedItem!.フォーカス難易度レベル;
 
                     // 全曲ツリーの構築を開始する。（現行化はまだ）
                     this._曲ツリー構築タスク = allTree.構築するAsync( Global.App.システム設定.曲検索フォルダ );

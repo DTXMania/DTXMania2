@@ -176,8 +176,6 @@ namespace DTXMania2.曲
         {
             this.ルートノード = new RootNode();
             this.フォーカスホルダ = this.ルートノード;
-
-            Song.現在の難易度レベル = () => this.フォーカス難易度レベル;
         }
 
         public virtual void Dispose()

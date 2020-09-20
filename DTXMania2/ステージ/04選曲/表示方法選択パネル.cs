@@ -40,6 +40,7 @@ namespace DTXMania2.選曲
             this._論理パネル番号.目標値++;
 
             Global.App.曲ツリーリスト.SelectNext( Loop: true );
+            曲.Song.現在の難易度レベル = () => Global.App.曲ツリーリスト.SelectedItem!.フォーカス難易度レベル;
         }
 
         public void 前のパネルを選択する()
@@ -47,6 +48,7 @@ namespace DTXMania2.選曲
             this._論理パネル番号.目標値--;
 
             Global.App.曲ツリーリスト.SelectPrev( Loop: true );
+            曲.Song.現在の難易度レベル = () => Global.App.曲ツリーリスト.SelectedItem!.フォーカス難易度レベル;
         }
 
         public void 進行描画する( DeviceContext dc )
