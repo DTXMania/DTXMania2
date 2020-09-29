@@ -454,6 +454,6 @@ namespace DTXMania2
         }
 
         private static double _小数第3位以下切り捨て( double v )
-            => Math.Truncate( 100.0 * v ) / 100.0;
+            => Math.Round( 100.0 * v, 2 ) / 100.0;
     }
 }
