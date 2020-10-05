@@ -420,7 +420,7 @@ namespace SSTFEditor
 
             // マウス位置（lane×grid）の初期化。
             this.前回のマウス位置LaneGrid = new レーングリッド座標() {
-                編集レーン位置 = this.Form.譜面.編集レーンtoレーン位置[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( e.X ) ],
+                編集レーン位置 = this.Form.譜面.譜面パネル内X座標pxにある表示レーン位置を返す( e.X ),
                 譜面内絶対位置grid = this.Form.譜面.譜面パネル内Y座標pxにおける譜面内絶対位置gridをガイド幅単位で返す( e.Y ),
             };
 
@@ -449,7 +449,7 @@ namespace SSTFEditor
 
             // 現在の位置を算出。
             var 現在のドラッグ終了位置LaneGrid = new レーングリッド座標() {
-                編集レーン位置 = this.Form.譜面.編集レーンtoレーン位置[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( this.現在の移動用ドラッグ終了位置px.X ) ],
+                編集レーン位置 = this.Form.譜面.譜面パネル内X座標pxにある表示レーン位置を返す( this.現在の移動用ドラッグ終了位置px.X ),
                 譜面内絶対位置grid = this.Form.譜面.譜面パネル内Y座標pxにおける譜面内絶対位置gridをガイド幅単位で返す( this.現在の移動用ドラッグ終了位置px.Y ),
             };
 
@@ -478,7 +478,8 @@ namespace SSTFEditor
                             #region " チップを横に移動する。"
                             //-----------------
                             int レーン数 = Enum.GetValues( typeof( 編集レーン種別 ) ).Length;
-                            int チップの現在のレーン位置 = this.Form.譜面.編集レーンtoレーン位置[ this.Form.譜面.チップ種別to編集レーン[ chip.チップ種別 ] ];
+                            var チップの現在のレーン種別 = this.Form.譜面.チップ種別to編集レーン[ chip.チップ種別 ];
+                            int チップの現在のレーン位置 = this.Form.譜面.レーン属性[ チップの現在のレーン種別 ].位置;
                             int チップの移動後のレーン位置;
 
                             #region " チップの移動後のレーン位置 を算出。"
@@ -510,7 +511,7 @@ namespace SSTFEditor
                             }
                             else
                             {
-                                var eチップの移動後の編集レーン = this.Form.譜面.レーン位置to編集レーン[ チップの移動後のレーン位置 ];
+                                var eチップの移動後の編集レーン = this.Form.譜面.レーン位置にある編集レーンを返す( チップの移動後のレーン位置 );
 
                                 foreach( var kvp in this.Form.譜面.チップ種別to編集レーン )
                                 {
@@ -726,8 +727,8 @@ namespace SSTFEditor
 
             // 現在のドラッグ範囲を (lane, grid) 座標に変換する。
 
-            int ドラッグ範囲左のレーン位置 = this.Form.譜面.編集レーンtoレーン位置[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( 現在のドラッグ範囲pxGrid.Left ) ];
-            int ドラッグ範囲右のレーン位置 = this.Form.譜面.編集レーンtoレーン位置[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( 現在のドラッグ範囲pxGrid.Right ) ];
+            int ドラッグ範囲左のレーン位置 = this.Form.譜面.レーン属性[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( 現在のドラッグ範囲pxGrid.Left ) ].位置;
+            int ドラッグ範囲右のレーン位置 = this.Form.譜面.レーン属性[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( 現在のドラッグ範囲pxGrid.Right ) ].位置;
 
             var 現在のドラッグ範囲LaneGrid = new Rectangle() {
                 X = ドラッグ範囲左のレーン位置,
@@ -739,16 +740,18 @@ namespace SSTFEditor
             // すべてのチップについて、現在のドラッグ範囲内に存在しているチップは「ドラッグ操作により選択中」フラグを立てる。
             foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
             {
-                int チップのレーン位置 = this.Form.譜面.編集レーンtoレーン位置[ this.Form.譜面.チップ種別to編集レーン[ chip.チップ種別 ] ];
-                int チップの厚さgrid = this.Form.譜面.チップサイズpx.Height * this.Form.GRID_PER_PIXEL;
+                if( chip.チップ種別 == SSTFormat.v004.チップ種別.Unknown )
+                    continue;
 
+                var チップのレーン種別 = this.Form.譜面.チップ種別to編集レーン[ chip.チップ種別 ];
+                int チップのレーン位置 = this.Form.譜面.レーン属性[ チップのレーン種別 ].位置;
+                int チップの厚さgrid = this.Form.譜面.チップサイズpx.Height * this.Form.GRID_PER_PIXEL;
                 var チップの領域LaneGrid = new Rectangle() {
                     X = チップのレーン位置,
                     Y = chip.譜面内絶対位置grid,
                     Width = 1,  // +1 を忘れずに。
                     Height = チップの厚さgrid,
                 };
-
                 chip.ドラッグ操作により選択中である = チップの領域LaneGrid.IntersectsWith( 現在のドラッグ範囲LaneGrid );
             }
         }
