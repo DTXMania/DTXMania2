@@ -1004,6 +1004,12 @@ namespace SSTFEditor
             dialog.numericUpDown最近使用したファイルの最大表示個数.Value = this.Config.MaxOfUsedRecentFiles;
             dialog.textBoxViewerPath.Text = this.Config.ViewerPath;
             dialog.checkBoxSSTF変換通知ダイアログ.CheckState = ( this.Config.DisplaysConfirmOfSSTFConversion ) ? CheckState.Checked : CheckState.Unchecked;
+            dialog.radioButtonRideLeft.Checked = this.Config.RideLeft;
+            dialog.radioButtonRideRight.Checked = !this.Config.RideLeft;
+            dialog.radioButtonChinaLeft.Checked = this.Config.ChinaLeft;
+            dialog.radioButtonChinaRight.Checked = !this.Config.ChinaLeft;
+            dialog.radioButtonSplashLeft.Checked = this.Config.SplashLeft;
+            dialog.radioButtonSplashRight.Checked = !this.Config.SplashLeft;
 
             if( DialogResult.OK == dialog.ShowDialog( this ) )
             {
@@ -1013,11 +1019,18 @@ namespace SSTFEditor
                 this.Config.MaxOfUsedRecentFiles = (int) dialog.numericUpDown最近使用したファイルの最大表示個数.Value;
                 this.Config.ViewerPath = dialog.textBoxViewerPath.Text;
                 this.Config.DisplaysConfirmOfSSTFConversion = dialog.checkBoxSSTF変換通知ダイアログ.Checked;
+                this.Config.RideLeft = dialog.radioButtonRideLeft.Checked;
+                this.Config.ChinaLeft = dialog.radioButtonChinaLeft.Checked;
+                this.Config.SplashLeft = dialog.radioButtonSplashLeft.Checked;
 
                 this._Viewer再生関連GUIのEnabledを設定する();
 
                 // [ファイル] メニューを修正。
                 this._ConfigのRecentUsedFilesをファイルメニューへ追加する();
+
+                // 譜面と編集モードに反映。
+                this.譜面.コンフィグを譜面に反映する( this.Config );
+                this.編集モード.レーン別チップ種別対応表を初期化する();
 
                 // Config.xml を保存する。
                 this.Config.保存する( Path.Combine( this._ユーザフォルダパス, Properties.Resources.CONFIG_FILE_NAME ) );
@@ -1409,6 +1422,7 @@ namespace SSTFEditor
             //-----------------
             this.譜面?.Dispose();
             this.譜面 = new 譜面( this );  // 譜面は、選択・編集モードよりも先に生成すること。
+            this.譜面.コンフィグを譜面に反映する( this.Config );
 
             this.UndoRedo管理 = new UndoRedo.UndoRedo管理();
             this.選択モード = new 選択モード( this );

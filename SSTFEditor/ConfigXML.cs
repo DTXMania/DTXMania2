@@ -60,6 +60,21 @@ namespace SSTFEditor
         /// </summary>
         public bool DisplaysConfirmOfSSTFConversion = true;
 
+        /// <summary>
+        ///     ライドレーンの表示位置が左ならtrue, 右ならfalse。
+        /// </summary>
+        public bool RideLeft = false;
+
+        /// <summary>
+        ///     チャイナレーンの表示位置が左ならtrue, 右ならfalse。
+        /// </summary>
+        public bool ChinaLeft = false;
+
+        /// <summary>
+        ///     スプラッシュレーンの表示位置が左ならtrue, 右ならfalse。
+        /// </summary>
+        public bool SplashLeft = true;
+
 
 
         // メソッド
@@ -67,7 +82,7 @@ namespace SSTFEditor
 
         public static Config 読み込む( string ファイル名 )
         {
-            Config config = null;
+            Config config;
 
             try
             {
