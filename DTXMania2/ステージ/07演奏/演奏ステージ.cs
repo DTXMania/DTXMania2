@@ -538,7 +538,7 @@ namespace DTXMania2.演奏
                 bool AutoPlayである = userConfig.AutoPlay[ ドラムチッププロパティ.AutoPlay種別 ];
                 bool チップはヒット済みである = this._チップの演奏状態[ chip ].ヒット済みである;
                 bool チップはまだヒットされていない = !( チップはヒット済みである );
-                bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec > userConfig.最大ヒット距離sec[ 判定種別.OK ] );
+                bool チップはMISSエリアに達している = ( ( ヒット判定バーと描画との時間sec - Global.App.システム設定.判定位置調整ms * 0.001 ) > userConfig.最大ヒット距離sec[ 判定種別.OK ] );
                 bool チップは描画についてヒット判定バーを通過した = ( 0 <= ヒット判定バーと描画との時間sec );
                 bool チップは発声についてヒット判定バーを通過した = ( 0 <= ヒット判定バーと発声との時間sec );
 
@@ -667,8 +667,8 @@ namespace DTXMania2.演奏
                     #region " チップがヒット対象外であれば無視する。"
                     //----------------
                     bool チップはAutoPlayONである = userConfig.AutoPlay[ ドラムチッププロパティ.AutoPlay種別 ];
-                    bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec + Global.App.システム設定.判定位置調整ms * 0.001 ) > userConfig.最大ヒット距離sec[ 判定種別.OK ];
-                    bool チップはOKエリアに達していない = ( ヒット判定バーと描画との時間sec + Global.App.システム設定.判定位置調整ms * 0.001 ) < -( userConfig.最大ヒット距離sec[ 判定種別.OK ] );
+                    bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec - Global.App.システム設定.判定位置調整ms * 0.001 ) > userConfig.最大ヒット距離sec[ 判定種別.OK ];
+                    bool チップはOKエリアに達していない = ( ヒット判定バーと描画との時間sec - Global.App.システム設定.判定位置調整ms * 0.001 ) < -( userConfig.最大ヒット距離sec[ 判定種別.OK ] );
                     bool チップはすでにヒット済みである = this._チップの演奏状態[ chip ].ヒット済みである;
                     bool チップはAutoPlayOFFのときユーザヒットの対象にならない = !( ドラムチッププロパティ.AutoPlayOFF_ユーザヒット );
 
@@ -720,7 +720,7 @@ namespace DTXMania2.演奏
                         //----------------
                         // 入力とチップの時間差を算出する。チップより入力が早ければ負数、遅ければ正数。
                         double 入力とチップの時間差sec =
-                            チップのヒット候補入力.InputEvent.TimeStamp - ( chip.描画時刻sec + Global.App.システム設定.判定位置調整ms * 0.001 );
+                            ( チップのヒット候補入力.InputEvent.TimeStamp - Global.App.システム設定.判定位置調整ms * 0.001 ) - chip.描画時刻sec;
 
                         // 時刻差から判定を算出。
                         double 入力とチップの時間差の絶対値sec = Math.Abs( 入力とチップの時間差sec );
