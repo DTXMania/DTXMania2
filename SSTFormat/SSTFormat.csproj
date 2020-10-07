@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Configurations>Debug;Release</Configurations>
     <Platforms>x64</Platforms>
+    <Version>4.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

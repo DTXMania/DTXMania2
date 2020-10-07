@@ -56,9 +56,6 @@ namespace SSTFormat.v004
                     スコア._スコア読み込み時の後処理を行う( score );
                 }
 
-                // SSTFの場合、空うちマップは空とする。
-                score.空打ちチップマップ.Clear();
-
                 return score;
             }
 
@@ -86,9 +83,6 @@ namespace SSTFormat.v004
                 {
                     スコア._スコア読み込み時の後処理を行う( score );
                 }
-
-                // SSTFの場合、空うちマップは空とする。
-                score.空打ちチップマップ.Clear();
 
                 return score;
             }
