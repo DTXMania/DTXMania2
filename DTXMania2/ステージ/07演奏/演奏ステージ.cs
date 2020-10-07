@@ -667,8 +667,8 @@ namespace DTXMania2.演奏
                     #region " チップがヒット対象外であれば無視する。"
                     //----------------
                     bool チップはAutoPlayONである = userConfig.AutoPlay[ ドラムチッププロパティ.AutoPlay種別 ];
-                    bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec + Global.App.システム設定.判定位置調整ms ) > userConfig.最大ヒット距離sec[ 判定種別.OK ];
-                    bool チップはOKエリアに達していない = ( ヒット判定バーと描画との時間sec + Global.App.システム設定.判定位置調整ms ) < -( userConfig.最大ヒット距離sec[ 判定種別.OK ] );
+                    bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec + Global.App.システム設定.判定位置調整ms * 0.001 ) > userConfig.最大ヒット距離sec[ 判定種別.OK ];
+                    bool チップはOKエリアに達していない = ( ヒット判定バーと描画との時間sec + Global.App.システム設定.判定位置調整ms * 0.001 ) < -( userConfig.最大ヒット距離sec[ 判定種別.OK ] );
                     bool チップはすでにヒット済みである = this._チップの演奏状態[ chip ].ヒット済みである;
                     bool チップはAutoPlayOFFのときゆユーザヒットの対象にならない = !( ドラムチッププロパティ.AutoPlayOFF_ユーザヒット );
 
@@ -1796,7 +1796,7 @@ namespace DTXMania2.演奏
         /// <summary>
         ///     該当するチップが1つもなかったら null を返す。
         /// </summary>
-        private SSTF.チップ? _指定された時刻に一番近いチップを返す( double 時刻sec, ドラム入力種別 drumType, bool 未ヒットチップのみ検索対象 )
+        private SSTF.チップ? _指定された時刻に一番近いチップを返す( double 時刻sec, ドラム入力種別 drumType, bool 未ヒットチップのみ検索 = false )
         {
             var チップtoプロパティ = Global.App.ログオン中のユーザ.ドラムチッププロパティリスト.チップtoプロパティ;
 
@@ -1810,7 +1810,7 @@ namespace DTXMania2.演奏
 
                 if( チップtoプロパティ[ chip.チップ種別 ].ドラム入力種別 != drumType )
                     continue;
-                if( 未ヒットチップのみ検索対象 && this._チップの演奏状態[ chip ].ヒット済みである )
+                if( 未ヒットチップのみ検索 && this._チップの演奏状態[ chip ].ヒット済みである )
                     continue;
 
                 var 今回の時刻差の絶対値sec = Math.Abs( chip.描画時刻sec - 時刻sec );
