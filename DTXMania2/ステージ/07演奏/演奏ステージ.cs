@@ -670,13 +670,13 @@ namespace DTXMania2.演奏
                     bool チップはMISSエリアに達している = ( ヒット判定バーと描画との時間sec + Global.App.システム設定.判定位置調整ms * 0.001 ) > userConfig.最大ヒット距離sec[ 判定種別.OK ];
                     bool チップはOKエリアに達していない = ( ヒット判定バーと描画との時間sec + Global.App.システム設定.判定位置調整ms * 0.001 ) < -( userConfig.最大ヒット距離sec[ 判定種別.OK ] );
                     bool チップはすでにヒット済みである = this._チップの演奏状態[ chip ].ヒット済みである;
-                    bool チップはAutoPlayOFFのときゆユーザヒットの対象にならない = !( ドラムチッププロパティ.AutoPlayOFF_ユーザヒット );
+                    bool チップはAutoPlayOFFのときユーザヒットの対象にならない = !( ドラムチッププロパティ.AutoPlayOFF_ユーザヒット );
 
                     if( チップはAutoPlayONである ||
                         チップはMISSエリアに達している ||
                         チップはOKエリアに達していない ||
                         チップはすでにヒット済みである ||
-                        チップはAutoPlayOFFのときゆユーザヒットの対象にならない )
+                        チップはAutoPlayOFFのときユーザヒットの対象にならない )
                         return;
                     //----------------
                     #endregion
