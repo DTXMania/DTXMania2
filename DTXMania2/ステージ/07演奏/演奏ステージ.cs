@@ -779,6 +779,7 @@ namespace DTXMania2.演奏
                     foreach( var 入力 in Global.App.ドラム入力.ポーリング結果 )
                     {
                         if( 入力.InputEvent.離された ||            // 押下じゃないなら無視。
+                            0 != 入力.InputEvent.Control ||        // コントロールチェンジなら無視。
                             ヒット処理済み入力.Contains( 入力 ) )  // ヒット済みなら無視。
                             continue;
 
