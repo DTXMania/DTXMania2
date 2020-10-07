@@ -1587,7 +1587,8 @@ namespace DTXMania2.演奏
                         prop.発声前消音,
                         prop.消音グループ種別,
                         BGM以外も再生する: Global.App.ログオン中のユーザ.ドラムの音を発声する && ( Global.Options.ビュアーモードである && ビュアーモードでドラム音を再生する ),
-                        音量: wavChip.音量 / (float)SSTF.チップ.最大音量, 演奏開始時刻sec - wavChip.発声時刻sec );
+                        音量: wavChip.音量 / (float)SSTF.チップ.最大音量,
+                        再生開始時刻sec: 演奏開始時刻sec - wavChip.発声時刻sec );
                 }
             }
             //----------------
@@ -1784,7 +1785,7 @@ namespace DTXMania2.演奏
                         drumChipProperty.発声前消音,
                         drumChipProperty.消音グループ種別,
                         ドラムサウンドを再生する,
-                         ( chip.音量 / (float)SSTF.チップ.最大音量 ) );
+                        音量: ( chip.音量 / (float)SSTF.チップ.最大音量 ) );
                     //----------------
                     #endregion
                 }
