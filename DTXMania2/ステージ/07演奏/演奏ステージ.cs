@@ -527,7 +527,6 @@ namespace DTXMania2.演奏
         private void _入力とヒット処理を行う()
         {
             var userConfig = Global.App.ログオン中のユーザ;
-
             double 現在の演奏時刻sec = Global.App.サウンドタイマ.現在時刻sec;
 
             #region " 自動ヒット処理。"
@@ -783,44 +782,12 @@ namespace DTXMania2.演奏
                             ヒット処理済み入力.Contains( 入力 ) )  // ヒット済みなら無視。
                             continue;
 
-                        var プロパティs = userConfig.ドラムチッププロパティリスト.チップtoプロパティ.Where( ( kvp ) => ( kvp.Value.ドラム入力種別 == 入力.Type ) );
-
-                        for( int i = 0; i < プロパティs.Count(); i++ )
+                        foreach( var prop in
+                            userConfig.ドラムチッププロパティリスト.チップtoプロパティ
+                            .Where( ( kvp ) => kvp.Value.ドラム入力種別 == 入力.Type )
+                            .Select( ( kvp ) => kvp.Value ) )
                         {
-                            var prop = プロパティs.ElementAt( i ).Value;
-
-                            if( 0 < Global.App.演奏スコア.空打ちチップマップ.Count )
-                            {
-                                #region " DTX他の場合（空うちチップマップ使用）"
-                                //----------------
-                                int zz = Global.App.演奏スコア.空打ちチップマップ[ prop.レーン種別 ];
-
-                                // (A) 空打ちチップの指定があるなら、それを発声する。
-                                if( 0 != zz )
-                                    Global.App.WAV管理?.発声する( zz, prop.チップ種別, prop.発声前消音, prop.消音グループ種別, true );
-
-                                // (B) 空打ちチップの指定がないなら、一番近いチップを検索し、それを発声する。
-                                else
-                                {
-                                    var chip = this._指定された時刻に一番近いチップを返す( 現在の演奏時刻sec, 入力.Type );
-
-                                    if( null != chip )
-                                    {
-                                        this._チップの発声を行う( chip, true );
-                                        break;  // 複数のチップが該当する場合でも、最初のチップの発声のみ行う。
-                                    }
-                                }
-                                //----------------
-                                #endregion
-                            }
-                            else
-                            {
-                                #region " SSTFの場合（空うちチップマップ未使用）"
-                                //----------------
-                                Global.App.ドラムサウンド.再生する( prop.チップ種別, 0, prop.発声前消音, prop.消音グループ種別 );
-                                //----------------
-                                #endregion
-                            }
+                            Global.App.ドラムサウンド.再生する( prop.チップ種別, 0, prop.発声前消音, prop.消音グループ種別 );
                         }
                     }
                 }
@@ -1827,37 +1794,35 @@ namespace DTXMania2.演奏
         /// <summary>
         ///     該当するチップが1つもなかったら null を返す。
         /// </summary>
-        private SSTF.チップ? _指定された時刻に一番近いチップを返す( double 時刻sec, ドラム入力種別 drumType )
+        private SSTF.チップ? _指定された時刻に一番近いチップを返す( double 時刻sec, ドラム入力種別 drumType, bool 未ヒットチップのみ検索対象 )
         {
             var チップtoプロパティ = Global.App.ログオン中のユーザ.ドラムチッププロパティリスト.チップtoプロパティ;
 
             var 一番近いチップ = (SSTF.チップ?) null;
             var 一番近いチップの時刻差の絶対値sec = (double) 0.0;
 
-            // すべてのチップについて、時刻の若い順に調べていく。
+            // すべてのチップについて、描画時刻の早い順に調べていく。
             for( int i = 0; i < Global.App.演奏スコア.チップリスト.Count; i++ )
             {
                 var chip = Global.App.演奏スコア.チップリスト[ i ];
 
-                // 指定されたドラム入力種別ではないチップは無視。
                 if( チップtoプロパティ[ chip.チップ種別 ].ドラム入力種別 != drumType )
                     continue;
+                if( 未ヒットチップのみ検索対象 && this._チップの演奏状態[ chip ].ヒット済みである )
+                    continue;
 
-                // ループ抜ける？
-                if( null != 一番近いチップ )
+                var 今回の時刻差の絶対値sec = Math.Abs( chip.描画時刻sec - 時刻sec );
+
+                if( null != 一番近いチップ &&
+                    一番近いチップの時刻差の絶対値sec < 今回の時刻差の絶対値sec )
                 {
-                    var 今回の時刻差の絶対値sec = Math.Abs( chip.描画時刻sec - 時刻sec );
-
-                    if( 一番近いチップの時刻差の絶対値sec < 今回の時刻差の絶対値sec )
-                    {
-                        // 時刻差の絶対値が前回より増えた → 前回のチップが指定時刻への再接近だった
-                        break;
-                    }
+                    // 時刻差の絶対値が前回より増えた → 前回のチップが指定時刻への再接近だった
+                    break;
                 }
 
                 // 更新して次へ
                 一番近いチップ = chip;
-                一番近いチップの時刻差の絶対値sec = Math.Abs( 一番近いチップ.描画時刻sec - 時刻sec );
+                一番近いチップの時刻差の絶対値sec = 今回の時刻差の絶対値sec;
             }
 
             return 一番近いチップ;
