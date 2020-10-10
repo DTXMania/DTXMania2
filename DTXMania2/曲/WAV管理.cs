@@ -126,7 +126,10 @@ namespace DTXMania2
             // 発声する。
 
             if( this._WAV情報リスト[ WAV番号 ].BGMである )        // BGM なら BGMAdjust を適用する
+            {
                 再生開始時刻sec += Global.App.演奏譜面.譜面.BGMAdjust / 1000.0;
+                再生開始時刻sec = Math.Max( 0.0, 再生開始時刻sec );
+            }
 
             this._WAV情報リスト[ WAV番号 ].発声する( muteGroupType, 音量, 再生開始時刻sec );
         }
