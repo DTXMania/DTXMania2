@@ -159,8 +159,7 @@ namespace DTXMania2.結果
                     {
                         #region " その他　→　空うちサウンドを再生する "
                         //----------------
-                        if( Global.App.ログオン中のユーザ.ドラムの音を発声する )
-                            this._空うちサウンドを再生する();
+                        this._空うちサウンドを再生する();
 
                         // すべてのアニメが完了したらアニメ完了フェーズへ "
                         if( this._曲別SKILL.アニメ完了 && this._難易度.アニメ完了 && this._達成率.アニメ完了 )
@@ -447,22 +446,6 @@ namespace DTXMania2.結果
             return 最高成績である;
         }
 
-        private SSTF.チップ? _一番最後のチップを返す( ドラム入力種別 drumType )
-        {
-            var チップtoプロパティ = Global.App.ログオン中のユーザ.ドラムチッププロパティリスト.チップtoプロパティ;
-
-            // チップリストの後方から先頭に向かって検索。
-            for( int i = Global.App.演奏スコア.チップリスト.Count - 1; i >= 0; i-- )
-            {
-                var chip = Global.App.演奏スコア.チップリスト[ i ];
-
-                if( チップtoプロパティ[ chip.チップ種別 ].ドラム入力種別 == drumType )
-                    return chip;    // 見つけた
-            }
-
-            return null;    // 見つからなかった
-        }
-
         private void _チップの発声を行う( SSTF.チップ chip, bool ドラムサウンドを再生する )
         {
             if( chip.チップ種別 == SSTF.チップ種別.背景動画 )
@@ -504,7 +487,13 @@ namespace DTXMania2.結果
                 var prop = Global.App.ログオン中のユーザ.ドラムチッププロパティリスト.チップtoプロパティ[ chip.チップ種別 ];
 
                 // WAVを持つチップなら発声する。（持つかどうかはこのメソッド↓内で判定される。）
-                Global.App.WAV管理.発声する( chip.チップサブID, chip.チップ種別, prop.発声前消音, prop.消音グループ種別, BGM以外も再生する: ドラムサウンドを再生する, 音量: ( chip.音量 / (float)SSTF.チップ.最大音量 ) );
+                Global.App.WAV管理.発声する( 
+                    chip.チップサブID, 
+                    chip.チップ種別,
+                    prop.発声前消音, 
+                    prop.消音グループ種別, 
+                    BGM以外も再生する: ドラムサウンドを再生する, 
+                    音量: ( chip.音量 / (float)SSTF.チップ.最大音量 ) );
                 //----------------
                 #endregion
             }
@@ -512,50 +501,56 @@ namespace DTXMania2.結果
 
         private void _空うちサウンドを再生する()
         {
-            // すべての押下入力について……
-            foreach( var 入力 in Global.App.ドラム入力.ポーリング結果.Where( ( e ) => e.InputEvent.押された ) )
+            // すべての押下入力（コントロールチェンジを除く）について……
+            foreach( var 入力 in 
+                Global.App.ドラム入力.ポーリング結果
+                .Where( ( e ) => e.InputEvent.押された && 0 == e.InputEvent.Control ) )
             {
-                var 押下入力に対応するすべてのドラムチッププロパティのリスト
-                    = Global.App.ログオン中のユーザ.ドラムチッププロパティリスト.チップtoプロパティ.Where( ( kvp ) => ( kvp.Value.ドラム入力種別 == 入力.Type ) );
+                // 結果ステージでは、一番最後に現れたチップを空打ち対象とする。
+                var chip = this._一番最後のチップを返す( 入力.Type );
+                if( null == chip )
+                    continue;
 
-                foreach( var kvp in 押下入力に対応するすべてのドラムチッププロパティのリスト )
+                var prop = Global.App.ログオン中のユーザ.ドラムチッププロパティリスト[ chip.チップ種別 ];
+
+                if( 0 == chip.チップサブID )
                 {
-                    var ドラムチッププロパティ = kvp.Value;
-
-                    if( 0 < Global.App.演奏スコア.空打ちチップマップ.Count )
-                    {
-                        #region " (A) 空うちチップマップが存在する場合（DTX他の場合）"
-                        //----------------
-                        int zz = Global.App.演奏スコア.空打ちチップマップ[ ドラムチッププロパティ.レーン種別 ];  // WAVのzz番号。登録されていなければ 0
-
-                        if( 0 != zz )
-                        {
-                            // (A-a) 空打ちチップの指定があるなら、それを発声する。
-                            Global.App.WAV管理.発声する( zz, ドラムチッププロパティ.チップ種別, ドラムチッププロパティ.発声前消音, ドラムチッププロパティ.消音グループ種別, BGM以外も再生する: true );
-                        }
-                        else
-                        {
-                            // (A-b) 空打ちチップの指定がないなら、入力に対応する一番最後のチップを検索し、それを発声する。
-                            var chip = this._一番最後のチップを返す( 入力.Type );
-                            if( null != chip )
-                            {
-                                this._チップの発声を行う( chip, true );
-                                break;  // 複数のチップが該当する場合でも、最初のチップの発声のみ行う。
-                            }
-                        }
-                        //----------------
-                        #endregion
-                    }
-                    else
-                    {
-                        #region " (B) 空うちチップマップ未使用の場合（SSTFの場合）"
-                        //----------------
-                        Global.App.ドラムサウンド.再生する( ドラムチッププロパティ.チップ種別, 0, ドラムチッププロパティ.発声前消音, ドラムチッププロパティ.消音グループ種別 );
-                        //----------------
-                        #endregion
-                    }
+                    // (A) SSTF の場合 → プリセットドラムを鳴らす。（DTX他と同じく、チップがない入力については無音なので注意。）
+                    Global.App.ドラムサウンド.再生する( prop.チップ種別, 0, prop.発声前消音, prop.消音グループ種別 );
+                }
+                else
+                {
+                    // (B) DTX他の場合 → チップのWAVを再生する。
+                    Global.App.WAV管理.発声する(
+                        chip.チップサブID,   // zz 番号を示す
+                        prop.チップ種別,
+                        prop.発声前消音,
+                        prop.消音グループ種別,
+                        BGM以外も再生する: Global.App.ログオン中のユーザ.ドラムの音を発声する,
+                        音量: chip.音量 / (float)SSTF.チップ.最大音量 );
                 }
             }
+        }
+
+        /// <summary>
+        ///     指定された <see cref="ドラム入力種別"/> のうちのいずれかに対応するチップのうち、一番最後に現れるものを返す。
+        /// </summary>
+        /// <param name="drumType">チップに対応する <see cref="ドラム入力種別"/> の集合。</param>
+        /// <returns>一番最後に現れたチップ。見つからなかったら null。</returns>
+        private SSTF.チップ? _一番最後のチップを返す( ドラム入力種別 drumType )
+        {
+            var チップtoプロパティ = Global.App.ログオン中のユーザ.ドラムチッププロパティリスト.チップtoプロパティ;
+
+            // チップリストの後方から先頭に向かって検索。
+            for( int i = Global.App.演奏スコア.チップリスト.Count - 1; i >= 0; i-- )
+            {
+                var chip = Global.App.演奏スコア.チップリスト[ i ];
+
+                if( チップtoプロパティ[ chip.チップ種別 ].ドラム入力種別 == drumType )
+                    return chip;    // 見つけた
+            }
+
+            return null;    // 見つからなかった
         }
     }
 }
