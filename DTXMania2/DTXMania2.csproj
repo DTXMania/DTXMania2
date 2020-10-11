@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>x64</Platforms>
     <Nullable>enable</Nullable>
-    <Version>59.0.0</Version>
+    <Version>60.0.0</Version>
     <Authors>FROM / Kenji Yamazaki</Authors>
     <Copyright>Copyright (C) 2000 2020 FROM / Kenji Yamazaki</Copyright>
     <Configurations>Debug;Release</Configurations>
