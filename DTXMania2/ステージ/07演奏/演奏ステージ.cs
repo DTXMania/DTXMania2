@@ -733,10 +733,6 @@ namespace DTXMania2.演奏
                             if( chipProperty.ドラム入力種別 == ドラム入力種別.Unknown )
                                 return false;
 
-                            // 入力に対応しないチップは無視。
-                            if( chipProperty.ドラム入力種別 != 入力.Type )
-                                return false;
-                            
                             // 判定エリアに達していないチップは無視。
                             if( ヒット判定バーと描画との時間sec < -userConfig.最大ヒット距離sec[ 判定種別.OK ] )
                                 return false;
@@ -753,16 +749,21 @@ namespace DTXMania2.演奏
                             if( !chipProperty.AutoPlayOFF_ユーザヒット )
                                 return false;
 
-                            // 1つの入力に対して、種類の異なる複数のチップがヒット判定対象になることができる。
-                            // 例えば、Ride入力は、RideチップとRide_Cupチップのどちらにもヒットすることができる。
-                            var 入力のヒット判定対象となる入力グループ種別集合 =
-                                userConfig.ドラムチッププロパティリスト.チップtoプロパティ
-                                .Where( ( kvp ) => kvp.Value.ドラム入力種別 == 入力.Type )
-                                .Select( ( kvp ) => kvp.Value.入力グループ種別 );
+                            // 入力に対応しないチップは無視……の前に入力グループ判定。
+                            if( chipProperty.ドラム入力種別 != 入力.Type )
+                            {
+                                // 入力グループ判定：
+                                // 1つの入力に対して、種類の異なる複数のチップがヒット判定対象になることができる。
+                                // 例えば、Ride入力は、RideチップとRide_Cupチップのどちらにもヒットすることができる。
+                                var 入力のヒット判定対象となる入力グループ種別集合 =
+                                    userConfig.ドラムチッププロパティリスト.チップtoプロパティ
+                                    .Where( ( kvp ) => kvp.Value.ドラム入力種別 == 入力.Type )
+                                    .Select( ( kvp ) => kvp.Value.入力グループ種別 );
 
-                            // チップの入力グループ種別が入力の入力グループ種別集合に含まれていないなら無視。
-                            if( !入力のヒット判定対象となる入力グループ種別集合.Any( ( type ) => ( type == chipProperty.入力グループ種別 ) ) )
-                                return false;
+                                // チップの入力グループ種別が入力の入力グループ種別集合に含まれていないなら無視。
+                                if( !入力のヒット判定対象となる入力グループ種別集合.Any( ( type ) => ( type == chipProperty.入力グループ種別 ) ) )
+                                    return false;
+                            }
 
                             // ここまで到達できれば、チップは入力にヒットしている。
                             return true;
