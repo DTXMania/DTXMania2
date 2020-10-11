@@ -124,36 +124,16 @@ namespace SSTFormat.v004
 
                             break;
                         }
-                        case チップ種別.HiHat_Close:
+                        case チップ種別.HiHat_Open:
                         {
-                            #region " HiHat_Close,28～2F → HiHat_Open "
+                            #region " HiHat_Open,2G～2N → HiHat_HalfOpen "
                             //----------------
-                            int zz = chip.チップサブID - _zz( "28" );
-
-                            if( 0 <= zz && zz < 8 )
-                            {
-                                chip.チップ種別 = チップ種別.HiHat_Open;
-                                chip.音量 = zz + 1;
-                            }
-                            //----------------
-                            #endregion
-
-                            #region " HiHat_Close,2G～2N → HiHat_HalfOpen "
-                            //----------------
-                            else if( 8 <= zz && zz < 16 )
+                            int zz = chip.チップサブID - _zz( "2G" );
+                            
+                            if( 0 <= zz && zz < 8)
                             {
                                 chip.チップ種別 = チップ種別.HiHat_HalfOpen;
-                                chip.音量 = zz - 7;
-                            }
-                            //----------------
-                            #endregion
-
-                            #region " HiHat_Close,2O～2V → HiHat_Foot "
-                            //----------------
-                            else if( 16 <= zz && zz < 24 )
-                            {
-                                chip.チップ種別 = チップ種別.HiHat_Foot;
-                                chip.音量 = zz - 15;
+                                chip.音量 = zz + 1;
                             }
                             //----------------
                             #endregion

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Data.Sqlite;
 using FDK;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2
 {
@@ -153,7 +153,7 @@ namespace DTXMania2
         public ScoreDBRecord( VariablePath 譜面ファイルの絶対パス, ユーザ設定 userConfig )
         {
             // 譜面を読み込む。（ノーツ数やBPMを算出するため、ヘッダだけじゃなくすべてを読み込む。）
-            var 譜面 = スコア.ファイルから生成する( 譜面ファイルの絶対パス.変数なしパス );
+            var 譜面 = SSTF.スコア.ファイルから生成する( 譜面ファイルの絶対パス.変数なしパス );
 
             var ノーツ数マップ = _ノーツ数を算出して返す( 譜面, userConfig );
             var (最小BPM, 最大BPM) = _最小最大BPMを調べて返す( 譜面 );
@@ -323,7 +323,7 @@ namespace DTXMania2
         // ローカル
 
 
-        private Dictionary<演奏.表示レーン種別, int> _ノーツ数を算出して返す( スコア score, ユーザ設定 userConfig )
+        private Dictionary<演奏.表示レーン種別, int> _ノーツ数を算出して返す( SSTF.スコア score, ユーザ設定 userConfig )
         {
             // ノーツ数マップを初期化。
             var ノーツ数マップ = new Dictionary<演奏.表示レーン種別, int>();
@@ -356,11 +356,11 @@ namespace DTXMania2
             return ノーツ数マップ;
         }
 
-        private static (double 最小BPM, double 最大BPM) _最小最大BPMを調べて返す( スコア score )
+        private static (double 最小BPM, double 最大BPM) _最小最大BPMを調べて返す( SSTF.スコア score )
         {
             var result = (最小BPM: double.MaxValue, 最大BPM: double.MinValue);
 
-            var BPMchips = score.チップリスト.Where( ( c ) => ( c.チップ種別 == チップ種別.BPM ) );
+            var BPMchips = score.チップリスト.Where( ( c ) => ( c.チップ種別 == SSTF.チップ種別.BPM ) );
             foreach( var chip in BPMchips )
             {
                 result.最小BPM = Math.Min( result.最小BPM, chip.BPM );
@@ -369,7 +369,7 @@ namespace DTXMania2
 
             if( result.最小BPM == double.MaxValue || result.最大BPM == double.MinValue )    // BPMチップがひとつもなかった
             {
-                double 初期BPM = スコア.初期BPM;
+                double 初期BPM = SSTF.スコア.初期BPM;
                 result = (初期BPM, 初期BPM);
             }
 

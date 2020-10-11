@@ -6,7 +6,7 @@ using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using FDK;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2.曲読み込み
 {
@@ -196,7 +196,7 @@ namespace DTXMania2.曲読み込み
 
             var 選択曲ファイルの絶対パス = Global.App.演奏譜面.譜面.ScorePath;
 
-            Global.App.演奏スコア = スコア.ファイルから生成する( 選択曲ファイルの絶対パス );
+            Global.App.演奏スコア = SSTF.スコア.ファイルから生成する( 選択曲ファイルの絶対パス );
 
 
             // 全チップの発声時刻を修正する。

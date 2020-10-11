@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using FDK;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2
 {
@@ -361,12 +361,12 @@ namespace DTXMania2
         ///		履歴内に複数存在している場合は、一番 古 い シーケンスが対象となる。
         ///		成立した場合、そのシーケンスと、それより古い履歴はすべて削除される。
         /// </remarks>
-        public bool シーケンスが入力された( IEnumerable<レーン種別> シーケンス, 演奏.ドラムチッププロパティリスト ドラムチッププロパティリスト )
+        public bool シーケンスが入力された( IEnumerable<SSTF.レーン種別> シーケンス, 演奏.ドラムチッププロパティリスト ドラムチッププロパティリスト )
         {
             // ストロークはシーケンスの構成単位。ここでは、「指定されたレーン種別に対応するドラム入力種別に対応するドラム入力イベント」と同義。
             // レーン種別 と ドラム入力種別 と ドラム入力イベント は、N 対 M 対 P の関係である。
 
-            bool 適合する( レーン種別 laneType, ドラム入力イベント drumEvent )
+            bool 適合する( SSTF.レーン種別 laneType, ドラム入力イベント drumEvent )
                 => ( 0 < ドラムチッププロパティリスト.チップtoプロパティ.Count( ( kvp ) => ( ( kvp.Value.レーン種別 == laneType ) && ( kvp.Value.ドラム入力種別 == drumEvent.Type ) && ( drumEvent.InputEvent.押された ) ) ) );
 
             int シーケンスのストローク数 = シーケンス.Count();

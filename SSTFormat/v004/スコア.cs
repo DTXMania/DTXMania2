@@ -253,18 +253,6 @@ namespace SSTFormat.v004
 
 
 
-        // 空うちチップマップ
-
-
-        /// <summary>
-        ///     レーンごとの空うちチップ番号。
-        ///		空打ちチップが指定されている場合はそのWAVzzのzz番号を、指定されていないなら 0 を保持する。
-        ///		[value: zz番号]
-        /// </summary>
-        public Dictionary<レーン種別, int> 空打ちチップマップ { get; protected set; }
-
-
-
         // メソッド
 
 
@@ -355,9 +343,9 @@ namespace SSTFormat.v004
             this.小節長倍率リスト = v3score.小節長倍率リスト;
             this.小節メモリスト = v3score.小節メモリスト;
 
-            this.空打ちチップマップ = new Dictionary<レーン種別, int>();
-            foreach( var v3kara in v3score.空打ちチップマップ )
-                this.空打ちチップマップ.Add( (レーン種別) v3kara.Key, v3kara.Value );
+            //this.空打ちチップマップ = new Dictionary<レーン種別, int>();
+            //foreach( var v3kara in v3score.空打ちチップマップ )
+            //    this.空打ちチップマップ.Add( (レーン種別) v3kara.Key, v3kara.Value );
 
             this.WAVリスト = new Dictionary<int, WAV情報>();
             foreach( var v3wav in v3score.WAVリスト )
@@ -433,9 +421,6 @@ namespace SSTFormat.v004
             this.小節メモリスト = new Dictionary<int, string>();
             this.WAVリスト = new Dictionary<int, WAV情報>();
             this.AVIリスト = new Dictionary<int, string>();
-            this.空打ちチップマップ = new Dictionary<レーン種別, int>();
-            foreach( レーン種別 lane in Enum.GetValues( typeof( レーン種別 ) ) )
-                this.空打ちチップマップ.Add( lane, 0 );
         }
 
         /// <summary>

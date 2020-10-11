@@ -18,7 +18,7 @@ namespace SSTFEditor
         {
             this.アイテムリスト.Clear();
 
-            foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+            foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
             {
                 if( chip.選択が確定している )
                 {
@@ -55,7 +55,7 @@ namespace SSTFEditor
                 foreach( var cell in this.アイテムリスト )
                 {
                     this.Form.譜面.チップを配置または置換する(
-                        this.Form.譜面.dicチップ編集レーン対応表[ cell.チップ.チップ種別 ],
+                        this.Form.譜面.チップ種別to編集レーン[ cell.チップ.チップ種別 ],
                         cell.チップ.チップ種別,
                         cell.チップ.譜面内絶対位置grid,
                         cell.チップ.チップ内文字列,

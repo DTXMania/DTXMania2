@@ -28,9 +28,7 @@ namespace DTXMania2.結果
                 { ランク種別.E, EffekseerNET.Effect.Create( Global.Effekseer.Manager, new VariablePath( @"$(Images)\ResultStage\rankE.efkefc" ).変数なしパス ) },
             };
 
-            // 0.6 秒後にエフェクト開始
-            this._エフェクト開始イベント = new ManualResetEventSlim( false );
-            this._エフェクト開始タイマ = new Timer( ( state ) => { this._エフェクト開始イベント.Set(); }, null, 600, Timeout.Infinite );
+            this._初めての進行描画 = true;
         }
 
         public virtual void Dispose()
@@ -57,16 +55,26 @@ namespace DTXMania2.結果
 
         public void 進行描画する( DeviceContext dc, ランク種別 rank )
         {
-            this._Rank = rank;
-
-            if( 0 > this._ランクエフェクトハンドル &&
-                this._エフェクト開始イベント.IsSet )
+            if( this._初めての進行描画 )
             {
-                this._ランクエフェクトを開始する();
-                this._エフェクト開始イベント.Reset();
+                this._初めての進行描画 = false;
+
+                this._Rank = rank;
+
+                // 0.6 秒後にエフェクト開始
+                this._エフェクト開始イベント = new ManualResetEventSlim( false );
+                this._エフェクト開始タイマ = new Timer( ( state ) => { this._エフェクト開始イベント.Set(); }, null, 600, Timeout.Infinite );
             }
 
-            if( 0 <= this._ランクエフェクトハンドル )
+            if( 0 > this._ランクエフェクトハンドル )
+            {
+                if( this._エフェクト開始イベント.IsSet )
+                {
+                    this._ランクエフェクトを開始する();
+                    this._エフェクト開始イベント.Reset();
+                }
+            }
+            else
             {
                 dc.EndDraw();   // D2D中断
                 Global.Effekseer.描画する( this._ランクエフェクトハンドル );
@@ -95,10 +103,12 @@ namespace DTXMania2.結果
 
         private int _ランクエフェクトハンドル = -1;
 
-        private ManualResetEventSlim _エフェクト開始イベント;
+        private ManualResetEventSlim _エフェクト開始イベント = null!;
 
-        private Timer _エフェクト開始タイマ;
+        private Timer _エフェクト開始タイマ = null!;
 
         private ランク種別 _Rank;
+
+        private bool _初めての進行描画;
     }
 }

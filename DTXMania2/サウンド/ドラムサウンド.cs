@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using CSCore;
 using FDK;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2
 {
@@ -26,7 +26,7 @@ namespace DTXMania2
             using var _ = new LogBlock( Log.現在のメソッド名 );
 
             this._SoundDevice = new WeakReference<SoundDevice>( device );
-            this._チップtoコンテキスト = new Dictionary<(チップ種別 chipType, int サブチップID), ドラムサウンドコンテキスト>();
+            this._チップtoコンテキスト = new Dictionary<(SSTF.チップ種別 chipType, int サブチップID), ドラムサウンドコンテキスト>();
         }
 
         public virtual void Dispose()
@@ -45,30 +45,30 @@ namespace DTXMania2
             lock( this._Sound利用権 )
             {
                 // SSTの既定のサウンドを、subChipId = 0 としてプリセット登録する。
-                var soundList = new List<(チップ種別 type, VariablePath path)>() {
-                    ( チップ種別.LeftCrash, @"$(DrumSounds)\LeftCrash.wav" ),
-                    ( チップ種別.Ride, @"$(DrumSounds)\Ride.wav" ),
-                    ( チップ種別.Ride_Cup, @"$(DrumSounds)\RideCup.wav" ),
-                    ( チップ種別.China, @"$(DrumSounds)\China.wav" ),
-                    ( チップ種別.Splash,  @"$(DrumSounds)\Splash.wav" ),
-                    ( チップ種別.HiHat_Open, @"$(DrumSounds)\HiHatOpen.wav" ),
-                    ( チップ種別.HiHat_HalfOpen, @"$(DrumSounds)\HiHatHalfOpen.wav" ),
-                    ( チップ種別.HiHat_Close, @"$(DrumSounds)\HiHatClose.wav" ),
-                    ( チップ種別.HiHat_Foot, @"$(DrumSounds)\HiHatFoot.wav" ),
-                    ( チップ種別.Snare, @"$(DrumSounds)\Snare.wav" ),
-                    ( チップ種別.Snare_OpenRim, @"$(DrumSounds)\SnareOpenRim.wav" ),
-                    ( チップ種別.Snare_ClosedRim, @"$(DrumSounds)\SnareClosedRim.wav" ),
-                    ( チップ種別.Snare_Ghost, @"$(DrumSounds)\SnareGhost.wav" ),
-                    ( チップ種別.Bass, @"$(DrumSounds)\Bass.wav" ),
-                    ( チップ種別.Tom1, @"$(DrumSounds)\Tom1.wav" ),
-                    ( チップ種別.Tom1_Rim, @"$(DrumSounds)\Tom1Rim.wav" ),
-                    ( チップ種別.Tom2, @"$(DrumSounds)\Tom2.wav" ),
-                    ( チップ種別.Tom2_Rim, @"$(DrumSounds)\Tom2Rim.wav" ),
-                    ( チップ種別.Tom3, @"$(DrumSounds)\Tom3.wav" ),
-                    ( チップ種別.Tom3_Rim, @"$(DrumSounds)\Tom3Rim.wav" ),
-                    ( チップ種別.RightCrash, @"$(DrumSounds)\RightCrash.wav" ),
-                    ( チップ種別.LeftCymbal_Mute, @"$(DrumSounds)\LeftCymbalMute.wav" ),
-                    ( チップ種別.RightCymbal_Mute, @"$(DrumSounds)\RightCymbalMute.wav" ),
+                var soundList = new List<(SSTF.チップ種別 type, VariablePath path)>() {
+                    ( SSTF.チップ種別.LeftCrash, @"$(DrumSounds)\LeftCrash.wav" ),
+                    ( SSTF.チップ種別.Ride, @"$(DrumSounds)\Ride.wav" ),
+                    ( SSTF.チップ種別.Ride_Cup, @"$(DrumSounds)\RideCup.wav" ),
+                    ( SSTF.チップ種別.China, @"$(DrumSounds)\China.wav" ),
+                    ( SSTF.チップ種別.Splash,  @"$(DrumSounds)\Splash.wav" ),
+                    ( SSTF.チップ種別.HiHat_Open, @"$(DrumSounds)\HiHatOpen.wav" ),
+                    ( SSTF.チップ種別.HiHat_HalfOpen, @"$(DrumSounds)\HiHatHalfOpen.wav" ),
+                    ( SSTF.チップ種別.HiHat_Close, @"$(DrumSounds)\HiHatClose.wav" ),
+                    ( SSTF.チップ種別.HiHat_Foot, @"$(DrumSounds)\HiHatFoot.wav" ),
+                    ( SSTF.チップ種別.Snare, @"$(DrumSounds)\Snare.wav" ),
+                    ( SSTF.チップ種別.Snare_OpenRim, @"$(DrumSounds)\SnareOpenRim.wav" ),
+                    ( SSTF.チップ種別.Snare_ClosedRim, @"$(DrumSounds)\SnareClosedRim.wav" ),
+                    ( SSTF.チップ種別.Snare_Ghost, @"$(DrumSounds)\SnareGhost.wav" ),
+                    ( SSTF.チップ種別.Bass, @"$(DrumSounds)\Bass.wav" ),
+                    ( SSTF.チップ種別.Tom1, @"$(DrumSounds)\Tom1.wav" ),
+                    ( SSTF.チップ種別.Tom1_Rim, @"$(DrumSounds)\Tom1Rim.wav" ),
+                    ( SSTF.チップ種別.Tom2, @"$(DrumSounds)\Tom2.wav" ),
+                    ( SSTF.チップ種別.Tom2_Rim, @"$(DrumSounds)\Tom2Rim.wav" ),
+                    ( SSTF.チップ種別.Tom3, @"$(DrumSounds)\Tom3.wav" ),
+                    ( SSTF.チップ種別.Tom3_Rim, @"$(DrumSounds)\Tom3Rim.wav" ),
+                    ( SSTF.チップ種別.RightCrash, @"$(DrumSounds)\RightCrash.wav" ),
+                    ( SSTF.チップ種別.LeftCymbal_Mute, @"$(DrumSounds)\LeftCymbalMute.wav" ),
+                    ( SSTF.チップ種別.RightCymbal_Mute, @"$(DrumSounds)\RightCymbalMute.wav" ),
                 };
 
                 foreach( var sound in soundList )
@@ -127,7 +127,7 @@ namespace DTXMania2
         // 再生
 
 
-        public void 再生する( チップ種別 chipType, int subChipId, bool 発声前に消音する = false, 消音グループ種別 groupType = 消音グループ種別.Unknown, float 音量0to1 = 1f )
+        public void 再生する( SSTF.チップ種別 chipType, int subChipId, bool 発声前に消音する = false, 消音グループ種別 groupType = 消音グループ種別.Unknown, float 音量0to1 = 1f )
         {
             lock( this._Sound利用権 )
             {
@@ -207,7 +207,7 @@ namespace DTXMania2
             private int _次に再生するSound番号 = 0;
         };
 
-        private Dictionary<(チップ種別 chipType, int サブチップID), ドラムサウンドコンテキスト> _チップtoコンテキスト;
+        private Dictionary<(SSTF.チップ種別 chipType, int サブチップID), ドラムサウンドコンテキスト> _チップtoコンテキスト;
 
         private WeakReference<SoundDevice> _SoundDevice;
 

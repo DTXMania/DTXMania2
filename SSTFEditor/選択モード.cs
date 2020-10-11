@@ -52,7 +52,7 @@ namespace SSTFEditor
             {
                 this.Form.UndoRedo管理.トランザクション記録を開始する();
 
-                foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+                foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
                 {
                     // 選択されていないすべてのチップを選択する。
                     if( chip.選択が確定していない )
@@ -100,7 +100,7 @@ namespace SSTFEditor
             {
                 this.Form.UndoRedo管理.トランザクション記録を開始する();
 
-                foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+                foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
                 {
                     if( ( 0 != chip.枠外レーン数 ) || ( 0 > chip.譜面内絶対位置grid ) )
                     {
@@ -112,12 +112,12 @@ namespace SSTFEditor
                             所有者ID: null,
                             Undoアクション: ( 変更対象, 変更前, 変更後, 任意1, 任意2 ) => {
                                 変更対象.CopyFrom( chip変更前 );
-                                this.Form.譜面.SSTFormatScore.チップリスト.Add( 変更対象 );
-                                this.Form.譜面.SSTFormatScore.チップリスト.Sort();
+                                this.Form.譜面.スコア.チップリスト.Add( 変更対象 );
+                                this.Form.譜面.スコア.チップリスト.Sort();
                                 this.Form.未保存である = true;
                             },
                             Redoアクション: ( 変更対象, 変更前, 変更後, 任意1, 任意2 ) => {
-                                this.Form.譜面.SSTFormatScore.チップリスト.Remove( 変更対象 );
+                                this.Form.譜面.スコア.チップリスト.Remove( 変更対象 );
                                 this.Form.未保存である = true;
                             },
                             変更対象: chip,
@@ -173,22 +173,22 @@ namespace SSTFEditor
                 return; // キャンセルされたら何もしない。
 
             int 開始小節番号 = ( dialog.小節範囲指定CheckBoxがチェックされている ) ? dialog.小節範囲開始番号 : 0;
-            int 終了小節番号 = ( dialog.小節範囲指定CheckBoxがチェックされている ) ? dialog.小節範囲終了番号 : this.Form.譜面.SSTFormatScore.最大小節番号を返す();
+            int 終了小節番号 = ( dialog.小節範囲指定CheckBoxがチェックされている ) ? dialog.小節範囲終了番号 : this.Form.譜面.スコア.最大小節番号を返す();
 
             if( 0 > 開始小節番号 )
                 開始小節番号 = 0; // 省略時は 0 とみなす。
 
             if( 0 > 終了小節番号 )
-                終了小節番号 = this.Form.譜面.SSTFormatScore.最大小節番号を返す();        // 省略時は 最大小節番号とする。
+                終了小節番号 = this.Form.譜面.スコア.最大小節番号を返す();        // 省略時は 最大小節番号とする。
 
             int 選択チップ数 = 0;
             try
             {
                 this.Form.UndoRedo管理.トランザクション記録を開始する();
 
-                foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+                foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
                 {
-                    var e編集レーン = this.Form.譜面.dicチップ編集レーン対応表[ chip.チップ種別 ];
+                    var e編集レーン = this.Form.譜面.チップ種別to編集レーン[ chip.チップ種別 ];
 
                     // 編集レーンを持たないチップは無視する。
                     if( e編集レーン == 編集レーン種別.Unknown )
@@ -405,7 +405,7 @@ namespace SSTFEditor
 
         protected struct レーングリッド座標
         {
-            public int 編集レーン番号;         // X座標に相当。
+            public int 編集レーン位置;         // X座標に相当。
             public int 譜面内絶対位置grid;     // Y座標に相当。
         };
         protected レーングリッド座標 前回のマウス位置LaneGrid = new レーングリッド座標();
@@ -420,14 +420,14 @@ namespace SSTFEditor
 
             // マウス位置（lane×grid）の初期化。
             this.前回のマウス位置LaneGrid = new レーングリッド座標() {
-                編集レーン番号 = this.Form.譜面.dicレーン番号[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( e.X ) ],
+                編集レーン位置 = this.Form.譜面.譜面パネル内X座標pxにある表示レーン位置を返す( e.X ),
                 譜面内絶対位置grid = this.Form.譜面.譜面パネル内Y座標pxにおける譜面内絶対位置gridをガイド幅単位で返す( e.Y ),
             };
 
             // 移動対象チップ（現在選択が確定しているチップ）の「移動開始時のチップの全状態」を、ローカルの Dictionary に控えておく。
             // これは 移動終了処理() で使用する。
             this.移動開始時のチップ状態.Clear();
-            foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+            foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
             {
                 if( chip.選択が確定している )
                     this.移動開始時のチップ状態.Add( chip, new 描画用チップ( chip ) );
@@ -449,70 +449,71 @@ namespace SSTFEditor
 
             // 現在の位置を算出。
             var 現在のドラッグ終了位置LaneGrid = new レーングリッド座標() {
-                編集レーン番号 = this.Form.譜面.dicレーン番号[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( this.現在の移動用ドラッグ終了位置px.X ) ],
+                編集レーン位置 = this.Form.譜面.譜面パネル内X座標pxにある表示レーン位置を返す( this.現在の移動用ドラッグ終了位置px.X ),
                 譜面内絶対位置grid = this.Form.譜面.譜面パネル内Y座標pxにおける譜面内絶対位置gridをガイド幅単位で返す( this.現在の移動用ドラッグ終了位置px.Y ),
             };
 
             // 前回位置からの移動量を算出。
             var 移動量LaneGrid = new レーングリッド座標() {
-                編集レーン番号 = 現在のドラッグ終了位置LaneGrid.編集レーン番号 - this.前回のマウス位置LaneGrid.編集レーン番号,
+                編集レーン位置 = 現在のドラッグ終了位置LaneGrid.編集レーン位置 - this.前回のマウス位置LaneGrid.編集レーン位置,
                 譜面内絶対位置grid = 現在のドラッグ終了位置LaneGrid.譜面内絶対位置grid - this.前回のマウス位置LaneGrid.譜面内絶対位置grid,
             };
 
             // 前回位置から移動していれば、選択されているすべてのチップを移動させる。
-            if( ( 0 != 移動量LaneGrid.編集レーン番号 ) || ( 0 != 移動量LaneGrid.譜面内絶対位置grid ) )
+            if( ( 0 != 移動量LaneGrid.編集レーン位置 ) || ( 0 != 移動量LaneGrid.譜面内絶対位置grid ) )
             {
                 #region " 全チップの移動済フラグをリセットする。"
                 //-----------------
-                foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+                foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
                     chip.移動済みである = false;
                 //-----------------
                 #endregion
 
-                foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+                foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
                 {
                     if( chip.選択が確定している && ( false == chip.移動済みである ) )
                     {
-                        if( 0 != 移動量LaneGrid.編集レーン番号 )
+                        if( 0 != 移動量LaneGrid.編集レーン位置 )
                         {
                             #region " チップを横に移動する。"
                             //-----------------
                             int レーン数 = Enum.GetValues( typeof( 編集レーン種別 ) ).Length;
-                            int チップの現在のレーン番号 = this.Form.譜面.dicレーン番号[ this.Form.譜面.dicチップ編集レーン対応表[ chip.チップ種別 ] ];
-                            int チップの移動後のレーン番号;
+                            var チップの現在のレーン種別 = this.Form.譜面.チップ種別to編集レーン[ chip.チップ種別 ];
+                            int チップの現在のレーン位置 = this.Form.譜面.レーン属性[ チップの現在のレーン種別 ].位置;
+                            int チップの移動後のレーン位置;
 
-                            #region " チップの移動後のレーン番号 を算出。"
+                            #region " チップの移動後のレーン位置 を算出。"
                             //-----------------
                             if( 0 > chip.枠外レーン数 )
                             {
-                                チップの移動後のレーン番号 = チップの現在のレーン番号 + 移動量LaneGrid.編集レーン番号;
+                                チップの移動後のレーン位置 = チップの現在のレーン位置 + 移動量LaneGrid.編集レーン位置;
                             }
                             else if( 0 < chip.枠外レーン数 )
                             {
-                                チップの移動後のレーン番号 = ( ( レーン数 - 1 ) + chip.枠外レーン数 ) + 移動量LaneGrid.編集レーン番号;
+                                チップの移動後のレーン位置 = ( ( レーン数 - 1 ) + chip.枠外レーン数 ) + 移動量LaneGrid.編集レーン位置;
                             }
                             else
                             {
-                                チップの移動後のレーン番号 = チップの現在のレーン番号;
+                                チップの移動後のレーン位置 = チップの現在のレーン位置;
                             }
                             //-----------------
                             #endregion
 
-                            #region " チップの移動後のレーン番号 から、チップのチップ種別 or 枠外レーン数 を修正する。"
+                            #region " チップの移動後のレーン位置 から、チップのチップ種別 or 枠外レーン数 を修正する。"
                             //-----------------
-                            if( 0 > チップの移動後のレーン番号 )             // 左にはみ出している
+                            if( 0 > チップの移動後のレーン位置 )             // 左にはみ出している
                             {
-                                chip.枠外レーン数 = チップの移動後のレーン番号;
+                                chip.枠外レーン数 = チップの移動後のレーン位置;
                             }
-                            else if( レーン数 <= チップの移動後のレーン番号 )    // 右にはみ出している
+                            else if( レーン数 <= チップの移動後のレーン位置 )    // 右にはみ出している
                             {
-                                chip.枠外レーン数 = チップの移動後のレーン番号 - ( レーン数 - 1 );
+                                chip.枠外レーン数 = チップの移動後のレーン位置 - ( レーン数 - 1 );
                             }
                             else
                             {
-                                var eチップの移動後の編集レーン = this.Form.譜面.dicレーン番号逆引き[ チップの移動後のレーン番号 ];
+                                var eチップの移動後の編集レーン = this.Form.譜面.レーン位置にある編集レーンを返す( チップの移動後のレーン位置 );
 
-                                foreach( var kvp in this.Form.譜面.dicチップ編集レーン対応表 )
+                                foreach( var kvp in this.Form.譜面.チップ種別to編集レーン )
                                 {
                                     if( kvp.Value == eチップの移動後の編集レーン )   // 対応表で最初に見つけた kvp のチップ種別を採択する。
                                     {
@@ -560,7 +561,7 @@ namespace SSTFEditor
 
                 // 前回位置を現在の位置に更新。
                 this.前回のマウス位置LaneGrid = new レーングリッド座標() {
-                    編集レーン番号 = 現在のドラッグ終了位置LaneGrid.編集レーン番号,
+                    編集レーン位置 = 現在のドラッグ終了位置LaneGrid.編集レーン位置,
                     譜面内絶対位置grid = 現在のドラッグ終了位置LaneGrid.譜面内絶対位置grid,
                 };
             }
@@ -574,7 +575,7 @@ namespace SSTFEditor
             {
                 this.Form.UndoRedo管理.トランザクション記録を開始する();
 
-                foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+                foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
                 {
                     // 選択が確定かつ初期位置から移動しているチップのみ対象とする。
 
@@ -587,7 +588,7 @@ namespace SSTFEditor
                         var 小節情報 = this.Form.譜面.譜面内絶対位置gridに位置する小節の情報を返す( chip.譜面内絶対位置grid );
                         var chip変更後 = new 描画用チップ( chip ) {
                             小節番号 = 小節情報.小節番号,
-                            小節解像度 = (int) ( this.Form.GRID_PER_PART * this.Form.譜面.SSTFormatScore.小節長倍率を取得する( 小節情報.小節番号 ) ),
+                            小節解像度 = (int) ( this.Form.GRID_PER_PART * this.Form.譜面.スコア.小節長倍率を取得する( 小節情報.小節番号 ) ),
                             小節内位置 = chip.譜面内絶対位置grid - 小節情報.小節の先頭位置grid,
                         };
                         var cell = new UndoRedo.セル<描画用チップ>(
@@ -668,7 +669,7 @@ namespace SSTFEditor
                 this.Form.UndoRedo管理.トランザクション記録を開始する();
 
                 // ドラック選択範囲に入っているがまだ選択が確定していないチップを選択確定させる。
-                foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+                foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
                 {
                     // ドラッグ選択範囲内にあって既に選択が確定されているものについては何もしない。
                     if( chip.ドラッグ操作により選択中である && ( false == chip.選択が確定している ) )
@@ -726,29 +727,31 @@ namespace SSTFEditor
 
             // 現在のドラッグ範囲を (lane, grid) 座標に変換する。
 
-            int ドラッグ範囲左のレーン番号 = this.Form.譜面.dicレーン番号[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( 現在のドラッグ範囲pxGrid.Left ) ];
-            int ドラッグ範囲右のレーン番号 = this.Form.譜面.dicレーン番号[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( 現在のドラッグ範囲pxGrid.Right ) ];
+            int ドラッグ範囲左のレーン位置 = this.Form.譜面.レーン属性[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( 現在のドラッグ範囲pxGrid.Left ) ].位置;
+            int ドラッグ範囲右のレーン位置 = this.Form.譜面.レーン属性[ this.Form.譜面.譜面パネル内X座標pxにある編集レーンを返す( 現在のドラッグ範囲pxGrid.Right ) ].位置;
 
             var 現在のドラッグ範囲LaneGrid = new Rectangle() {
-                X = ドラッグ範囲左のレーン番号,
+                X = ドラッグ範囲左のレーン位置,
                 Y = 現在のドラッグ範囲pxGrid.Y,
-                Width = Math.Abs( ドラッグ範囲右のレーン番号 - ドラッグ範囲左のレーン番号 ) + 1,  // +1 を忘れずに。
+                Width = Math.Abs( ドラッグ範囲右のレーン位置 - ドラッグ範囲左のレーン位置 ) + 1,  // +1 を忘れずに。
                 Height = 現在のドラッグ範囲pxGrid.Height + 1,    // +1 を忘れずに。
             };
 
             // すべてのチップについて、現在のドラッグ範囲内に存在しているチップは「ドラッグ操作により選択中」フラグを立てる。
-            foreach( 描画用チップ chip in this.Form.譜面.SSTFormatScore.チップリスト )
+            foreach( 描画用チップ chip in this.Form.譜面.スコア.チップリスト )
             {
-                int チップのレーン番号 = this.Form.譜面.dicレーン番号[ this.Form.譜面.dicチップ編集レーン対応表[ chip.チップ種別 ] ];
-                int チップの厚さgrid = this.Form.譜面.チップサイズpx.Height * this.Form.GRID_PER_PIXEL;
+                if( chip.チップ種別 == SSTFormat.v004.チップ種別.Unknown )
+                    continue;
 
+                var チップのレーン種別 = this.Form.譜面.チップ種別to編集レーン[ chip.チップ種別 ];
+                int チップのレーン位置 = this.Form.譜面.レーン属性[ チップのレーン種別 ].位置;
+                int チップの厚さgrid = this.Form.譜面.チップサイズpx.Height * this.Form.GRID_PER_PIXEL;
                 var チップの領域LaneGrid = new Rectangle() {
-                    X = チップのレーン番号,
+                    X = チップのレーン位置,
                     Y = chip.譜面内絶対位置grid,
                     Width = 1,  // +1 を忘れずに。
                     Height = チップの厚さgrid,
                 };
-
                 chip.ドラッグ操作により選択中である = チップの領域LaneGrid.IntersectsWith( 現在のドラッグ範囲LaneGrid );
             }
         }

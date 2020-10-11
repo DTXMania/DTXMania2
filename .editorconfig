@@ -1,0 +1,230 @@
+# 上位ディレクトリから .editorconfig 設定を継承する場合は、以下の行を削除します
+root = true
+
+# C# ファイル
+[*.cs]
+
+#### コア EditorConfig オプション ####
+
+# インデントと間隔
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+# 改行設定
+end_of_line = crlf
+insert_final_newline = false
+
+#### .NET コーディング規則 ####
+
+# using の整理
+dotnet_separate_import_directive_groups = false
+dotnet_sort_system_directives_first = false
+file_header_template = unset
+
+# this. と Me. の設定
+dotnet_style_qualification_for_event = true:silent
+dotnet_style_qualification_for_field = true:silent
+dotnet_style_qualification_for_method = true:silent
+dotnet_style_qualification_for_property = true:silent
+
+# 言語キーワードと BCL の種類の設定
+dotnet_style_predefined_type_for_locals_parameters_members = true:silent
+dotnet_style_predefined_type_for_member_access = false:silent
+
+# かっこの設定
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:silent
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:silent
+dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:silent
+
+# 修飾子設定
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
+
+# 式レベルの設定
+dotnet_style_coalesce_expression = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_explicit_tuple_names = true:suggestion
+dotnet_style_null_propagation = true:suggestion
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+dotnet_style_prefer_auto_properties = true:silent
+dotnet_style_prefer_compound_assignment = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:silent
+dotnet_style_prefer_conditional_expression_over_return = true:silent
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
+dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
+dotnet_style_prefer_simplified_interpolation = true:suggestion
+
+# フィールド設定
+dotnet_style_readonly_field = true:suggestion
+
+# パラメーターの設定
+dotnet_code_quality_unused_parameters = all:suggestion
+
+#### C# コーディング規則 ####
+
+# var を優先
+csharp_style_var_elsewhere = false:silent
+csharp_style_var_for_built_in_types = false:silent
+csharp_style_var_when_type_is_apparent = false:silent
+
+# 式のようなメンバー
+csharp_style_expression_bodied_accessors = true:silent
+csharp_style_expression_bodied_constructors = false:silent
+csharp_style_expression_bodied_indexers = true:silent
+csharp_style_expression_bodied_lambdas = true:silent
+csharp_style_expression_bodied_local_functions = false:silent
+csharp_style_expression_bodied_methods = false:silent
+csharp_style_expression_bodied_operators = false:silent
+csharp_style_expression_bodied_properties = true:silent
+
+# パターン マッチング設定
+csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
+csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
+csharp_style_prefer_switch_expression = true:suggestion
+
+# Null チェック設定
+csharp_style_conditional_delegate_call = true:suggestion
+
+# 修飾子設定
+csharp_prefer_static_local_function = true:suggestion
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:silent
+
+# コード ブロックの設定
+csharp_prefer_braces = true:silent
+csharp_prefer_simple_using_statement = true:silent
+
+# 式レベルの設定
+csharp_prefer_simple_default_expression = true:suggestion
+csharp_style_deconstructed_variable_declaration = true:suggestion
+csharp_style_inlined_variable_declaration = true:suggestion
+csharp_style_pattern_local_over_anonymous_function = true:suggestion
+csharp_style_prefer_index_operator = true:suggestion
+csharp_style_prefer_range_operator = true:suggestion
+csharp_style_throw_expression = true:suggestion
+csharp_style_unused_value_assignment_preference = discard_variable:suggestion
+csharp_style_unused_value_expression_statement_preference = discard_variable:silent
+
+# 'using' ディレクティブの基本設定
+csharp_using_directive_placement = outside_namespace:silent
+
+#### C# 書式ルール ####
+
+# 改行設定
+csharp_new_line_before_catch = true
+csharp_new_line_before_else = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_open_brace = accessors,control_blocks,methods,properties,types
+csharp_new_line_between_query_expression_clauses = true
+
+# インデント設定
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+csharp_indent_case_contents = true
+csharp_indent_case_contents_when_block = false
+csharp_indent_labels = one_less_than_current
+csharp_indent_switch_labels = true
+
+# スペース設定
+csharp_space_after_cast = false
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_after_comma = true
+csharp_space_after_dot = false
+csharp_space_after_keywords_in_control_flow_statements = false
+csharp_space_after_semicolon_in_for_statement = true
+csharp_space_around_binary_operators = before_and_after
+csharp_space_around_declaration_statements = false
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_before_comma = false
+csharp_space_before_dot = false
+csharp_space_before_open_square_brackets = false
+csharp_space_before_semicolon_in_for_statement = false
+csharp_space_between_empty_square_brackets = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_space_between_method_call_parameter_list_parentheses = true
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_declaration_parameter_list_parentheses = true
+csharp_space_between_parentheses = control_flow_statements,expressions
+csharp_space_between_square_brackets = true
+
+# 折り返しの設定
+csharp_preserve_single_line_blocks = true
+csharp_preserve_single_line_statements = true
+
+#### 命名スタイル ####
+
+# 名前付けルール
+
+dotnet_naming_rule.インターフェイス_should_be_i_で始まる.severity = silent
+dotnet_naming_rule.インターフェイス_should_be_i_で始まる.symbols = インターフェイス
+dotnet_naming_rule.インターフェイス_should_be_i_で始まる.style = i_で始まる
+
+dotnet_naming_rule.プライベート_メソッド_should_be___で始まる.severity = suggestion
+dotnet_naming_rule.プライベート_メソッド_should_be___で始まる.symbols = プライベート_メソッド
+dotnet_naming_rule.プライベート_メソッド_should_be___で始まる.style = __で始まる
+
+dotnet_naming_rule.プライベートまたは内部フィールド_should_be___で始まる.severity = suggestion
+dotnet_naming_rule.プライベートまたは内部フィールド_should_be___で始まる.symbols = プライベートまたは内部フィールド
+dotnet_naming_rule.プライベートまたは内部フィールド_should_be___で始まる.style = __で始まる
+
+dotnet_naming_rule.プライベートまたは内部静的フィールド_should_be___で始まる.severity = suggestion
+dotnet_naming_rule.プライベートまたは内部静的フィールド_should_be___で始まる.symbols = プライベートまたは内部静的フィールド
+dotnet_naming_rule.プライベートまたは内部静的フィールド_should_be___で始まる.style = __で始まる
+
+dotnet_naming_rule.型_should_be_パスカル_ケース.severity = silent
+dotnet_naming_rule.型_should_be_パスカル_ケース.symbols = 型
+dotnet_naming_rule.型_should_be_パスカル_ケース.style = パスカル_ケース
+
+dotnet_naming_rule.フィールド以外のメンバー_should_be_パスカル_ケース.severity = silent
+dotnet_naming_rule.フィールド以外のメンバー_should_be_パスカル_ケース.symbols = フィールド以外のメンバー
+dotnet_naming_rule.フィールド以外のメンバー_should_be_パスカル_ケース.style = パスカル_ケース
+
+# 記号の仕様
+
+dotnet_naming_symbols.インターフェイス.applicable_kinds = interface
+dotnet_naming_symbols.インターフェイス.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.インターフェイス.required_modifiers = 
+
+dotnet_naming_symbols.プライベート_メソッド.applicable_kinds = method
+dotnet_naming_symbols.プライベート_メソッド.applicable_accessibilities = private
+dotnet_naming_symbols.プライベート_メソッド.required_modifiers = 
+
+dotnet_naming_symbols.プライベートまたは内部フィールド.applicable_kinds = field
+dotnet_naming_symbols.プライベートまたは内部フィールド.applicable_accessibilities = internal, private
+dotnet_naming_symbols.プライベートまたは内部フィールド.required_modifiers = 
+
+dotnet_naming_symbols.プライベートまたは内部静的フィールド.applicable_kinds = field
+dotnet_naming_symbols.プライベートまたは内部静的フィールド.applicable_accessibilities = internal, private
+dotnet_naming_symbols.プライベートまたは内部静的フィールド.required_modifiers = static
+
+dotnet_naming_symbols.型.applicable_kinds = class, struct, interface, enum
+dotnet_naming_symbols.型.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.型.required_modifiers = 
+
+dotnet_naming_symbols.フィールド以外のメンバー.applicable_kinds = property, event, method
+dotnet_naming_symbols.フィールド以外のメンバー.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.フィールド以外のメンバー.required_modifiers = 
+
+# 命名スタイル
+
+dotnet_naming_style.パスカル_ケース.required_prefix = 
+dotnet_naming_style.パスカル_ケース.required_suffix = 
+dotnet_naming_style.パスカル_ケース.word_separator = 
+dotnet_naming_style.パスカル_ケース.capitalization = pascal_case
+
+dotnet_naming_style.i_で始まる.required_prefix = I
+dotnet_naming_style.i_で始まる.required_suffix = 
+dotnet_naming_style.i_で始まる.word_separator = 
+dotnet_naming_style.i_で始まる.capitalization = pascal_case
+
+dotnet_naming_style.__で始まる.required_prefix = _
+dotnet_naming_style.__で始まる.required_suffix = 
+dotnet_naming_style.__で始まる.word_separator = 
+dotnet_naming_style.__で始まる.capitalization = pascal_case

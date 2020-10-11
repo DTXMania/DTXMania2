@@ -11,8 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FDK;
-using SSTFormat.v004;
 using DTXMania2.曲;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2
 {
@@ -95,7 +95,7 @@ namespace DTXMania2
         ///     現在演奏中のスコア。
         ///     曲読み込みステージで<see cref="App.演奏譜面"/>を読み込んで生成される。
         /// </summary>
-        internal スコア 演奏スコア { get; set; } = null!;
+        internal SSTF.スコア 演奏スコア { get; set; } = null!;
 
         /// <summary>
         ///     <see cref="App.演奏スコア"/> に対応して生成されたWAVサウンドインスタンスの管理。

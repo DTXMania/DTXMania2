@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2.演奏
 {
@@ -29,7 +29,7 @@ namespace DTXMania2.演奏
         // 生成と終了
 
 
-        public チップの演奏状態( チップ chip )
+        public チップの演奏状態( SSTF.チップ chip )
         {
             this._chip = chip;
             this.ヒット前の状態にする();
@@ -74,6 +74,6 @@ namespace DTXMania2.演奏
         // ローカル
 
 
-        protected readonly チップ _chip;
+        protected readonly SSTF.チップ _chip;
     }
 }

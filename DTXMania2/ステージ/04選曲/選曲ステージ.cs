@@ -6,8 +6,8 @@ using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Animation;
 using FDK;
-using SSTFormat.v004;
 using DTXMania2.曲;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2.選曲
 {
@@ -280,7 +280,7 @@ namespace DTXMania2.選曲
                         //----------------
                         #endregion
                     }
-                    else if( 入力.シーケンスが入力された( new[] { レーン種別.HiHat, レーン種別.HiHat }, Global.App.ログオン中のユーザ.ドラムチッププロパティリスト ) )
+                    else if( 入力.シーケンスが入力された( new[] { SSTF.レーン種別.HiHat, SSTF.レーン種別.HiHat }, Global.App.ログオン中のユーザ.ドラムチッププロパティリスト ) )
                     {
                         #region " HH×2 → 難易度変更 "
                         //----------------
@@ -289,7 +289,7 @@ namespace DTXMania2.選曲
                         //----------------
                         #endregion
                     }
-                    else if( 入力.シーケンスが入力された( new[] { レーン種別.Bass, レーン種別.Bass }, Global.App.ログオン中のユーザ.ドラムチッププロパティリスト ) )
+                    else if( 入力.シーケンスが入力された( new[] { SSTF.レーン種別.Bass, SSTF.レーン種別.Bass }, Global.App.ログオン中のユーザ.ドラムチッププロパティリスト ) )
                     {
                         #region " BD×2 → QuickConfig画面を生成し、QuickConfig フェーズへ "
                         //----------------

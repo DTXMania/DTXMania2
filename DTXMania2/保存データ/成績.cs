@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using DTXMania2.演奏;
 using DTXMania2.結果;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2
 {
@@ -431,7 +431,7 @@ namespace DTXMania2
         /// <summary>
         ///     スコアのチップリストのうち、判定対象のチップの数を返す。
         /// </summary>
-        private int _総ノーツ数を算出して返す( スコア score, ユーザ設定 options )
+        private int _総ノーツ数を算出して返す( SSTF.スコア score, ユーザ設定 options )
         {
             int 総ノーツ数 = 0;
 

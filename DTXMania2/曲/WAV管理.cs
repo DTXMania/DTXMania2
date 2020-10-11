@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using CSCore;
 using FDK;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2
 {
@@ -104,7 +104,7 @@ namespace DTXMania2
         ///		指定した番号のWAVを、指定したチップ種別として発声する。
         /// </summary>
         /// <param name="音量">0:無音～1:原音</param>
-        public void 発声する( int WAV番号, チップ種別 chipType, bool 発声前に消音する, 消音グループ種別 muteGroupType, bool BGM以外も再生する, float 音量 = 1f, double 再生開始時刻sec = 0.0 )
+        public void 発声する( int WAV番号, SSTF.チップ種別 chipType, bool 発声前に消音する, 消音グループ種別 muteGroupType, bool BGM以外も再生する, float 音量 = 1f, double 再生開始時刻sec = 0.0 )
         {
             if( !( this._WAV情報リスト.ContainsKey( WAV番号 ) ) ||
                 ( !( BGM以外も再生する ) && !( this._WAV情報リスト[ WAV番号 ].BGMである ) ) )
@@ -126,7 +126,10 @@ namespace DTXMania2
             // 発声する。
 
             if( this._WAV情報リスト[ WAV番号 ].BGMである )        // BGM なら BGMAdjust を適用する
+            {
                 再生開始時刻sec += Global.App.演奏譜面.譜面.BGMAdjust / 1000.0;
+                再生開始時刻sec = Math.Max( 0.0, 再生開始時刻sec );
+            }
 
             this._WAV情報リスト[ WAV番号 ].発声する( muteGroupType, 音量, 再生開始時刻sec );
         }

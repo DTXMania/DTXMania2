@@ -109,9 +109,7 @@ SSTFoverDTX ファイルは、まずは通常の DTX ファイルとして読み
 | チップ種別    | サブチップID(zz) |  | 新チップ種別 |
 |---------------|--------|----|----------------------|
 | SE1           | 18～1F | → | LeftCymbal_Mute      |
-| HiHat_Close   | 28～2F | → | HiHat_Open           |
-| HiHat_Close   | 2G～2N | → | HiHat_HalfOpen       |
-| HiHat_Close   | 2O～2V | → | HiHat_Foot           |
+| HiHat_Open    | 2G～2N | → | HiHat_HalfOpen       |
 | Snare         | 38～3F | → | Snare_OpenRim        |
 | Snare         | 3G～3N | → | Snare_ClosedRim      |
 | Snare         | 3O～3V | → | Snare_Ghost          |

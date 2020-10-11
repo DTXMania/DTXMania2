@@ -859,27 +859,6 @@ namespace SSTFormat.v004
                                 }
                                 break;
                             }
-                            // 空打ち（ドラム）
-                            case 0xB1: 現在の.スコア.空打ちチップマップ[ レーン種別.HiHat ] = オブジェクト値; break;      // HiHat Open と共有
-                            case 0xB2: 現在の.スコア.空打ちチップマップ[ レーン種別.Snare ] = オブジェクト値; break;
-                            case 0xB3: 現在の.スコア.空打ちチップマップ[ レーン種別.Bass ] = オブジェクト値; break;
-                            case 0xB4: 現在の.スコア.空打ちチップマップ[ レーン種別.Tom1 ] = オブジェクト値; break;
-                            case 0xB5: 現在の.スコア.空打ちチップマップ[ レーン種別.Tom2 ] = オブジェクト値; break;
-                            case 0xB6:
-                            {
-                                現在の.スコア.空打ちチップマップ[ レーン種別.RightCrash ] = オブジェクト値;               // ReftCrash と China は共有
-                                現在の.スコア.空打ちチップマップ[ レーン種別.China ] = オブジェクト値;
-                                break;
-                            }
-                            case 0xB7: 現在の.スコア.空打ちチップマップ[ レーン種別.Tom3 ] = オブジェクト値; break;
-                            case 0xB8: 現在の.スコア.空打ちチップマップ[ レーン種別.HiHat ] = オブジェクト値; break;      // HiHat Close と共有
-                            case 0xB9: 現在の.スコア.空打ちチップマップ[ レーン種別.Ride ] = オブジェクト値; break;
-                            case 0xBC:
-                            {
-                                現在の.スコア.空打ちチップマップ[ レーン種別.LeftCrash ] = オブジェクト値;                // LeftCrash と Splash は共有
-                                現在の.スコア.空打ちチップマップ[ レーン種別.Splash ] = オブジェクト値;
-                                break;
-                            }
                         }
                     }
                     //----------------

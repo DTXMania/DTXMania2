@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using SSTFormat.v004;
 using FDK;
+using SSTF=SSTFormat.v004;
 
 namespace SSTFEditor
 {
@@ -139,7 +139,7 @@ namespace SSTFEditor
             return ( this.checkedListBoxレーン選択リスト.GetItemCheckState( key ) == CheckState.Checked );
         }
 
-        public bool 選択されている( チップ種別 chipType )
+        public bool 選択されている( SSTF.チップ種別 chipType )
         {
             // First() で要素が見つからなかったらバグなので、そのまま System.InvalidOperationException を放出させる。
             var key = this.dic行とチップ種別対応表.First( ( kvp ) => ( kvp.Value == chipType ) ).Key;
@@ -189,32 +189,32 @@ namespace SSTFEditor
             #endregion
         };
 
-        protected readonly Dictionary<int, チップ種別> dic行とチップ種別対応表 = new Dictionary<int, チップ種別>() {
+        protected readonly Dictionary<int, SSTF.チップ種別> dic行とチップ種別対応表 = new Dictionary<int, SSTF.チップ種別>() {
             #region " *** "
             //----------------
-            {  0, チップ種別.BPM },
-            {  1, チップ種別.LeftCrash },
-            {  2, チップ種別.HiHat_Close },
-            {  3, チップ種別.HiHat_HalfOpen },
-            {  4, チップ種別.HiHat_Open },
-            {  5, チップ種別.HiHat_Foot },
-            {  6, チップ種別.Snare },
-            {  7, チップ種別.Snare_Ghost },
-            {  8, チップ種別.Snare_ClosedRim },
-            {  9, チップ種別.Snare_OpenRim },
-            { 10, チップ種別.Tom1 },
-            { 11, チップ種別.Tom1_Rim },
-            { 12, チップ種別.Bass },
-            { 13, チップ種別.Tom2 },
-            { 14, チップ種別.Tom2_Rim },
-            { 15, チップ種別.Tom3 },
-            { 16, チップ種別.Tom3_Rim },
-            { 17, チップ種別.RightCrash },
-            { 18, チップ種別.Ride },
-            { 19, チップ種別.Ride_Cup },
-            { 20, チップ種別.China },
-            { 21, チップ種別.Splash },
-            { 22, チップ種別.背景動画 },
+            {  0, SSTF.チップ種別.BPM },
+            {  1, SSTF.チップ種別.LeftCrash },
+            {  2, SSTF.チップ種別.HiHat_Close },
+            {  3, SSTF.チップ種別.HiHat_HalfOpen },
+            {  4, SSTF.チップ種別.HiHat_Open },
+            {  5, SSTF.チップ種別.HiHat_Foot },
+            {  6, SSTF.チップ種別.Snare },
+            {  7, SSTF.チップ種別.Snare_Ghost },
+            {  8, SSTF.チップ種別.Snare_ClosedRim },
+            {  9, SSTF.チップ種別.Snare_OpenRim },
+            { 10, SSTF.チップ種別.Tom1 },
+            { 11, SSTF.チップ種別.Tom1_Rim },
+            { 12, SSTF.チップ種別.Bass },
+            { 13, SSTF.チップ種別.Tom2 },
+            { 14, SSTF.チップ種別.Tom2_Rim },
+            { 15, SSTF.チップ種別.Tom3 },
+            { 16, SSTF.チップ種別.Tom3_Rim },
+            { 17, SSTF.チップ種別.RightCrash },
+            { 18, SSTF.チップ種別.Ride },
+            { 19, SSTF.チップ種別.Ride_Cup },
+            { 20, SSTF.チップ種別.China },
+            { 21, SSTF.チップ種別.Splash },
+            { 22, SSTF.チップ種別.背景動画 },
             //----------------
             #endregion
         };

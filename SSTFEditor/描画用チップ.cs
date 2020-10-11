@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace SSTFEditor
 {
     /// <summary>
     ///		SSTFormat.チップ の機能拡張。
     /// </summary>
-    class 描画用チップ : チップ
+    class 描画用チップ : SSTF.チップ
     {
         public int 譜面内絶対位置grid { get; set; } = 0;
 
@@ -34,7 +34,7 @@ namespace SSTFEditor
         public int 枠外レーン数 { get; set; } = 0;
 
 
-        public 描画用チップ( チップ sstfChip = null )
+        public 描画用チップ( SSTF.チップ sstfChip = null )
         {
             if( null != sstfChip )
                 this.CopyFrom( sstfChip );
@@ -50,7 +50,7 @@ namespace SSTFEditor
 
         public static void Copy( 描画用チップ src, 描画用チップ dst )
         {
-            ( (チップ) dst ).CopyFrom( src );
+            ( (SSTF.チップ) dst ).CopyFrom( src );
 
             dst.譜面内絶対位置grid = src.譜面内絶対位置grid;
             dst.ドラッグ操作により選択中である = src.ドラッグ操作により選択中である;
@@ -67,9 +67,9 @@ namespace SSTFEditor
 
         private void _特別なチップ内文字列を設定する()
         {
-            if( this.チップ種別 == チップ種別.China ) this.チップ内文字列 = "C N";
-            if( this.チップ種別 == チップ種別.Splash ) this.チップ内文字列 = "S P";
-            if( this.チップ種別 == チップ種別.BPM ) this.チップ内文字列 = this.BPM.ToString( "###.##" );
+            if( this.チップ種別 == SSTF.チップ種別.China ) this.チップ内文字列 = "C N";
+            if( this.チップ種別 == SSTF.チップ種別.Splash ) this.チップ内文字列 = "S P";
+            if( this.チップ種別 == SSTF.チップ種別.BPM ) this.チップ内文字列 = this.BPM.ToString( "###.##" );
         }
     }
 }

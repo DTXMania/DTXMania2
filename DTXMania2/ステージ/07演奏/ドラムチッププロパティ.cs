@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace DTXMania2.演奏
 {
@@ -12,8 +12,8 @@ namespace DTXMania2.演奏
     {
         // 主キー
 
-        public チップ種別 チップ種別 { get; set; }
-        public レーン種別 レーン種別 { get; set; }
+        public SSTF.チップ種別 チップ種別 { get; set; }
+        public SSTF.レーン種別 レーン種別 { get; set; }
 
         // 表示
 

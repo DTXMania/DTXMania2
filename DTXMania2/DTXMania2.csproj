@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>x64</Platforms>
     <Nullable>enable</Nullable>
-    <Version>59.0.0</Version>
+    <Version>60.0.0</Version>
     <Authors>FROM / Kenji Yamazaki</Authors>
     <Copyright>Copyright (C) 2000 2020 FROM / Kenji Yamazaki</Copyright>
     <Configurations>Debug;Release</Configurations>
@@ -27,9 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.8" />
     <PackageReference Include="Microsoft.HLSL.CSharpVB" Version="1.0.2" />
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
     <PackageReference Include="NVorbis" Version="0.10.1" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.Animation" Version="4.2.0" />
@@ -40,8 +40,8 @@
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
     <PackageReference Include="SharpDX.MediaFoundation" Version="4.2.0" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
-    <PackageReference Include="YamlDotNet" Version="8.1.1" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
+    <PackageReference Include="YamlDotNet" Version="8.1.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -91,38 +91,35 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="concrt140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\concrt140.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="D3DCompiler_47.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\D3DCompiler_47.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="Ijwhost.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\msvcp140.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="msvcp140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\msvcp140_1.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="msvcp140_1.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\msvcp140_2.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="msvcp140_2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\msvcp140_codecvt_ids.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="msvcp140_codecvt_ids.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\vccorlib140.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="vccorlib140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\vcruntime140.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="vcruntime140.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\vcruntime140_1.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="vcruntime140_1.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ws2_32.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="NativeDlls\ws2_32.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Default\DrumSounds\Bass.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -605,5 +602,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /Y $(SolutionDir)packages-selfbuild\Effekseer-netcore\Ijwhost.dll $(TargetDir)&#xD;&#xA;xcopy /Y $(ProjectDir)NativeDlls\*.dll $(TargetDir)" />
+  </Target>
+
+  <!-- ポストビルドイベントでxcopyしたネイティブdllは publish 時には無視されるため、publish 後イベントで同じようにxcopyする。-->
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <Exec Command="xcopy /Y $(SolutionDir)packages-selfbuild\Effekseer-netcore\Ijwhost.dll ..\publish&#xD;&#xA;xcopy /Y $(ProjectDir)NativeDlls\*.dll ..\publish&#xD;&#xA;" />
+  </Target>
 
 </Project>

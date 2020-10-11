@@ -8,24 +8,56 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using SSTFormat.v004;
 using FDK;
+using SSTF=SSTFormat.v004;
 
 namespace SSTFEditor
 {
     partial class メインフォーム : Form
     {
-        public int メジャーバージョン番号 => Assembly.GetExecutingAssembly().GetName().Version.Major;
+        public Config Config { get; set; }
 
-        public int マイナーバージョン番号 => Assembly.GetExecutingAssembly().GetName().Version.Minor;
+        public 譜面 譜面 { get; set; }
 
-        public int リビジョン番号 => Assembly.GetExecutingAssembly().GetName().Version.Revision;
+        public 選択モード 選択モード { get; set; }
 
-        public int ビルド番号 => Assembly.GetExecutingAssembly().GetName().Version.Build;
+        public 編集モード 編集モード { get; set; }
+
+        public クリップボード クリップボード { get; set; }
+
+        public UndoRedo.UndoRedo管理 UndoRedo管理 { get; set; }
+
+
+        public readonly int メジャーバージョン番号 = Assembly.GetExecutingAssembly().GetName().Version.Major;
+
+        public readonly int マイナーバージョン番号 = Assembly.GetExecutingAssembly().GetName().Version.Minor;
+
+        public readonly int リビジョン番号 = Assembly.GetExecutingAssembly().GetName().Version.Revision;
+
+        public readonly int ビルド番号 = Assembly.GetExecutingAssembly().GetName().Version.Build;
 
         public const int 最大音量 = 8;
 
         public const int 最小音量 = 1;
+
+
+        /// <summary>
+        ///		１小節あたりのグリッド数。
+        ///		小節長倍率が 1.0 でない場合は、これを乗じることでグリッド数が変化する。
+        /// </summary>
+        public readonly int GRID_PER_PART = int.Parse( Properties.Resources.GRID_PER_PART );
+
+        /// <summary>
+        ///		１ピクセルあたりのグリッド数。
+        ///		現在の譜面拡大率によって変化する。
+        /// </summary>
+        public int GRID_PER_PIXEL => (int)( int.Parse( Properties.Resources.GRID_PER_PIXEL ) / ( 1 + 0.25 * this.toolStripComboBox譜面拡大率.SelectedIndex ) );
+
+
+        public bool 選択モードである => ( CheckState.Checked == this.toolStripButton選択モード.CheckState );
+
+        public bool 編集モードである => ( CheckState.Checked == this.toolStripButton編集モード.CheckState );
+
 
         public bool 未保存である
         {
@@ -56,39 +88,9 @@ namespace SSTFEditor
             }
         }
 
-        public bool 選択モードである => ( CheckState.Checked == this.toolStripButton選択モード.CheckState );
+        public bool 初期化完了 { get; set; } = false;
 
-        public bool 編集モードである => ( CheckState.Checked == this.toolStripButton編集モード.CheckState );
-
-        /// <summary>
-        ///		１小節あたりのグリッド数。
-        ///		小節長倍率が 1.0 でない場合は、これを乗じることでグリッド数が変化する。
-        /// </summary>
-        public int GRID_PER_PART => int.Parse( Properties.Resources.GRID_PER_PART );
-
-        /// <summary>
-        ///		１ピクセルあたりのグリッド数。
-        ///		現在の譜面拡大率によって変化する。
-        /// </summary>
-        public int GRID_PER_PIXEL => (int) ( int.Parse( Properties.Resources.GRID_PER_PIXEL ) / ( 1 + 0.25 * this.toolStripComboBox譜面拡大率.SelectedIndex ) );
-
-        public Config Config { get; set; }
-
-        public 選択モード 選択モード { get; set; }
-
-        public 編集モード 編集モード { get; set; }
-
-        public 譜面 譜面 { get; set; }
-
-        public UndoRedo.UndoRedo管理 UndoRedo管理 { get; set; }
-
-        public クリップボード クリップボード { get; set; }
-
-        public Size 譜面パネルサイズ => this.pictureBox譜面パネル.ClientSize;
-
-        public Rectangle 譜面パネル領域 => this.pictureBox譜面パネル.ClientRectangle;
-
-        public チップ種別 現在のチップ種別
+        public SSTF.チップ種別 現在のチップ種別
         {
             get
                 => this._現在のチップ種別;
@@ -102,7 +104,9 @@ namespace SSTFEditor
 
         public int 現在のチップ音量 { get; set; } = メインフォーム.最大音量;
 
-        public bool 初期化完了 { get; set; } = false;
+        public Size 譜面パネルサイズ => this.pictureBox譜面パネル.ClientSize;
+
+        public Rectangle 譜面パネル領域 => this.pictureBox譜面パネル.ClientRectangle;
 
 
         public メインフォーム()
@@ -201,43 +205,43 @@ namespace SSTFEditor
 
         private bool _未保存である = false;
 
-        private readonly Dictionary<チップ種別, string> _チップto名前 = new Dictionary<チップ種別, string>() {
+        private Font _メモ用フォント = new Font( FontFamily.GenericSansSerif, 9.0f );
+
+        private readonly Dictionary<SSTF.チップ種別, string> _チップto名前 = new Dictionary<SSTF.チップ種別, string>() {
             #region " *** "
              //-----------------
-            { チップ種別.Bass,               "BassDrum" },
-            { チップ種別.BPM,                "BPM" },
-            { チップ種別.China,              "China" },
-            { チップ種別.HiHat_Close,        "HiHat(Close)" },
-            { チップ種別.HiHat_Foot,         "FootPedal" },
-            { チップ種別.HiHat_HalfOpen,     "HiHat(HalfOpen)" },
-            { チップ種別.HiHat_Open,         "HiHat(Open)" },
-            { チップ種別.LeftCrash,          "Crash" },
-            { チップ種別.Ride,               "Ride" },
-            { チップ種別.Ride_Cup,           "Ride(Cup)" },
-            { チップ種別.RightCrash,         "Crash" },
-            { チップ種別.Snare,              "Snare" },
-            { チップ種別.Snare_ClosedRim,    "Snare(CloseRimShot)" },
-            { チップ種別.Snare_Ghost,        "Snare(Ghost)" },
-            { チップ種別.Snare_OpenRim,      "Snare(OpenRimShot)" },
-            { チップ種別.Splash,             "Splash" },
-            { チップ種別.Tom1,               "HighTom" },
-            { チップ種別.Tom1_Rim,           "HighTom(RimShot)" },
-            { チップ種別.Tom2,               "LowTom" },
-            { チップ種別.Tom2_Rim,           "LowTom(RimShot)" },
-            { チップ種別.Tom3,               "FloorTom" },
-            { チップ種別.Tom3_Rim,           "FloorTom(RimShot)" },
-            { チップ種別.LeftCymbal_Mute,    "Mute" },
-            { チップ種別.RightCymbal_Mute,   "Mute" },
-            { チップ種別.背景動画,           "" },
-            { チップ種別.BGM,                "" },
-            { チップ種別.Unknown,            "" },
-            { チップ種別.小節線,             "" },
-            { チップ種別.拍線,               "" },
+            { SSTF.チップ種別.Bass,               "BassDrum" },
+            { SSTF.チップ種別.BPM,                "BPM" },
+            { SSTF.チップ種別.China,              "China" },
+            { SSTF.チップ種別.HiHat_Close,        "HiHat(Close)" },
+            { SSTF.チップ種別.HiHat_Foot,         "FootPedal" },
+            { SSTF.チップ種別.HiHat_HalfOpen,     "HiHat(HalfOpen)" },
+            { SSTF.チップ種別.HiHat_Open,         "HiHat(Open)" },
+            { SSTF.チップ種別.LeftCrash,          "Crash" },
+            { SSTF.チップ種別.Ride,               "Ride" },
+            { SSTF.チップ種別.Ride_Cup,           "Ride(Cup)" },
+            { SSTF.チップ種別.RightCrash,         "Crash" },
+            { SSTF.チップ種別.Snare,              "Snare" },
+            { SSTF.チップ種別.Snare_ClosedRim,    "Snare(CloseRimShot)" },
+            { SSTF.チップ種別.Snare_Ghost,        "Snare(Ghost)" },
+            { SSTF.チップ種別.Snare_OpenRim,      "Snare(OpenRimShot)" },
+            { SSTF.チップ種別.Splash,             "Splash" },
+            { SSTF.チップ種別.Tom1,               "HighTom" },
+            { SSTF.チップ種別.Tom1_Rim,           "HighTom(RimShot)" },
+            { SSTF.チップ種別.Tom2,               "LowTom" },
+            { SSTF.チップ種別.Tom2_Rim,           "LowTom(RimShot)" },
+            { SSTF.チップ種別.Tom3,               "FloorTom" },
+            { SSTF.チップ種別.Tom3_Rim,           "FloorTom(RimShot)" },
+            { SSTF.チップ種別.LeftCymbal_Mute,    "Mute" },
+            { SSTF.チップ種別.RightCymbal_Mute,   "Mute" },
+            { SSTF.チップ種別.背景動画,           "" },
+            { SSTF.チップ種別.BGM,                "" },
+            { SSTF.チップ種別.Unknown,            "" },
+            { SSTF.チップ種別.小節線,             "" },
+            { SSTF.チップ種別.拍線,               "" },
             //-----------------
             #endregion
         };
-
-        private Font _メモ用フォント = new Font( FontFamily.GenericSansSerif, 9.0f );
 
         private readonly Dictionary<int, string> _音量toラベル = new Dictionary<int, string>() {
             #region " *** "
@@ -258,11 +262,11 @@ namespace SSTFEditor
         {
             get
             {
-                if( ( null != this.譜面.SSTFormatScore ) &&
-                    ( null != this.譜面.SSTFormatScore.チップリスト ) &&
-                    ( 0 < this.譜面.SSTFormatScore.チップリスト.Count ) )
+                if( ( null != this.譜面.スコア ) &&
+                    ( null != this.譜面.スコア.チップリスト ) &&
+                    ( 0 < this.譜面.スコア.チップリスト.Count ) )
                 {
-                    foreach( 描画用チップ chip in this.譜面.SSTFormatScore.チップリスト )
+                    foreach( 描画用チップ chip in this.譜面.スコア.チップリスト )
                     {
                         if( chip.選択が確定している )
                             return true;
@@ -279,7 +283,7 @@ namespace SSTFEditor
 
         private Point _選択モードでコンテクストメニューを開いたときのマウスの位置;
 
-        private チップ種別 _現在のチップ種別 = チップ種別.Unknown;
+        private SSTF.チップ種別 _現在のチップ種別 = SSTF.チップ種別.Unknown;
 
         #region " フォルダ、ファイルパス "
         //----------------
@@ -639,9 +643,9 @@ namespace SSTFEditor
 
                 #region " 譜面が持つすべてのチップについて、選択されているチップがあれば削除する。"
                 //----------------
-                for( int i = this.譜面.SSTFormatScore.チップリスト.Count - 1; 0 <= i; i-- )
+                for( int i = this.譜面.スコア.チップリスト.Count - 1; 0 <= i; i-- )
                 {
-                    var chip = (描画用チップ) this.譜面.SSTFormatScore.チップリスト[ i ];
+                    var chip = (描画用チップ) this.譜面.スコア.チップリスト[ i ];
 
                     if( chip.選択が確定していない )
                         continue;
@@ -652,11 +656,11 @@ namespace SSTFEditor
                         所有者ID: null,
                         Undoアクション: ( 変更対象, 変更前, 変更後, 任意1, 任意2 ) => {
                             変更対象.CopyFrom( 変更前 );
-                            this.譜面.SSTFormatScore.チップリスト.Add( 変更対象 );
-                            this.譜面.SSTFormatScore.チップリスト.Sort();
+                            this.譜面.スコア.チップリスト.Add( 変更対象 );
+                            this.譜面.スコア.チップリスト.Sort();
                         },
                         Redoアクション: ( 変更対象, 変更前, 変更後, 任意1, 任意2 ) => {
-                            this.譜面.SSTFormatScore.チップリスト.Remove( 変更対象 );
+                            this.譜面.スコア.チップリスト.Remove( 変更対象 );
                             this.未保存である = true;
                         },
                         変更対象: chip,
@@ -1000,6 +1004,12 @@ namespace SSTFEditor
             dialog.numericUpDown最近使用したファイルの最大表示個数.Value = this.Config.MaxOfUsedRecentFiles;
             dialog.textBoxViewerPath.Text = this.Config.ViewerPath;
             dialog.checkBoxSSTF変換通知ダイアログ.CheckState = ( this.Config.DisplaysConfirmOfSSTFConversion ) ? CheckState.Checked : CheckState.Unchecked;
+            dialog.radioButtonRideLeft.Checked = this.Config.RideLeft;
+            dialog.radioButtonRideRight.Checked = !this.Config.RideLeft;
+            dialog.radioButtonChinaLeft.Checked = this.Config.ChinaLeft;
+            dialog.radioButtonChinaRight.Checked = !this.Config.ChinaLeft;
+            dialog.radioButtonSplashLeft.Checked = this.Config.SplashLeft;
+            dialog.radioButtonSplashRight.Checked = !this.Config.SplashLeft;
 
             if( DialogResult.OK == dialog.ShowDialog( this ) )
             {
@@ -1009,11 +1019,18 @@ namespace SSTFEditor
                 this.Config.MaxOfUsedRecentFiles = (int) dialog.numericUpDown最近使用したファイルの最大表示個数.Value;
                 this.Config.ViewerPath = dialog.textBoxViewerPath.Text;
                 this.Config.DisplaysConfirmOfSSTFConversion = dialog.checkBoxSSTF変換通知ダイアログ.Checked;
+                this.Config.RideLeft = dialog.radioButtonRideLeft.Checked;
+                this.Config.ChinaLeft = dialog.radioButtonChinaLeft.Checked;
+                this.Config.SplashLeft = dialog.radioButtonSplashLeft.Checked;
 
                 this._Viewer再生関連GUIのEnabledを設定する();
 
                 // [ファイル] メニューを修正。
                 this._ConfigのRecentUsedFilesをファイルメニューへ追加する();
+
+                // 譜面と編集モードに反映。
+                this.譜面.コンフィグを譜面に反映する( this.Config );
+                this.編集モード.レーン別チップ種別対応表を初期化する();
 
                 // Config.xml を保存する。
                 this.Config.保存する( Path.Combine( this._ユーザフォルダパス, Properties.Resources.CONFIG_FILE_NAME ) );
@@ -1037,7 +1054,7 @@ namespace SSTFEditor
 
             #region " 変更後の小節長倍率をユーザに入力させる。"
             //-----------------
-            double 現在の小節長倍率 = this.譜面.SSTFormatScore.小節長倍率を取得する( 小節番号 );
+            double 現在の小節長倍率 = this.譜面.スコア.小節長倍率を取得する( 小節番号 );
 
             using( var dialog = new 小節長倍率入力ダイアログ( 小節番号 ) )
             {
@@ -1048,7 +1065,7 @@ namespace SSTFEditor
                     return;
 
                 変更後倍率 = (double) dialog.倍率;
-                変更終了小節番号 = ( dialog.後続も全部変更する ) ? this.譜面.SSTFormatScore.最大小節番号を返す() : 小節番号;
+                変更終了小節番号 = ( dialog.後続も全部変更する ) ? this.譜面.スコア.最大小節番号を返す() : 小節番号;
             }
             //-----------------
             #endregion
@@ -1059,18 +1076,18 @@ namespace SSTFEditor
 
                 for( int i = 変更開始小節番号; i <= 変更終了小節番号; i++ )
                 {
-                    var 変更前倍率 = this.譜面.SSTFormatScore.小節長倍率を取得する( i );
+                    var 変更前倍率 = this.譜面.スコア.小節長倍率を取得する( i );
 
                     #region " 新しい小節長倍率を設定する。"
                     //-----------------
                     var cell = new UndoRedo.セル<double>(
                         所有者ID: null,
                         Undoアクション: ( 変更対象, 変更前, 変更後, 対象小節番号, 任意2 ) => {
-                            this.譜面.SSTFormatScore.小節長倍率を設定する( (int) 対象小節番号, 変更前 );
+                            this.譜面.スコア.小節長倍率を設定する( (int) 対象小節番号, 変更前 );
                             this.未保存である = true;
                         },
                         Redoアクション: ( 変更対象, 変更前, 変更後, 対象小節番号, 任意2 ) => {
-                            this.譜面.SSTFormatScore.小節長倍率を設定する( (int) 対象小節番号, 変更後 );
+                            this.譜面.スコア.小節長倍率を設定する( (int) 対象小節番号, 変更後 );
                             this.未保存である = true;
                         },
                         変更対象: 0.0,
@@ -1088,9 +1105,9 @@ namespace SSTFEditor
                     //-----------------
                     int 変化量grid = (int) ( ( 変更後倍率 - 変更前倍率 ) * this.GRID_PER_PART );
 
-                    for( int j = this.譜面.SSTFormatScore.チップリスト.Count - 1; j >= 0; j-- )    // 削除する場合があるので後ろからカウントする。
+                    for( int j = this.譜面.スコア.チップリスト.Count - 1; j >= 0; j-- )    // 削除する場合があるので後ろからカウントする。
                     {
-                        var chip = (描画用チップ) this.譜面.SSTFormatScore.チップリスト[ j ];
+                        var chip = (描画用チップ) this.譜面.スコア.チップリスト[ j ];
 
                         // (A) 変更対象の小節内のチップ　→　移動なし。カウント変更あり。小節はみ出しチェックあり。
 
@@ -1108,12 +1125,12 @@ namespace SSTFEditor
                                     所有者ID: null,
                                     Undoアクション: ( 変更対象, 変更前, 変更後, 任意1, 任意2 ) => {
                                         変更対象.CopyFrom( 変更前 );
-                                        this.譜面.SSTFormatScore.チップリスト.Add( 変更対象 );
-                                        this.譜面.SSTFormatScore.チップリスト.Sort();
+                                        this.譜面.スコア.チップリスト.Add( 変更対象 );
+                                        this.譜面.スコア.チップリスト.Sort();
                                         this.未保存である = true;
                                     },
                                     Redoアクション: ( 変更対象, 変更前, 変更後, 任意1, 任意2 ) => {
-                                        this.譜面.SSTFormatScore.チップリスト.Remove( 変更対象 );
+                                        this.譜面.スコア.チップリスト.Remove( 変更対象 );
                                         this.未保存である = true;
                                     },
                                     変更対象: chip,
@@ -1203,7 +1220,7 @@ namespace SSTFEditor
         private void _小節を挿入する( int 挿入前小節番号 )
         {
             // 挿入する新しい小節の小節長は、直前の（挿入前小節番号-1 の小節）と同じサイズとする。
-            double 小節長倍率 = ( 0 < 挿入前小節番号 ) ? this.譜面.SSTFormatScore.小節長倍率を取得する( 挿入前小節番号 - 1 ) : 1.0;
+            double 小節長倍率 = ( 0 < 挿入前小節番号 ) ? this.譜面.スコア.小節長倍率を取得する( 挿入前小節番号 - 1 ) : 1.0;
 
             try
             {
@@ -1213,7 +1230,7 @@ namespace SSTFEditor
                 //-----------------
                 int 挿入に伴う増加量grid = (int) ( this.GRID_PER_PART * 小節長倍率 );
 
-                foreach( 描画用チップ chip in this.譜面.SSTFormatScore.チップリスト )
+                foreach( 描画用チップ chip in this.譜面.スコア.チップリスト )
                 {
                     if( 挿入前小節番号 <= chip.小節番号 )
                     {
@@ -1245,11 +1262,11 @@ namespace SSTFEditor
                 var cc = new UndoRedo.セル<double>(
                     所有者ID: null,
                     Undoアクション: ( 変更対象, 変更前, 変更後, _挿入前小節番号, 任意2 ) => {
-                        this.譜面.SSTFormatScore.小節長倍率リスト.RemoveAt( (int) _挿入前小節番号 );
+                        this.譜面.スコア.小節長倍率リスト.RemoveAt( (int) _挿入前小節番号 );
                         this.未保存である = true;
                     },
                     Redoアクション: ( 変更対象, 変更前, 変更後, _挿入前小節番号, 任意2 ) => {
-                        this.譜面.SSTFormatScore.小節長倍率リスト.Insert( (int) _挿入前小節番号, 小節長倍率 );
+                        this.譜面.スコア.小節長倍率リスト.Insert( (int) _挿入前小節番号, 小節長倍率 );
                         this.未保存である = true;
                     },
                     変更対象: 0.0,
@@ -1276,7 +1293,7 @@ namespace SSTFEditor
         }
         private void _小節を削除する( int 削除する小節番号 )
         {
-            double 削除する小節の小節長倍率 = this.譜面.SSTFormatScore.小節長倍率を取得する( 削除する小節番号 );
+            double 削除する小節の小節長倍率 = this.譜面.スコア.小節長倍率を取得する( 削除する小節番号 );
 
             // 削除する。
             try
@@ -1285,9 +1302,9 @@ namespace SSTFEditor
 
                 #region " 削除する小節内のチップをすべて削除する。"
                 //-----------------
-                for( int i = this.譜面.SSTFormatScore.チップリスト.Count - 1; i >= 0; i-- )
+                for( int i = this.譜面.スコア.チップリスト.Count - 1; i >= 0; i-- )
                 {
-                    var chip = (描画用チップ) this.譜面.SSTFormatScore.チップリスト[ i ];
+                    var chip = (描画用チップ) this.譜面.スコア.チップリスト[ i ];
 
                     if( 削除する小節番号 == chip.小節番号 )
                     {
@@ -1297,11 +1314,11 @@ namespace SSTFEditor
                             所有者ID: null,
                             Undoアクション: ( 変更対象, 変更前, 変更後, 任意1, 任意2 ) => {
                                 変更対象.CopyFrom( 変更前 );
-                                this.譜面.SSTFormatScore.チップリスト.Add( 変更対象 );
-                                this.譜面.SSTFormatScore.チップリスト.Sort();
+                                this.譜面.スコア.チップリスト.Add( 変更対象 );
+                                this.譜面.スコア.チップリスト.Sort();
                             },
                             Redoアクション: ( 変更対象, 変更前, 変更後, 任意1, 任意2 ) => {
-                                this.譜面.SSTFormatScore.チップリスト.Remove( 変更対象 );
+                                this.譜面.スコア.チップリスト.Remove( 変更対象 );
                                 this.未保存である = true;
                             },
                             変更対象: chip,
@@ -1321,7 +1338,7 @@ namespace SSTFEditor
                 //-----------------
                 int 削除に伴う減少量grid = (int) ( this.GRID_PER_PART * 削除する小節の小節長倍率 );
 
-                foreach( 描画用チップ chip in this.譜面.SSTFormatScore.チップリスト )
+                foreach( 描画用チップ chip in this.譜面.スコア.チップリスト )
                 {
                     if( 削除する小節番号 < chip.小節番号 )
                     {
@@ -1353,11 +1370,11 @@ namespace SSTFEditor
                 var cc = new UndoRedo.セル<double>(
                     所有者ID: null,
                     Undoアクション: ( 変更対象, 変更前, 変更後, _削除する小節番号, 任意2 ) => {
-                        this.譜面.SSTFormatScore.小節長倍率リスト.Insert( (int) _削除する小節番号, 変更前 );
+                        this.譜面.スコア.小節長倍率リスト.Insert( (int) _削除する小節番号, 変更前 );
                         this.未保存である = true;
                     },
                     Redoアクション: ( 変更対象, 変更前, 変更後, _削除する小節番号, 任意2 ) => {
-                        this.譜面.SSTFormatScore.小節長倍率リスト.RemoveAt( (int) _削除する小節番号 );
+                        this.譜面.スコア.小節長倍率リスト.RemoveAt( (int) _削除する小節番号 );
                         this.未保存である = true;
                     },
                     変更対象: 0.0,
@@ -1386,7 +1403,7 @@ namespace SSTFEditor
         private void _小節の先頭へ移動する( int 小節番号 )
         {
             // 小節番号をクリッピングする。
-            小節番号 = Math.Clamp( 小節番号, min: 0, max: this.譜面.SSTFormatScore.最大小節番号を返す() );
+            小節番号 = Math.Clamp( 小節番号, min: 0, max: this.譜面.スコア.最大小節番号を返す() );
 
             // 垂直スクロールバーを移動させると、画面も自動的に移動する。
             var bar = this.vScrollBar譜面用垂直スクロールバー;
@@ -1405,6 +1422,7 @@ namespace SSTFEditor
             //-----------------
             this.譜面?.Dispose();
             this.譜面 = new 譜面( this );  // 譜面は、選択・編集モードよりも先に生成すること。
+            this.譜面.コンフィグを譜面に反映する( this.Config );
 
             this.UndoRedo管理 = new UndoRedo.UndoRedo管理();
             this.選択モード = new 選択モード( this );
@@ -1537,7 +1555,7 @@ namespace SSTFEditor
 
         private void _ファイルを読み込む( string ファイル名 )
         {
-            bool SSTFoverDTXである = スコア.SSTFoverDTX.ファイルがSSTFoverDTXである( ファイル名 );
+            bool SSTFoverDTXである = SSTF.スコア.SSTFoverDTX.ファイルがSSTFoverDTXである( ファイル名 );
 
             #region " .sstf 以外のファイルの場合（SSTFoverDTXを除く）、SSTF形式でインポートする旨を表示する。"
             //----------------
@@ -1582,7 +1600,7 @@ namespace SSTFEditor
                 this.譜面.曲データファイルを読み込む( ファイル名 );
 
                 // 最低でも 10 小節は存在させる。
-                int 最大小節番号 = this.譜面.SSTFormatScore.最大小節番号を返す();
+                int 最大小節番号 = this.譜面.スコア.最大小節番号を返す();
                 for( int n = 最大小節番号 + 1; n < 9; n++ )
                     ;
 
@@ -1603,34 +1621,34 @@ namespace SSTFEditor
                 // 基本情報タブを設定する。
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.textBox曲名.Text = 譜面.SSTFormatScore.曲名;
+                this.textBox曲名.Text = 譜面.スコア.曲名;
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.textBoxアーティスト名.Text = 譜面.SSTFormatScore.アーティスト名;
+                this.textBoxアーティスト名.Text = 譜面.スコア.アーティスト名;
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.textBoxLevel.Text = 譜面.SSTFormatScore.難易度.ToString( "0.00" );
+                this.textBoxLevel.Text = 譜面.スコア.難易度.ToString( "0.00" );
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.trackBarLevel.Value = Math.Clamp( (int) ( 譜面.SSTFormatScore.難易度 * 100 ), min: 0, max: 999 );
+                this.trackBarLevel.Value = Math.Clamp( (int) ( 譜面.スコア.難易度 * 100 ), min: 0, max: 999 );
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.textBox説明.Text = 譜面.SSTFormatScore.説明文;
+                this.textBox説明.Text = 譜面.スコア.説明文;
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.textBoxBGV.Text = 譜面.SSTFormatScore.BGVファイル名;
+                this.textBoxBGV.Text = 譜面.スコア.BGVファイル名;
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.textBoxBGM.Text = 譜面.SSTFormatScore.BGMファイル名;
+                this.textBoxBGM.Text = 譜面.スコア.BGMファイル名;
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.textBoxメモ.Text = ( this.譜面.SSTFormatScore.小節メモリスト.ContainsKey( 0 ) ) ? this.譜面.SSTFormatScore.AVIリスト[ 0 ] : "";
+                this.textBoxメモ.Text = ( this.譜面.スコア.小節メモリスト.ContainsKey( 0 ) ) ? this.譜面.スコア.AVIリスト[ 0 ] : "";
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.textBoxプレビュー音声.Text = 譜面.SSTFormatScore.プレビュー音声ファイル名;
+                this.textBoxプレビュー音声.Text = 譜面.スコア.プレビュー音声ファイル名;
 
                 this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-                this.textBoxプレビュー画像.Text = 譜面.SSTFormatScore.プレビュー画像ファイル名;
+                this.textBoxプレビュー画像.Text = 譜面.スコア.プレビュー画像ファイル名;
 
                 this._プレビュー画像を更新する();
 
@@ -1854,7 +1872,10 @@ namespace SSTFEditor
             string[] data = (string[]) e.Data.GetData( DataFormats.FileDrop );
 
             if( 1 <= data.Length )
-                this._指定されたファイルを開く( data[ 0 ] );            // Dropされたファイルが複数個あっても、先頭のファイルだけを有効とする。
+            {
+                // Dropされたファイルが複数あっても、先頭のファイルだけを有効とする。
+                this._指定されたファイルを開く( data[ 0 ] );
+            }
         }
 
         protected void メインフォーム_FormClosing( object sender, FormClosingEventArgs e )
@@ -1871,6 +1892,7 @@ namespace SSTFEditor
 
         protected void メインフォーム_ResizeEnd( object sender, EventArgs e )
         {
+            // 新しい位置とサイズをコンフィグに記憶しておく。
             this.Config.WindowLocation = this.Location;
             this.Config.ClientSize = this.ClientSize;
         }
@@ -2282,7 +2304,7 @@ namespace SSTFEditor
             // フォーカスを得る。
             this.pictureBox譜面パネル.Focus();
 
-            // 選択・編集モードオブジェクトのいずれかへ処理を引き継ぐ。
+            // 各モードに処理を引き継ぐ。
             if( this.選択モードである )
             {
                 this.選択モード.MouseClick( e );
@@ -2295,28 +2317,28 @@ namespace SSTFEditor
 
         protected void pictureBox譜面パネル_MouseDown( object sender, MouseEventArgs e )
         {
-            // 選択モードオブジェクトへ処理を引き継ぐ。
+            // 各モードに処理を引き継ぐ。
             if( this.選択モードである )
                 this.選択モード.MouseDown( e );
         }
 
         protected void pictureBox譜面パネル_MouseEnter( object sender, EventArgs e )
         {
-            // オートフォーカスが有効の場合、譜面にマウスが入ったら譜面がフォーカスを得る。"
+            // オートフォーカスが有効の場合、譜面にマウスが入ったら譜面がフォーカスを得る。
             if( this.Config.AutoFocus )
                 this.pictureBox譜面パネル.Focus();
         }
 
         protected void pictureBox譜面パネル_MouseLeave( object sender, EventArgs e )
         {
-            // 編集モードオブジェクトへ処理を引き継ぐ。
+            // 各モードに処理を引き継ぐ。
             if( this.編集モードである )
                 this.編集モード.MouseLeave( e );
         }
 
         protected void pictureBox譜面パネル_MouseMove( object sender, MouseEventArgs e )
         {
-            // 選択・編集モードオブジェクトのいずれかへ処理を引き継ぐ。
+            // 各モードに処理を引き継ぐ。
             if( this.選択モードである )
             {
                 this.選択モード.MouseMove( e );
@@ -2383,7 +2405,7 @@ namespace SSTFEditor
             //-----------------
             #endregion
 
-            // 選択・編集モードオブジェクトのいずれかへ処理を引き継ぐ。
+            // 各モードに処理を引き継ぐ。
             if( this.選択モードである )
             {
                 this.選択モード.Paint( e );
@@ -2440,7 +2462,7 @@ namespace SSTFEditor
             }
             else
             {
-                // 編集モードオブジェクトへ処理を引き継ぐ。
+                // 各モードに処理を引き継ぐ。
                 if( this.編集モードである )
                     this.編集モード.PreviewKeyDown( e );
             }
@@ -2513,7 +2535,7 @@ namespace SSTFEditor
             int パネル上辺grid = パネル下辺grid + ( this.pictureBox譜面パネル.ClientSize.Height * this.GRID_PER_PIXEL );
             int 開始小節番号 = this.譜面.譜面表示下辺に位置する小節番号;
 
-            int 最大小節番号 = this.譜面.SSTFormatScore.最大小節番号を返す();
+            int 最大小節番号 = this.譜面.スコア.最大小節番号を返す();
             for( int 小節番号 = 開始小節番号; 小節番号 <= 最大小節番号; 小節番号++ )
             {
                 int 小節の下辺grid = this.譜面.小節先頭の譜面内絶対位置gridを返す( 小節番号 );
@@ -2522,9 +2544,9 @@ namespace SSTFEditor
                 if( 小節の下辺grid > パネル上辺grid )
                     break;  // 小節が画面上方にはみ出し切ってしまったらそこで終了。
 
-                if( this.譜面.SSTFormatScore.小節メモリスト.ContainsKey( 小節番号 ) )
+                if( this.譜面.スコア.小節メモリスト.ContainsKey( 小節番号 ) )
                 {
-                    string メモ = this.譜面.SSTFormatScore.小節メモリスト[ 小節番号 ];
+                    string メモ = this.譜面.スコア.小節メモリスト[ 小節番号 ];
 
                     string[] lines = メモ.Split( new string[] { Environment.NewLine }, StringSplitOptions.None );
                     int 行数 = lines.Length;
@@ -2708,7 +2730,7 @@ namespace SSTFEditor
             this.未保存である = true;
 
             // スコアには随時保存する。
-            譜面.SSTFormatScore.曲名 = this.textBox曲名.Text;
+            譜面.スコア.曲名 = this.textBox曲名.Text;
         }
         protected void textBox曲名_Validated( object sender, EventArgs e )
         {
@@ -2771,7 +2793,7 @@ namespace SSTFEditor
             this.未保存である = true;
 
             // スコアには随時保存する。
-            譜面.SSTFormatScore.アーティスト名 = this.textBoxアーティスト名.Text;
+            譜面.スコア.アーティスト名 = this.textBoxアーティスト名.Text;
         }
         protected void textBoxアーティスト名_Validated( object sender, EventArgs e )
         {
@@ -2834,7 +2856,7 @@ namespace SSTFEditor
             this.未保存である = true;
 
             // スコアには随時保存する。
-            譜面.SSTFormatScore.説明文 = this.textBox説明.Text;
+            譜面.スコア.説明文 = this.textBox説明.Text;
         }
         protected void textBox説明_Validated( object sender, EventArgs e )
         {
@@ -2879,17 +2901,17 @@ namespace SSTFEditor
 
                             #region " dicメモ の更新 "
                             //-----------------
-                            if( this.譜面.SSTFormatScore.小節メモリスト.ContainsKey( 小節番号 ) )
+                            if( this.譜面.スコア.小節メモリスト.ContainsKey( 小節番号 ) )
                             {
                                 if( string.IsNullOrEmpty( 変更前 ) )
-                                    this.譜面.SSTFormatScore.小節メモリスト.Remove( 小節番号 );
+                                    this.譜面.スコア.小節メモリスト.Remove( 小節番号 );
                                 else
-                                    this.譜面.SSTFormatScore.小節メモリスト[ 小節番号 ] = 変更前;
+                                    this.譜面.スコア.小節メモリスト[ 小節番号 ] = 変更前;
                             }
                             else
                             {
                                 if( !string.IsNullOrEmpty( 変更前 ) )
-                                    this.譜面.SSTFormatScore.小節メモリスト.Add( 小節番号, 変更前 );
+                                    this.譜面.スコア.小節メモリスト.Add( 小節番号, 変更前 );
                             }
                             //-----------------
                             #endregion
@@ -2908,17 +2930,17 @@ namespace SSTFEditor
 
                             #region " dicメモの更新 "
                             //-----------------
-                            if( this.譜面.SSTFormatScore.小節メモリスト.ContainsKey( 小節番号 ) )
+                            if( this.譜面.スコア.小節メモリスト.ContainsKey( 小節番号 ) )
                             {
                                 if( string.IsNullOrEmpty( 変更後 ) )
-                                    this.譜面.SSTFormatScore.小節メモリスト.Remove( 小節番号 );
+                                    this.譜面.スコア.小節メモリスト.Remove( 小節番号 );
                                 else
-                                    this.譜面.SSTFormatScore.小節メモリスト[ 小節番号 ] = 変更後;
+                                    this.譜面.スコア.小節メモリスト[ 小節番号 ] = 変更後;
                             }
                             else
                             {
                                 if( !string.IsNullOrEmpty( 変更後 ) )
-                                    this.譜面.SSTFormatScore.小節メモリスト.Add( 小節番号, 変更後 );
+                                    this.譜面.スコア.小節メモリスト.Add( 小節番号, 変更後 );
                             }
                             //-----------------
                             #endregion
@@ -2956,17 +2978,17 @@ namespace SSTFEditor
                 if( string.IsNullOrEmpty( this.textBoxメモ.Text ) )
                 {
                     // (A) 空文字列の場合
-                    if( this.譜面.SSTFormatScore.小節メモリスト.ContainsKey( 小節番号 ) )
-                        this.譜面.SSTFormatScore.小節メモリスト.Remove( 小節番号 );        // 存在してたら削除。
+                    if( this.譜面.スコア.小節メモリスト.ContainsKey( 小節番号 ) )
+                        this.譜面.スコア.小節メモリスト.Remove( 小節番号 );        // 存在してたら削除。
                                                                             // 存在してなかったら何もしない。
                 }
                 else
                 {
                     // (B) その他の場合
-                    if( this.譜面.SSTFormatScore.小節メモリスト.ContainsKey( 小節番号 ) )
-                        this.譜面.SSTFormatScore.小節メモリスト[ 小節番号 ] = this.textBoxメモ.Text;     // 存在してたら更新。
+                    if( this.譜面.スコア.小節メモリスト.ContainsKey( 小節番号 ) )
+                        this.譜面.スコア.小節メモリスト[ 小節番号 ] = this.textBoxメモ.Text;     // 存在してたら更新。
                     else
-                        this.譜面.SSTFormatScore.小節メモリスト.Add( 小節番号, this.textBoxメモ.Text );      // 存在してなかったら追加。
+                        this.譜面.スコア.小節メモリスト.Add( 小節番号, this.textBoxメモ.Text );      // 存在してなかったら追加。
                 }
             }
             //-----------------
@@ -2975,7 +2997,7 @@ namespace SSTFEditor
             //-----------------
             {
                 int 小節番号 = (int) this.numericUpDownメモ用小節番号.Value;
-                if( 小節番号 == this.譜面.SSTFormatScore.最大小節番号を返す() )
+                if( 小節番号 == this.譜面.スコア.最大小節番号を返す() )
                 {
                     this.譜面.最後の小節の後ろに小節を４つ追加する();
                 }
@@ -2998,8 +3020,8 @@ namespace SSTFEditor
             // 小節番号にあわせて、textBoxメモにメモを表示する。
             int 小節番号 = (int) this.numericUpDownメモ用小節番号.Value;
             this._次のプロパティ変更がUndoRedoリストに載らないようにする();
-            if( this.譜面.SSTFormatScore.小節メモリスト.ContainsKey( 小節番号 ) )
-                this.textBoxメモ.Text = this.譜面.SSTFormatScore.小節メモリスト[ 小節番号 ];
+            if( this.譜面.スコア.小節メモリスト.ContainsKey( 小節番号 ) )
+                this.textBoxメモ.Text = this.譜面.スコア.小節メモリスト[ 小節番号 ];
             else
                 this.textBoxメモ.Text = "";
             this._次のプロパティ変更がUndoRedoリストに載るようにする();
@@ -3089,7 +3111,7 @@ namespace SSTFEditor
                 this.trackBarLevel.Value = (int) ( val * 100 );
 
                 // スコアに反映する。
-                譜面.SSTFormatScore.難易度 = val;
+                譜面.スコア.難易度 = val;
             }
             else
             {
@@ -3159,7 +3181,7 @@ namespace SSTFEditor
             this.未保存である = true;
 
             // スコアには随時保存する。
-            譜面.SSTFormatScore.BGVファイル名 = this.textBoxBGV.Text;
+            譜面.スコア.BGVファイル名 = this.textBoxBGV.Text;
         }
         protected void textBoxBGV_Validated( object sender, EventArgs e )
         {
@@ -3246,7 +3268,7 @@ namespace SSTFEditor
             this.未保存である = true;
 
             // スコアには随時保存する。
-            譜面.SSTFormatScore.BGMファイル名 = this.textBoxBGM.Text;
+            譜面.スコア.BGMファイル名 = this.textBoxBGM.Text;
         }
         private void textBoxBGM_Validated( object sender, EventArgs e )
         {
@@ -3333,7 +3355,7 @@ namespace SSTFEditor
             this.未保存である = true;
 
             // スコアには随時保存する。
-            譜面.SSTFormatScore.プレビュー音声ファイル名 = this.textBoxプレビュー音声.Text;
+            譜面.スコア.プレビュー音声ファイル名 = this.textBoxプレビュー音声.Text;
         }
         protected void textBoxプレビュー音声_Validated( object sender, EventArgs e )
         {
@@ -3420,7 +3442,7 @@ namespace SSTFEditor
             this.未保存である = true;
 
             // スコアには随時保存する。
-            譜面.SSTFormatScore.プレビュー画像ファイル名 = this.textBoxプレビュー画像.Text;
+            譜面.スコア.プレビュー画像ファイル名 = this.textBoxプレビュー画像.Text;
         }
         private void textBoxプレビュー画像_Validated( object sender, EventArgs e )
         {

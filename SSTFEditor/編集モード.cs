@@ -4,7 +4,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-using SSTFormat.v004;
+using SSTF=SSTFormat.v004;
 
 namespace SSTFEditor
 {
@@ -29,18 +29,21 @@ namespace SSTFEditor
                 this.dicレーン別チップ種別バックアップ[ editLaneType ] = 0;
             }
 
+            this.レーン別チップ種別対応表を初期化する();
+        }
 
-            // レーン別チップ種別対応表の初期化。
-            // C譜面.dicチップ編集レーン対応表 を元にするので、譜面を先に生成してから編集モードを生成すること。
+        public void レーン別チップ種別対応表を初期化する()
+        {
+            // 譜面.チップ種別to編集レーン プロパティを元にするので、譜面を先に生成してから編集モードを生成すること。
 
-            this.dicレーン別チップ種別対応表 = new Dictionary<編集レーン種別, List<チップ種別>>();
+            this.dicレーン別チップ種別対応表 = new Dictionary<編集レーン種別, List<SSTF.チップ種別>>();
 
             foreach( 編集レーン種別 editLaneType in Enum.GetValues( typeof( 編集レーン種別 ) ) )
-                this.dicレーン別チップ種別対応表[ editLaneType ] = new List<チップ種別>();
+                this.dicレーン別チップ種別対応表[ editLaneType ] = new List<SSTF.チップ種別>();
 
-            foreach( var kvp in this.Form.譜面.dicチップ編集レーン対応表 )
+            foreach( var kvp in this.Form.譜面.チップ種別to編集レーン )
             {
-                if( kvp.Key == チップ種別.LeftBass )
+                if( kvp.Key == SSTF.チップ種別.LeftBass )
                     continue;   // SSTFEditorではLeftBassを扱わない
 
                 this.dicレーン別チップ種別対応表[ kvp.Value ].Add( kvp.Key );
@@ -120,6 +123,7 @@ namespace SSTFEditor
 
                 // 画面へ反映する。
                 this.チップカーソルのあるレーンに合わせて現在のチップ種別を変更する();
+                this.Form.譜面をリフレッシュする();
 
                 this.強制種別使用中 = false;
                 //-----------------
@@ -158,6 +162,7 @@ namespace SSTFEditor
 
                     // 画面へ反映する。
                     this.チップカーソルのあるレーンに合わせて現在のチップ種別を変更する();
+                    this.Form.譜面をリフレッシュする();
                 }
                 //-----------------
                 #endregion
@@ -177,26 +182,29 @@ namespace SSTFEditor
 
         protected Dictionary<編集レーン種別, int> dicレーン別現在のチップ種別番号;
 
-        protected Dictionary<編集レーン種別, List<チップ種別>> dicレーン別チップ種別対応表;
+        protected Dictionary<編集レーン種別, List<SSTF.チップ種別>> dicレーン別チップ種別対応表;
 
 
-        protected void チップカーソルを描画する( Graphics g, チップ種別 eチップ )
+        protected void チップカーソルを描画する( Graphics g, SSTF.チップ種別 チップ種別 )
         {
             #region " 事前チェック。"
             //-----------------
             if( ( 0 >= this.現在のチップカーソル領域.Width ) ||
                 ( 0 >= this.現在のチップカーソル領域.Height ) ||
                 ( this.現在チップカーソルがある編集レーン == 編集レーン種別.Unknown ) ||
-                ( eチップ == チップ種別.Unknown ) ||
-                ( eチップ == チップ種別.小節線 ) ||
-                ( eチップ == チップ種別.拍線 ) )
+                ( チップ種別 == SSTF.チップ種別.Unknown ) ||
+                ( チップ種別 == SSTF.チップ種別.小節線 ) ||
+                ( チップ種別 == SSTF.チップ種別.拍線 ) )
             {
                 return;     // 描画しない。
             }
             //-----------------
             #endregion
 
-            this.Form.譜面.チップを指定領域へ描画する( g, eチップ, this.Form.現在のチップ音量, this.現在のチップカーソル領域, null );
+            // チップを描いて、
+            this.Form.譜面.チップを指定領域へ描画する( g, チップ種別, this.Form.現在のチップ音量, this.現在のチップカーソル領域, null );
+
+            // チップをカーソル枠で囲む。
             this.Form.譜面.チップの太枠を指定領域へ描画する( g, this.現在のチップカーソル領域 );
         }
 
@@ -224,10 +232,10 @@ namespace SSTFEditor
                     //-----------------
                     string チップ内文字列 = null;
 
-                    if( this.Form.現在のチップ種別 == チップ種別.China )
+                    if( this.Form.現在のチップ種別 == SSTF.チップ種別.China )
                         チップ内文字列 = "C N";
 
-                    if( this.Form.現在のチップ種別 == チップ種別.Splash )
+                    if( this.Form.現在のチップ種別 == SSTF.チップ種別.Splash )
                         チップ内文字列 = "S P";
 
                     this.Form.譜面.チップを配置または置換する(
@@ -258,7 +266,7 @@ namespace SSTFEditor
 
                     this.Form.譜面.チップを配置または置換する(
                         e編集レーン: 編集レーン種別.BPM,
-                        eチップ: チップ種別.BPM,
+                        eチップ: SSTF.チップ種別.BPM,
                         譜面内絶対位置grid: this.現在のチップカーソルの譜面先頭からのガイド単位の位置grid,
                         チップ文字列: bpm.ToString( "###.##" ),
                         音量: メインフォーム.最大音量,       // BPM チップは常に最大音量枠
