@@ -207,7 +207,7 @@ namespace DTXMania2.演奏
                     表示チップ種別 = 表示チップ種別.HiHat_Open,
                     ドラム入力種別 = ドラム入力種別.HiHat_Open,
                     AutoPlay種別 = AutoPlay種別.HiHat,
-                    //入力グループ種別 = ...
+                    入力グループ種別 = 入力グループ種別.HiHat,
                     発声前消音 = true,
                     消音グループ種別 = 消音グループ種別.HiHat,
                     AutoPlayON_自動ヒット_再生 = true,
@@ -233,7 +233,7 @@ namespace DTXMania2.演奏
                     表示チップ種別 = 表示チップ種別.HiHat_HalfOpen,
                     ドラム入力種別 = ドラム入力種別.HiHat_Open,
                     AutoPlay種別 = AutoPlay種別.HiHat,
-                    //入力グループ種別 = ...
+                    入力グループ種別 = 入力グループ種別.HiHat,
                     発声前消音 = true,
                     消音グループ種別 = 消音グループ種別.HiHat,
                     AutoPlayON_自動ヒット_再生 = true,
@@ -259,7 +259,7 @@ namespace DTXMania2.演奏
                     表示チップ種別 = 表示チップ種別.HiHat,
                     ドラム入力種別 = ドラム入力種別.HiHat_Close,
                     AutoPlay種別 = AutoPlay種別.HiHat,
-                    //入力グループ種別 = ...
+                    入力グループ種別 = 入力グループ種別.HiHat,
                     発声前消音 = true,
                     消音グループ種別 = 消音グループ種別.HiHat,
                     AutoPlayON_自動ヒット_再生 = true,
@@ -1830,10 +1830,11 @@ namespace DTXMania2.演奏
                             case SSTF.チップ種別.Ride_Cup:
                             case SSTF.チップ種別.China:
                             case SSTF.チップ種別.Splash:
-                            case SSTF.チップ種別.HiHat_Open:
-                            case SSTF.チップ種別.HiHat_HalfOpen:
-                            case SSTF.チップ種別.HiHat_Close:
-                            //case SSTF.チップ種別.HiHat_Foot: --> FootPedal はシンバルフリーから除外。
+                            // HiHat はシンバルフリーから除外。
+                            //case SSTF.チップ種別.HiHat_Open:
+                            //case SSTF.チップ種別.HiHat_HalfOpen:
+                            //case SSTF.チップ種別.HiHat_Close:
+                            //case SSTF.チップ種別.HiHat_Foot:
                             case SSTF.チップ種別.RightCrash:
                                 kvp.Value.入力グループ種別 = 入力グループ種別.Cymbal;
                                 break;
@@ -1867,13 +1868,6 @@ namespace DTXMania2.演奏
 
                             case SSTF.チップ種別.Splash:
                                 kvp.Value.入力グループ種別 = 入力グループ種別.Splash;
-                                break;
-
-                            case SSTF.チップ種別.HiHat_Open:
-                            case SSTF.チップ種別.HiHat_HalfOpen:
-                            case SSTF.チップ種別.HiHat_Close:
-                            case SSTF.チップ種別.HiHat_Foot:
-                                kvp.Value.入力グループ種別 = 入力グループ種別.HiHat;
                                 break;
 
                             case SSTF.チップ種別.RightCrash:

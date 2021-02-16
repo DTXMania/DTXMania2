@@ -86,7 +86,7 @@ namespace DTXMania2.オプション設定
                             where ( kvp.Key.deviceId == item.inputEvent.DeviceID ) && ( kvp.Key.key == item.inputEvent.Key )
                             select kvp.Value;
 
-                        if( 0 < drumType.Count() )
+                        if( drumType.Any() )
                             item.Text += $" （{Properties.Resources.TXT_現在の割り当て}: {drumType.ElementAt( 0 )}）";
 
                         this._一定時間が経っていれば空行を挿入する();
@@ -108,7 +108,7 @@ namespace DTXMania2.オプション設定
                 {
                     var inputEvent = Global.App.ドラム入力.MidiIns.入力イベントリスト[ i ];
 
-                    if( inputEvent.押された && ( 255 == inputEvent.Key ) && ( 4 == inputEvent.Control ) )
+                    if( inputEvent.押された && ( 255 == inputEvent.Key ) && ( MidiIns.CTL_FOOTPEDAL == inputEvent.Control ) )
                     {
                         #region " (A) フットペダルコントロールの場合　→　入力リストではなく専用のUIで表示。"
                         //----------------
@@ -142,14 +142,16 @@ namespace DTXMania2.オプション設定
                         var item = new ListViewItem入力リスト用( InputDeviceType.MidiIn, inputEvent );
 
                         // 既に割り当てられていたらそのドラム種別を表示。
-                        var drumType =
-                            from kvp in this._変更後のシステム設定.MIDItoドラム
-                            where ( kvp.Key.deviceId == item.inputEvent.DeviceID ) && ( kvp.Key.key == item.inputEvent.Key )
-                            select kvp.Value;
+                        if( 0 == item.inputEvent.Control )  // コントロールチェンジは除外。
+                        {
+                            var drumType =
+                                from kvp in this._変更後のシステム設定.MIDItoドラム
+                                where ( kvp.Key.deviceId == item.inputEvent.DeviceID ) && ( kvp.Key.key == item.inputEvent.Key )
+                                select kvp.Value;
 
-                        if( 0 < drumType.Count() )
-                            item.Text += $" （{Properties.Resources.TXT_現在の割り当て}: {drumType.ElementAt( 0 )}）";
-
+                            if( drumType.Any() )
+                                item.Text += $" （{Properties.Resources.TXT_現在の割り当て}: {drumType.ElementAt( 0 )}）";
+                        }
                         this._一定時間が経っていれば空行を挿入する();
 
                         this.listView入力リスト.Items.Add( item );
@@ -220,7 +222,7 @@ namespace DTXMania2.オプション設定
                     where ( kvp.Key.deviceId == item.inputEvent.DeviceID ) && ( kvp.Key.key == item.inputEvent.Key )
                     select kvp.Value;
 
-                if( 0 < drumType.Count() )
+                if( drumType.Any() )
                     item.Text += $" （{Properties.Resources.TXT_現在の割り当て}: {drumType.ElementAt( 0 )}）";
 
                 this._一定時間が経っていれば空行を挿入する();

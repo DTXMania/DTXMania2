@@ -11,6 +11,11 @@ namespace FDK
     public class MidiIns : IDisposable
     {
 
+        // 定数
+
+        public const int CTL_FOOTPEDAL = 4; // フットペダルのコントロールチェンジ番号
+
+
         // プロパティ
 
 
@@ -115,45 +120,6 @@ namespace FDK
             {
                 this.入力イベントリスト = this._蓄積用入力イベントリスト;
                 this._蓄積用入力イベントリスト = new List<InputEvent>();
-            }
-
-            // FootPedal同時HHのキャンセル処理。
-            if( ( 0 < this.FootPedalNotes.Count ) && ( 0 < this.HiHatNotes.Count ) )
-            {
-                #region " (1) FootPedalとほぼ同時にHiHatが鳴っていたら、そのHiHatに無効印（Key=-1）を付与する。"
-                //-----------------
-                for( int i = 0; i < this.入力イベントリスト.Count; i++ )
-                {
-                    // FP を探す。（まずHHより数は少ないだろう）
-                    int fppos = this.FootPedalNotes.FindIndex( ( note ) => ( note == this.入力イベントリスト[ i ].Key ) );
-                    if( 0 > fppos )
-                        continue;
-
-                    // FP の前後が HH 、かつ時刻がしきい値内なら、そのHHは消す。
-                    const double しきい値 = 0.006;       // 6ms
-                    int[] 前後pos = { fppos - 1, fppos + 1 };     // 最大１つまでしか消さないので、前後１つずつのチェックのみ行う。
-                    foreach( int pos in 前後pos )
-                    {
-                        if( ( 0 <= pos ) && ( this.入力イベントリスト.Count > pos ) &&
-                            ( 0 <= this.HiHatNotes.FindIndex( ( hh ) => ( hh == this.入力イベントリスト[ pos ].Key ) ) ) )
-                        {
-                            double 時刻差 = Math.Abs( this.入力イベントリスト[ fppos ].TimeStamp - this.入力イベントリスト[ pos ].TimeStamp );
-                            if( しきい値 >= 時刻差 )
-                            {
-                                this.入力イベントリスト[ pos ].Key = -1;       // 無効印
-                                break;  // 最大１つまでしか消さないので、これでチェックは終了。
-                            }
-                        }
-                    }
-                }
-                //-----------------
-                #endregion
-
-                #region " (2) 無効印のあるイベントをすべて取り除く。"
-                //-----------------
-                this.入力イベントリスト.RemoveAll( ( ev ) => ( -1 == ev.Key ) );
-                //-----------------
-                #endregion
             }
         }
 

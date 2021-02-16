@@ -561,9 +561,21 @@ namespace DTXMania2
                         }
                         case 曲読み込み.曲読み込みステージ stage:
                         {
+                            #region " キャンセル → 選曲ステージへ "
+                            //----------------
+                            if( stage.現在のフェーズ == 曲読み込み.曲読み込みステージ.フェーズ.キャンセル )
+                            {
+                                this.ステージ.Dispose();
+
+                                Log.Header( "選曲ステージ" );
+                                this.ステージ = new 選曲.選曲ステージ();
+                            }
+                            //----------------
+                            #endregion
+
                             #region " 完了 → 演奏ステージへ "
                             //----------------
-                            if( stage.現在のフェーズ == 曲読み込み.曲読み込みステージ.フェーズ.完了 )
+                            else if( stage.現在のフェーズ == 曲読み込み.曲読み込みステージ.フェーズ.完了 )
                             {
                                 this.ステージ.Dispose();
 
@@ -1020,7 +1032,7 @@ namespace DTXMania2
             {
                 // RawInputData 構造体（可変長）の実サイズを取得する。
                 int dataSize = 0;
-                if( 0 > RawInput.GetRawInputData( m.LParam, RawInput.DataType.Input, null, ref dataSize, Marshal.SizeOf<RawInput.RawInputHeader>() ) )
+                if( 0 > RawInput.GetRawInputData( m.LParam, RawInput.DataType.Input, null, ref dataSize, Marshal.SizeOf<RawInput.RawInputHeader.Native>() ) )
                 {
                     Log.ERROR( $"GetRawInputData(): error = { Marshal.GetLastWin32Error()}" );
                     return;
@@ -1028,14 +1040,14 @@ namespace DTXMania2
 
                 // RawInputData 構造体の実データを取得する。
                 var dataBytes = stackalloc byte[ dataSize ];
-                if( 0 > RawInput.GetRawInputData( m.LParam, RawInput.DataType.Input, dataBytes, &dataSize, Marshal.SizeOf<RawInput.RawInputHeader>() ) )
+                if( 0 > RawInput.GetRawInputData( m.LParam, RawInput.DataType.Input, dataBytes, &dataSize, Marshal.SizeOf<RawInput.RawInputHeader.Native>() ) )
                 {
                     Log.ERROR( $"GetRawInputData(): error = { Marshal.GetLastWin32Error()}" );
                     return;
                 }
 
                 // 取得された実データは byte[] なので、これを RawInputData 構造体に変換する。
-                rawInputData = Marshal.PtrToStructure<RawInput.RawInputData>( new IntPtr( dataBytes ) );
+                rawInputData = new RawInput.RawInputData( *( (RawInput.RawInputData.Native*)dataBytes ) );
             }
             //----------------
             #endregion

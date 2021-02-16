@@ -420,6 +420,7 @@ namespace DTXMania2.結果
                     record.Score = this._結果.Score;
                     record.Achievement = this._結果.Achievement;
                     record.CountMap = this._結果.CountMap;
+                    record.InsertTo( recorddb );    // 更新
 
                     最高成績である = true;
                     Global.App.演奏譜面.最高記録 = record;

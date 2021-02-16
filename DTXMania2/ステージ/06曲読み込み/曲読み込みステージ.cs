@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
@@ -24,6 +25,8 @@ namespace DTXMania2.曲読み込み
             フェードイン,
             表示,
             完了,
+            キャンセル時フェードアウト,
+            キャンセル,
         }
 
         public フェーズ 現在のフェーズ { get; protected set; } = フェーズ.完了;
@@ -100,7 +103,7 @@ namespace DTXMania2.曲読み込み
             {
                 case フェーズ.フェードイン:
                 {
-                    #region " フェードインが完了したら次のフェーズへ。"
+                    #region " フェードインが完了したら表示フェーズへ。"
                     //----------------
                     if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.オープン完了 )
                         this.現在のフェーズ = フェーズ.表示;
@@ -111,25 +114,45 @@ namespace DTXMania2.曲読み込み
                 }
                 case フェーズ.表示:
                 {
-                    #region " スコアを読み込んで完了フェーズへ。"
+                    #region " スコアを読み込んで次のフェーズへ。"
                     //----------------
-                    スコアを読み込む();
-                    Global.App.ドラム入力.すべての入力デバイスをポーリングする();  // 先行入力があったらここでキャンセル
+                    if( スコアを読み込む() )
+                    {
+                        // 成功
+                        this.現在のフェーズ = フェーズ.完了;
+                    }
+                    else
+                    {
+                        // 失敗またはキャンセル
+                        Log.Info( "スコアの読み込みをキャンセルしました。" );
 
-                    // 次のフェーズへ。
-                    this.現在のフェーズ = フェーズ.完了;
+                        Global.App.アイキャッチ管理.アイキャッチを選択しクローズする( nameof( 半回転黒フェード ) );
+                        this.現在のフェーズ = フェーズ.キャンセル時フェードアウト;
+                    }
                     //----------------
                     #endregion
 
                     break;
                 }
                 case フェーズ.完了:
+                case フェーズ.キャンセル:
                 {
                     #region " 遷移終了。Appによるステージ遷移待ち。"
+                //----------------
+                //----------------
+                #endregion
+
+                    break;
+                }
+                case フェーズ.キャンセル時フェードアウト:
+                {
+                    #region " フェードアウトが完了したらキャンセルフェーズへ。"
                     //----------------
+                    if( Global.App.アイキャッチ管理.現在のアイキャッチ.現在のフェーズ == アイキャッチ.フェーズ.クローズ完了 )
+                        this.現在のフェーズ = フェーズ.キャンセル;
                     //----------------
                     #endregion
-
+        
                     break;
                 }
             }
@@ -185,24 +208,57 @@ namespace DTXMania2.曲読み込み
 
                     break;
                 }
+                case フェーズ.キャンセル時フェードアウト:
+                {
+                    #region " 背景画面＆アイキャッチフェードアウトを描画する。"
+                    //----------------
+                    d2ddc.BeginDraw();
+
+                    this._背景画面を描画する( d2ddc );
+                    Global.App.アイキャッチ管理.現在のアイキャッチ.進行描画する( d2ddc );
+
+                    d2ddc.EndDraw();
+                    //----------------
+                    #endregion
+
+                    break;
+                }
             }
         }
 
 
 
-        // スコアの読み込み
-
-
-        public static void スコアを読み込む()
+        /// <summary>
+        ///     スコアを読み込む。
+        /// </summary>
+        /// <returns>読み込みに成功すれば true, 失敗またはキャンセルされれば false。</returns>
+        public static bool スコアを読み込む()
         {
             using var _ = new LogBlock( Log.現在のメソッド名 );
+
+            var keyboard = Global.App.ドラム入力.Keyboard;
+
+            #region " キャンセルチェック "
+            //----------------
+            keyboard.ポーリングする();
+            if( keyboard.キーが押された( 0, Keys.Escape ) )
+                return false;
+            //----------------
+            #endregion
 
 
             // 曲ファイルを読み込む。
 
             var 選択曲ファイルの絶対パス = Global.App.演奏譜面.譜面.ScorePath;
-
             Global.App.演奏スコア = SSTF.スコア.ファイルから生成する( 選択曲ファイルの絶対パス );
+
+            #region " キャンセルチェック "
+            //----------------
+            keyboard.ポーリングする();
+            if( keyboard.キーが押された( 0, Keys.Escape ) )
+                return false;
+            //----------------
+            #endregion
 
 
             // 全チップの発声時刻を修正する。
@@ -219,6 +275,14 @@ namespace DTXMania2.曲読み込み
 
                 chip.発声時刻sec -= Global.App.サウンドデバイス.再生遅延sec;
             }
+
+            #region " キャンセルチェック "
+            //----------------
+            keyboard.ポーリングする();
+            if( keyboard.キーが押された( 0, Keys.Escape ) )
+                return false;
+            //----------------
+            #endregion
 
 
             // WAVを生成する。
@@ -237,6 +301,14 @@ namespace DTXMania2.曲読み込み
 
             foreach( var kvp in Global.App.演奏スコア.WAVリスト )
             {
+                #region " キャンセルチェック "
+                //----------------
+                keyboard.ポーリングする();
+                if( keyboard.キーが押された( 0, Keys.Escape ) )
+                    return false;
+                //----------------
+                #endregion
+
                 var wavInfo = kvp.Value;
 
                 var path = Path.Combine( Global.App.演奏スコア.PATH_WAV, wavInfo.ファイルパス );
@@ -253,6 +325,14 @@ namespace DTXMania2.曲読み込み
             {
                 foreach( var kvp in Global.App.演奏スコア.AVIリスト )
                 {
+                    #region " キャンセルチェック "
+                    //----------------
+                    keyboard.ポーリングする();
+                    if( keyboard.キーが押された( 0, Keys.Escape ) )
+                        return false;
+                    //----------------
+                    #endregion
+
                     var path = Path.Combine( Global.App.演奏スコア.PATH_WAV, kvp.Value );
 
                     // Viewerでの再生速度は、ビュアーモード時のみ反映する。
@@ -264,10 +344,20 @@ namespace DTXMania2.曲読み込み
                 }
             }
 
+            #region " キャンセルチェック "
+            //----------------
+            keyboard.ポーリングする();
+            if( keyboard.キーが押された( 0, Keys.Escape ) )
+                return false;
+            //----------------
+            #endregion
+
 
             // 完了。
 
             Log.Info( $"曲ファイルを読み込みました。[{Folder.絶対パスをフォルダ変数付き絶対パスに変換して返す( 選択曲ファイルの絶対パス )}]" );
+
+            return true;
         }
 
 

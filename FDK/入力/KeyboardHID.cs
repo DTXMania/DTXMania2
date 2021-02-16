@@ -63,10 +63,10 @@ namespace FDK
         /// </remarks>
         public void OnInput( in RawInput.RawInputData rawInput )
         {
-            if( rawInput.Header.Type != RawInput.DeviceType.Keyboard )
+            if( rawInput.Header.Type != RawInput.DeviceType.Keyboard || rawInput.Keyboard is null )
                 return; // Keyboard 以外は無視。
 
-            var keyboard = rawInput.Data.Keyboard;
+            var keyboard = rawInput.Keyboard!;
 
             // InputEvent 作成。
             var inputEvent = new InputEvent() {

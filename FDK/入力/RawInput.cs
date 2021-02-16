@@ -356,125 +356,277 @@ namespace FDK
             public IntPtr hwndTarget;
         };
 
-        [StructLayout( LayoutKind.Sequential )]
-        public struct RawInputData
+        public unsafe class RawInputData
         {
+            [StructLayout( LayoutKind.Sequential )]
+            public struct Native
+            {
+                public RawInputHeader.Native Header;
+                public RawInputUnionData0 Data;
+
+                [StructLayout( LayoutKind.Explicit )]
+                public struct RawInputUnionData0
+                {
+                    [FieldOffset( 0 )]
+                    public RawMouse.Native Mouse;
+                    [FieldOffset( 0 )]
+                    public RawKeyboard.Native Keyboard;
+                    [FieldOffset( 0 )]
+                    public RawHid.Native Hid;
+                }
+            }
+
             /// <summary>
             ///     Raw Input ヘッダ情報。
             /// </summary>
-            public RawInputHeader Header;
-
+            public RawInputHeader Header { get; set; }
             /// <summary>
-            ///     Raw Input 生データ共同体。
+            ///     マウスの Raw Input データ。無効なら null。
             /// </summary>
-            public RawInputUnionData0 Data;
+            public RawMouse? Mouse { get; set; }
+            /// <summary>
+            ///     キーボードの Raw Input データ。無効なら null。
+            /// </summary>
+            public RawKeyboard? Keyboard { get; set; }
+            /// <summary>
+            ///     キーボードとマウス以外のデバイスの Raw Input データ。無効なら null。
+            /// </summary>
+            public RawHid? Hid { get; set; }
+
+            public RawInputData()
+            {
+                this.Header = new RawInputHeader();
+                this.Mouse = null;
+                this.Keyboard = null;
+                this.Hid = null;
+            }
+            public RawInputData( in Native native )
+                : this()
+            {
+                fixed( Native* pNative = &native )
+                    this.RestoreFrom( pNative );
+            }
+
+            public void MarshalTo( Native* pNative )
+            {
+                this.Header.MarshalTo( &pNative->Header );
+                this.Mouse?.MarshalTo( &pNative->Data.Mouse );
+                this.Keyboard?.MarshalTo( &pNative->Data.Keyboard );
+                this.Hid?.MarshalTo( &pNative->Data.Hid );
+            }
+            public void RestoreFrom( Native* pNative )
+            {
+                this.Header = new RawInputHeader( pNative->Header );
+                switch( this.Header.Type )
+                {
+                    case DeviceType.Mouse:
+                        this.Mouse = new RawMouse( pNative->Data.Mouse );
+                        break;
+
+                    case DeviceType.Keyboard:
+                        this.Keyboard = new RawKeyboard( pNative->Data.Keyboard );
+                        break;
+
+                    case DeviceType.HumanInputDevice:
+                        this.Hid = new RawHid( pNative->Data.Hid );
+                        break;
+
+                    default:
+                        throw new ArgumentException( $"未知のDeviceTypeです。[{this.Header.Type}]" );
+                }
+            }
         }
 
-        [StructLayout( LayoutKind.Sequential )]
-        public struct RawInputHeader
+        public unsafe class RawInputHeader
         {
+            [StructLayout( LayoutKind.Sequential )]
+            public struct Native
+            {
+                public DeviceType Type;
+                public int Size;
+                public IntPtr hDevice;
+                public IntPtr wParam;
+            }
+
             /// <summary>
             ///     Raw Inpu デバイスの種別。
             /// </summary>
-            public DeviceType Type;
-
+            public DeviceType Type { get; set; }
             /// <summary>
             ///     データの入力パケット全体のサイズ（バイト単位）。
             /// </summary>
             /// <remarks>
             ///     これには、<see cref="RawInputData"/> に加えて、<see cref="RawHid"/> 可変長配列の中の拡張入力レポートも（あるなら）含まれる。
             /// </remarks>
-            public int Size;
-
+            public int Size { get; set; }
             /// <summary>
             ///     Raw Input データを生成するデバイスのハンドル。
             /// </summary>
-            public IntPtr hDevice;
-
+            public IntPtr hDevice { get; set; }
             /// <summary>
             ///     WM_INPUT メッセージの <see cref="System.Windows.Forms.Message.WParam"/> で渡される値。
             /// </summary>
-            public IntPtr wParam;
+            public IntPtr wParam { get; set; }
+
+            public RawInputHeader()
+            {
+            }
+            public RawInputHeader( in Native native )
+                : this()
+            {
+                fixed( Native* pNative = &native )
+                    this.RestoreFrom( pNative );
+            }
+
+            public void MarshalTo( Native* pNative )
+            {
+                pNative->Type = this.Type;
+                pNative->Size = this.Size;
+                pNative->hDevice = this.hDevice;
+                pNative->wParam = this.wParam;
+            }
+            public void RestoreFrom( Native* pNative )
+            {
+                this.Type = pNative->Type;
+                this.Size = pNative->Size;
+                this.hDevice = pNative->hDevice;
+                this.wParam = pNative->wParam;
+            }
         }
 
-        [StructLayout( LayoutKind.Explicit )]
-        public struct RawInputUnionData0
+        public unsafe class RawMouse
         {
-            /// <summary>
-            ///     マウスの Raw Input データ。
-            /// </summary>
-            [FieldOffset( 0 )]
-            public RawMouse Mouse;
+            [StructLayout( LayoutKind.Sequential )]
+            public struct Native
+            {
+                public MouseMode Flags;
+                public RawMouseButtonsData.Native ButtonsData;
+                public int RawButtons;
+                public int LastX;
+                public int LastY;
+                public int ExtraInformation;
+            }
 
-            /// <summary>
-            ///     キーボードの Raw Input データ。
-            /// </summary>
-            [FieldOffset( 0 )]
-            public RawKeyboard Keyboard;
-
-            /// <summary>
-            ///     キーボードとマウス以外のデバイスの Raw Input データ。
-            /// </summary>
-            [FieldOffset( 0 )]
-            public RawHid Hid;
-        }
-
-        [StructLayout( LayoutKind.Sequential )]
-        public struct RawMouse
-        {
             /// <summary>
             ///     マウスの状態。
             /// </summary>
-            public MouseMode Flags;
-
-            [StructLayout( LayoutKind.Explicit )]
-            public struct RawMouseButtonsData
-            {
-                [FieldOffset( 0 )]
-                public int Buttons;
-
-                [FieldOffset( 0 )]
-                public MouseButtonFlags ButtonFlags;
-
-                /// <summary>
-                ///     マウスホイールが水平または縦に移動すれば、ここに移動差分量が格納される。
-                /// </summary>
-                [FieldOffset( 2 )]
-                public short ButtonData;
-            }
-
-            public RawMouseButtonsData ButtonsData;
-
+            public MouseMode Flags { get; set; }
+            public RawMouseButtonsData ButtonsData { get; set; }
             /// <summary>
             ///     生のボタンデータ。
             /// </summary>
-            public int RawButtons;
-
+            public int RawButtons { get; set; }
             /// <summary>
             ///     X軸方向の移動量。
             /// </summary>
             /// <remarks>
             ///     この値は、符号付き相対移動量または絶対移動量であり、それは <see cref="Flags"/> に依存する。
             /// </remarks>
-            public int LastX;
-
+            public int LastX { get; set; }
             /// <summary>
             ///     Y軸方向の移動量。
             /// </summary>
             /// <remarks>
             ///     この値は、符号付き相対移動量または絶対移動量であり、それは <see cref="Flags"/> に依存する。
             /// </remarks>
-            public int LastY;
-
+            public int LastY { get; set; }
             /// <summary>
             ///     デバイス定義の追加情報。
             /// </summary>
-            public int ExtraInformation;
+            public int ExtraInformation { get; set; }
+
+            public RawMouse()
+            {
+                this.ButtonsData = new RawMouseButtonsData();
+            }
+            public RawMouse( in Native native )
+                : this()
+            {
+                fixed( Native* pNative = &native )
+                    this.RestoreFrom( pNative );
+            }
+
+            public void MarshalTo( Native* pNative )
+            {
+                pNative->Flags = this.Flags;
+                this.ButtonsData.MarshalTo( &pNative->ButtonsData );
+                pNative->RawButtons = this.RawButtons;
+                pNative->LastX = this.LastX;
+                pNative->LastY = this.LastY;
+                pNative->ExtraInformation = this.ExtraInformation;
+            }
+            public void RestoreFrom( Native* pNative )
+            {
+                this.Flags = pNative->Flags;
+                this.ButtonsData = new RawMouseButtonsData( pNative->ButtonsData );
+                this.RawButtons = pNative->RawButtons;
+                this.LastX = pNative->LastX;
+                this.LastY = pNative->LastY;
+                this.ExtraInformation = pNative->ExtraInformation;
+            }
         }
 
-        [StructLayout( LayoutKind.Sequential, Pack = 1 )]
-        public struct RawKeyboard
+        public unsafe class RawMouseButtonsData
         {
+            [StructLayout( LayoutKind.Explicit )]
+            public struct Native
+            {
+                [FieldOffset( 0 )]
+                public int ulButtons;
+                [FieldOffset( 0 )]
+                public MouseButtonFlags usButtonFlags;
+                [FieldOffset( 2 )]
+                public short usButtonData;
+            }
+
+            /// <summary>
+            ///     Reserved.
+            /// </summary>
+            public int ulButtons { get; set; }
+            /// <summary>
+            ///     マウスボタンの遷移状態。
+            /// </summary>
+            public MouseButtonFlags usButtonFlags { get; set; }
+            /// <summary>
+            ///     マウスホイールが水平または縦に移動すれば、ここに移動差分量が格納される。
+            /// </summary>
+            public short usButtonData { get; set; }
+
+            public RawMouseButtonsData()
+            {
+            }
+            public RawMouseButtonsData( in Native native )
+                : this()
+            {
+                fixed( Native* pNative = &native )
+                    this.RestoreFrom( pNative );
+            }
+
+            public void MarshalTo( Native* pNative )
+            {
+                pNative->usButtonFlags = this.usButtonFlags;
+                pNative->usButtonData = this.usButtonData;
+            }
+            public void RestoreFrom( Native* pNative )
+            {
+                this.usButtonFlags = pNative->usButtonFlags;
+                this.usButtonData = pNative->usButtonData;
+            }
+        }
+
+        public unsafe class RawKeyboard
+        {
+            [StructLayout( LayoutKind.Sequential, Pack = 1 )]
+            public struct Native
+            {
+                public short MakeCode;
+                public ScanCodeFlags Flags;
+                public short Reserved;
+                public short VKey;
+                public uint Message;
+                public int ExtraInformation;
+            }
+
             /// <summary>
             ///     スキャンコード。
             /// </summary>
@@ -482,52 +634,105 @@ namespace FDK
             ///     キーボードのオーバーランに対するスキャンコードは、KEYBOARD_OVERRUN_MAKE_CODE (0xFF) である。
             /// </remarks>
             public short MakeCode;
-
             /// <summary>
             ///     スキャンコード情報に関するフラグ。
             /// </summary>
             public ScanCodeFlags Flags;
-
             /// <summary>
             ///     予約済み；ゼロであること。
             /// </summary>
             public short Reserved;
-
             /// <summary>
             ///     Windows メッセージ互換の仮想キーコード。
             /// </summary>
             public short VKey;
-
             /// <summary>
             ///     対応するウィンドウメッセージ。
             ///     WM_KEYDOWN, WM_SYSKEYDOWN など。
             /// </summary>
             public uint Message;
-
             /// <summary>
             ///     デバイス定義の追加情報。
             /// </summary>
             public int ExtraInformation;
+
+            public RawKeyboard()
+            {
+            }
+            public RawKeyboard( in Native native )
+                : this()
+            {
+                fixed( Native* pNative = &native )
+                    this.RestoreFrom( pNative );
+            }
+
+            public void MarshalTo( Native* pNative )
+            {
+                pNative->MakeCode = this.MakeCode;
+                pNative->Flags = this.Flags;
+                pNative->Reserved = this.Reserved;
+                pNative->VKey = this.VKey;
+                pNative->Message = this.Message;
+                pNative->ExtraInformation = this.ExtraInformation;
+            }
+            public void RestoreFrom( Native* pNative )
+            {
+                this.MakeCode = pNative->MakeCode;
+                this.Flags = pNative->Flags;
+                this.Reserved = pNative->Reserved;
+                this.VKey = pNative->VKey;
+                this.Message = pNative->Message;
+                this.ExtraInformation = pNative->ExtraInformation;
+            }
         }
 
-        [StructLayout( LayoutKind.Sequential )]
-        public struct RawHid
+        public unsafe class RawHid
         {
+            [StructLayout( LayoutKind.Sequential )]
+            public struct Native
+            {
+                public int SizeHid;
+                public int Count;
+                public byte RawData;    // 実際はBYTE[SizeHid*Count]。構造体のサイズ計算を行う場合には注意。
+            }
+
             /// <summary>
             ///     <see cref="RawData"/> フィールド内のそれぞれの HID 入力のサイズ（バイト単位）。
             /// </summary>
-            public int SizeHid;
-
+            public int SizeHid { get; set; }
             /// <summary>
             ///     <see cref="RawData"/> フィールド内の HID 入力の数.
             /// </summary>
-            public int Count;
-
+            public int Count { get; set; }
             /// <summary>
             ///     Type: BYTE[1]
             ///     Raw Input データ。バイトの配列。
             /// </summary>
-            public byte RawData;
+            public byte[] RawData { get; set; } = null!;
+
+            public RawHid()
+            {
+            }
+            public RawHid( in Native native )
+                : this()
+            {
+                fixed( Native* pNative = &native )
+                    this.RestoreFrom( pNative );
+            }
+
+            public void MarshalTo( Native* pNative )
+            {
+                throw new NotImplementedException();
+            }
+            public void RestoreFrom( Native* pNative )
+            {
+                this.SizeHid = pNative->SizeHid;
+                this.Count = pNative->Count;
+                this.RawData = new byte[ this.SizeHid * this.Count ];
+                byte* p = &pNative->RawData;
+                for( int i = 0; i < this.RawData.Length; i++ )
+                    this.RawData[ i ] = *p++;
+            }
         }
 
         [StructLayout( LayoutKind.Sequential )]

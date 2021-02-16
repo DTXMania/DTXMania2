@@ -26,7 +26,7 @@ namespace FDK
             }
         }
 
-        public static T ファイルをデシリアライズしてインスタンスを生成する<T>( VariablePath XMLファイル名 )
+        public static T? ファイルをデシリアライズしてインスタンスを生成する<T>( VariablePath XMLファイル名 )
         {
             using( var sr = new StreamReader(
                 new FileStream( XMLファイル名.変数なしパス, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ),

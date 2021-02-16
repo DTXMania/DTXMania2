@@ -540,9 +540,9 @@ namespace FDK
             double デバイス位置sec = (double)position / frequency;
 
             // デバイス位置の精度が荒い（階段状のとびとびの値になる）場合には、パフォーマンスカウンタで補間する。
-            if( position == this._最後のデバイス位置.position )
+            if( position == this._最後のデバイス位置.position && 0 < position )
             {
-                // (A) デバイス位置が前回と同じである場合：
+                // (A) デバイス位置が前回と同じである場合（ただし 0 を除く）：
                 // → 最後のデバイス位置における qpcPosition と今回の qpcPosition の差をデバイス位置secに加算する。
                 デバイス位置sec += ( qpcPosition - this._最後のデバイス位置.qpcPosition ) / 10_000_000.0;
             }

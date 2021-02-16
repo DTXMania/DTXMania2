@@ -95,7 +95,7 @@ namespace FDK
         /// </remarks>
         public void OnInput( in RawInput.RawInputData rawInputData )
         {
-            if( rawInputData.Header.Type != RawInput.DeviceType.HumanInputDevice )
+            if( rawInputData.Header.Type != RawInput.DeviceType.HumanInputDevice || rawInputData.Hid is null )
                 return; // Keyboard, Mouse は無視
 
 
@@ -287,25 +287,15 @@ namespace FDK
             #region " RawInput データからHIDレポートを取得する。"
             //----------------
             {
-                rawHidReports = new byte[ rawInputData.Data.Hid.Count ][];
+                rawHidReports = new byte[ rawInputData.Hid.Count ][];
 
                 // インライン配列からバイト配列を取得。
-                unsafe
+                int dataIndex = 0;
+                for( int c = 0; c < rawInputData.Hid.Count; c++ )
                 {
-                    fixed( RawInput.RawInputData* pData = &rawInputData )
-                    {
-                        byte* pRawHidData = ( (byte*)( &pData->Data.Hid ) ) +
-                            sizeof( int ) + // sizeof( RawHid.SizeHid )
-                            sizeof( int );  // sizeof( RawHid.Count )
-
-                        for( int c = 0; c < rawInputData.Data.Hid.Count; c++ )
-                        {
-                            rawHidReports[ c ] = new byte[ rawInputData.Data.Hid.SizeHid ];
-
-                            for( int p = 0; p < rawInputData.Data.Hid.SizeHid; p++ )
-                                rawHidReports[ c ][ p ] = *pRawHidData++;
-                        }
-                    }
+                    rawHidReports[ c ] = new byte[ rawInputData.Hid.SizeHid ];
+                    for( int i = 0; i < rawInputData.Hid.SizeHid; i++ )
+                        rawHidReports[ c ][ i ] = rawInputData.Hid.RawData[ dataIndex++ ];
                 }
             }
             //----------------

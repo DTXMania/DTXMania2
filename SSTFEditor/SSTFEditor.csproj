@@ -1,13 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>x64</Platforms>
-    <Version>4.3.3</Version>
+    <Version>4.4.3</Version>
     <Authors>FROM / Kenji Yamazaki</Authors>
-    <Copyright>Copyright (C) 2000 2020 FROM / Kenji Yamzaki</Copyright>
+    <Copyright>Copyright (C) 2000 2021 FROM / Kenji Yamzaki</Copyright>
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
   </PropertyGroup>
 

@@ -1601,6 +1601,7 @@ namespace SSTFEditor
                 Filter = "SSTFoverDTXファイル(*.dtx)|*.dtx|SSTFファイル(*.sstf)|*.sstf",
                 FilterIndex = 1,
                 InitialDirectory = this._作業フォルダパス,
+                FileName = Path.GetFileNameWithoutExtension( this._編集中のファイル名 ),
             } )
             {
                 result = dialog.ShowDialog( this );
@@ -1733,9 +1734,8 @@ namespace SSTFEditor
                 // ウィンドウのタイトルバーの表示変更（str編集中のファイル名 が確定した後に）
                 this.未保存である = true;     // 以前の状態によらず、確実に更新するようにする。
 
-                // 読み込み時と拡張子が同一である（が読み込み時はSSTFoverDTXではない）場合は、保存済み状態としておく。
-                if( 読み込み時の拡張子.ToLower() == Path.GetExtension( this._編集中のファイル名 ).ToLower() &&
-                    ! SSTFoverDTXである )
+                // 読み込み時と拡張子が同一である場合は、保存済み状態としておく。
+                if( 読み込み時の拡張子.ToLower() == Path.GetExtension( this._編集中のファイル名 ).ToLower() )
                     this.未保存である = false;
             }
             catch( InvalidDataException )

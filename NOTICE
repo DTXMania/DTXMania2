@@ -4,10 +4,10 @@ Redistributed binaries
 
 This product contains:
 
-.NET Core Libraries (CoreFX)
+.NET Runtime
     Copyright (c) .NET Foundation and Contributors
     The MIT License (MIT)
-    https://github.com/dotnet/corefx/blob/master/LICENSE.TXT
+    https://github.com/dotnet/runtime/blob/master/LICENSE.TXT
 
 bjxa (BandJAM XA audio codec)
     Copyright (C) 2018  Dridi Boukelmoune
@@ -43,11 +43,6 @@ NVorbis
     Microsoft Public Licence (Ms-PL)
     https://github.com/ioctlLR/NVorbis/blob/master/LICENSE
 
-protobuf-net
-    Copyright 2008 Marc Gravell
-    Apache Licence, Version 2.0
-    https://github.com/mgravell/protobuf-net/blob/master/Licence.txt
-
 SharpDX
     Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
     The MIT License (MIT)
@@ -57,8 +52,3 @@ YamlDotNet
     Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Antoine Aubry and contributors
     The MIT License (MIT)
     https://github.com/aaubry/YamlDotNet/blob/master/LICENSE.txt
-
-Windows-API-Code-Pack
-    Microsoft
-    Micrsoft software Licence
-    https://github.com/contre/Windows-API-Code-Pack-1.1/blob/master/LICENSE

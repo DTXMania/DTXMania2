@@ -133,9 +133,9 @@ namespace DTXMania2
                 {
                     if( null != subKey )
                     {
-                        var os_product = subKey.GetValue( "ProductName" ).ToString() ?? "Unknown OS";
-                        var os_release = subKey.GetValue( "ReleaseId" ).ToString() ?? "Unknown Release";
-                        var os_build = subKey.GetValue( "CurrentBuild" ).ToString() ?? "Unknown Build";
+                        var os_product = subKey.GetValue( "ProductName" )?.ToString() ?? "Unknown OS";
+                        var os_release = subKey.GetValue( "ReleaseId" )?.ToString() ?? "Unknown Release";
+                        var os_build = subKey.GetValue( "CurrentBuild" )?.ToString() ?? "Unknown Build";
                         var os_bit = Environment.Is64BitOperatingSystem ? "64bit" : "32bit";
                         var process_bit = Environment.Is64BitProcess ? "64bit" : "32bit";
 
@@ -154,14 +154,24 @@ namespace DTXMania2
                     info.Arguments = "OS get FreePhysicalMemory,TotalVisibleMemorySize /Value";
                     info.RedirectStandardOutput = true;
                     using( var process = Process.Start( info ) )
-                        output = process.StandardOutput.ReadToEnd();
-                    var lines = output.Trim().Split( "\n" );
-                    var freeMemoryParts = lines[ 0 ].Split( "=", StringSplitOptions.RemoveEmptyEntries );
-                    var totalMemoryParts = lines[ 1 ].Split( "=", StringSplitOptions.RemoveEmptyEntries );
-                    var Total = Math.Round( double.Parse( totalMemoryParts[ 1 ] ) / 1024 / 1024, 0 );
-                    var Free = Math.Round( double.Parse( freeMemoryParts[ 1 ] ) / 1024 / 1024, 0 );
+                    {
+                        if( process is not null )
+                        {
+                            output = process.StandardOutput.ReadToEnd();
 
-                    Log.WriteLine( $"{Total}GB Total physical memory, {Free}GB Free" );
+                            var lines = output.Trim().Split( "\n" );
+                            var freeMemoryParts = lines[ 0 ].Split( "=", StringSplitOptions.RemoveEmptyEntries );
+                            var totalMemoryParts = lines[ 1 ].Split( "=", StringSplitOptions.RemoveEmptyEntries );
+                            var Total = Math.Round( double.Parse( totalMemoryParts[ 1 ] ) / 1024 / 1024, 0 );
+                            var Free = Math.Round( double.Parse( freeMemoryParts[ 1 ] ) / 1024 / 1024, 0 );
+
+                            Log.WriteLine( $"{Total}GB Total physical memory, {Free}GB Free" );
+                        }
+                        else
+                        {
+                            Log.ERROR( "Proces.Start() failed." );
+                        }
+                    }
                 }
                 //----------------
                 #endregion

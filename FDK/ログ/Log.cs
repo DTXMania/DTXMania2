@@ -25,7 +25,7 @@ namespace FDK
             get
             {
                 // 1つ前のスタックフレームを取得。
-                var prevFrame = new StackFrame( skipFrames: 1, fNeedFileInfo: false );
+                var prevFrame = new StackFrame( skipFrames: 1, needFileInfo: false );
 
                 var クラス名 = prevFrame.GetMethod()?.ReflectedType?.ToString() ?? "";
                 var メソッド名 = prevFrame.GetMethod()?.Name ?? "";

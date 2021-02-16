@@ -18,11 +18,11 @@ namespace FDK
         public override void Flush()
             => this._streamWriter?.Flush();
 
-        public override void Write( string message )
-            => this._streamWriter?.Write( this.SanitizeUsername( message ) );
+        public override void Write( string? message )
+            => this._streamWriter?.Write( SanitizeUsername( message ) );
 
-        public override void WriteLine( string message )
-            => this._streamWriter?.WriteLine( this.SanitizeUsername( message ) );
+        public override void WriteLine( string? message )
+            => this._streamWriter?.WriteLine( SanitizeUsername( message ) );
 
         protected override void Dispose( bool disposing )
         {
@@ -41,11 +41,11 @@ namespace FDK
         /// <summary>
         ///		ユーザ名が出力に存在する場合は、伏字にする。
         /// </summary>
-        private string SanitizeUsername( string message )
+        private static string? SanitizeUsername( string? message )
         {
             string userprofile = Environment.GetFolderPath( Environment.SpecialFolder.UserProfile );
 
-            if( message.Contains( userprofile ) )
+            if( message is not null && message.Contains( userprofile ) )
             {
                 char delimiter = Path.DirectorySeparatorChar;
                 string[] u = userprofile.Split( delimiter );

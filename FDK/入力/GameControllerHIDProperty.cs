@@ -33,10 +33,10 @@ namespace FDK
         public GameControllerHIDProperty()
         {
             this.Caps = new HID.Caps();
-            this.ButtonCaps = new HID.ButtonCaps[ 0 ];
-            this.ValueCaps = new HID.ValueCaps[ 0 ];
-            this.CollectionNodes = new HID.LinkCollectionNode[ 0 ];
-            this.ButtonState = new bool[ 0 ][];
+            this.ButtonCaps = Array.Empty<HID.ButtonCaps>();
+            this.ValueCaps = Array.Empty<HID.ValueCaps>();
+            this.CollectionNodes = Array.Empty<HID.LinkCollectionNode>();
+            this.ButtonState = Array.Empty<bool[]>();
         }
 
         public virtual void Dispose()

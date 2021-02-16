@@ -332,7 +332,7 @@ namespace DTXMania2.演奏
                                 int FastSlow値の絶対値 = Math.Abs( FastSlow値 );
                                 var 接尾詞 =
                                     ( FastSlow値の絶対値 < 10 ) ? "_yellow" :
-                                    ( 0 < FastSlow値 ) ? "_blue" : "_red";
+                                    ( 0 > FastSlow値 ) ? "_blue" : "_red";
                                 var 文字列 = FastSlow値.ToString( "D" );
                                 int 文字数 = 文字列.Length;
                                 float 拡大率 = 2f;

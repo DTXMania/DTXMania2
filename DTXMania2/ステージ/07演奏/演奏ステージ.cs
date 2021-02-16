@@ -218,6 +218,9 @@ namespace DTXMania2.演奏
                 {
                     #region " 演奏を開始し、表示フェーズへ。"
                     //----------------
+                    // 現時点での入力をすべて取り出してクリアする。
+                    Global.App.ドラム入力.すべての入力デバイスをポーリングする( 入力履歴を記録する: false );
+
                     // 演奏を開始する。
                     this._描画開始チップ番号 = -1; // -1 以外になれば演奏開始。
 
@@ -581,7 +584,6 @@ namespace DTXMania2.演奏
                             chipProperty.AutoPlayON_自動ヒット_再生,
                             chipProperty.AutoPlayON_自動ヒット_判定,
                             chipProperty.AutoPlayON_自動ヒット_非表示,
-                            ヒット判定バーと発声との時間sec,
                             ヒット判定バーと描画との時間sec );
                         //----------------
                         #endregion
@@ -596,7 +598,6 @@ namespace DTXMania2.演奏
                             chipProperty.AutoPlayOFF_ユーザヒット_再生,
                             chipProperty.AutoPlayOFF_ユーザヒット_判定,
                             chipProperty.AutoPlayOFF_ユーザヒット_非表示,
-                            ヒット判定バーと発声との時間sec,
                             ヒット判定バーと描画との時間sec );
                         //----------------
                         #endregion
@@ -642,7 +643,6 @@ namespace DTXMania2.演奏
                                 chipProperty.AutoPlayON_自動ヒット_再生,
                                 chipProperty.AutoPlayON_自動ヒット_判定,
                                 chipProperty.AutoPlayON_自動ヒット_非表示,
-                                ヒット判定バーと発声との時間sec,
                                 ヒット判定バーと描画との時間sec );
 
                             this._ドラムキットとヒットバー.ヒットアニメ開始( chipProperty.表示レーン種別 );
@@ -659,7 +659,6 @@ namespace DTXMania2.演奏
                                 chipProperty.AutoPlayOFF_自動ヒット_再生,
                                 chipProperty.AutoPlayOFF_自動ヒット_判定,
                                 chipProperty.AutoPlayOFF_自動ヒット_非表示,
-                                ヒット判定バーと発声との時間sec,
                                 ヒット判定バーと描画との時間sec );
 
                             this._ドラムキットとヒットバー.ヒットアニメ開始( chipProperty.表示レーン種別 );
@@ -806,14 +805,8 @@ namespace DTXMania2.演奏
                             {
                                 #region " チップの手動ヒット処理。"
                                 //----------------
-                                this._チップと判定との距離と時間を計算する(
-                                    現在の演奏時刻sec,
-                                    chip,
-                                    out double ヒット判定バーと描画との時間sec,   // 負数ならバー未達、0でバー直上、正数でバー通過。 
-                                    out double ヒット判定バーと発声との時間sec,   //
-                                    out double ヒット判定バーとの距離dpx );       //
-
                                 var chipProperty = userConfig.ドラムチッププロパティリスト.チップtoプロパティ[ chip.チップ種別 ];
+
                                 double 入力とチップの時間差sec = 入力.InputEvent.TimeStamp - chip.描画時刻sec;
                                 double 入力とチップの時間差の絶対値sec = Math.Abs( 入力とチップの時間差sec );
                                 var ヒット判定 =
@@ -829,7 +822,6 @@ namespace DTXMania2.演奏
                                         && userConfig.ドラムの音を発声する,          // 　自動演奏チップとは異なり、オプション設定の影響を受ける。
                                     chipProperty.AutoPlayOFF_ユーザヒット_判定,      // ヒットすれば判定する？
                                     chipProperty.AutoPlayOFF_ユーザヒット_非表示,    // ヒットすれば非表示にする？
-                                    ヒット判定バーと発声との時間sec,
                                     入力とチップの時間差sec );
 
                                 this.成績.エキサイトゲージを更新する( ヒット判定 );
@@ -911,7 +903,7 @@ namespace DTXMania2.演奏
 
                 #region " (3) 入力に応じたハイハットの開閉 "
                 //----------------
-                foreach( var ev in Global.App.ドラム入力.MidiIns.入力イベントリスト.Where( ( ie ) => ( 255 == ie.Key ) ) )
+                foreach( var ev in Global.App.ドラム入力.MidiIns.入力イベントリスト.Where( ( ie ) => ( 255 == ie.Key ) && ( MidiIns.CTL_FOOTPEDAL == ie.Control ) ) )
                     this._ドラムキットとヒットバー.ハイハットの開度を設定する( ev.Velocity );
                 //----------------
                 #endregion
@@ -1868,7 +1860,7 @@ namespace DTXMania2.演奏
         /// <param name="非表示">チップを非表示化するならtrue。</param>
         /// <param name="ヒット判定バーと発声との時間sec">負数でバー未達、0で直上、正数でバー通過。</param>
         /// <param name="入力とチップとの間隔sec">チップより入力が早ければ負数、遅ければ正数。</param>
-        private void _チップのヒット処理を行う( SSTF.チップ chip, 判定種別 judge, bool 再生, bool 判定, bool 非表示, double ヒット判定バーと発声との時間sec, double 入力とチップとの間隔sec )
+        private void _チップのヒット処理を行う( SSTF.チップ chip, 判定種別 judge, bool 再生, bool 判定, bool 非表示, double 入力とチップとの間隔sec )
         {
             this._チップの演奏状態[ chip ].ヒット済みである = true;
 
